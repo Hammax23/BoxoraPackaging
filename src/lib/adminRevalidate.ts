@@ -1,7 +1,8 @@
 import { revalidatePath } from "next/cache";
 
 export function revalidatePublicContent() {
-  revalidatePath("/");
+  // Root layout feeds the header (industries megamenu) on every page
+  revalidatePath("/", "layout");
   revalidatePath("/products");
   revalidatePath("/blog");
   revalidatePath("/products", "layout");

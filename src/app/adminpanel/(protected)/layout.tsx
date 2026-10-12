@@ -11,6 +11,7 @@ import {
   Waypoints,
   Image as ImageIcon,
   Inbox,
+  Factory,
 } from "lucide-react";
 
 export default async function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
@@ -35,6 +36,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
               { href: "/adminpanel", label: "Dashboard", icon: LayoutDashboard },
               { href: "/adminpanel/site-settings", label: "Site settings", icon: Settings },
               { href: "/adminpanel/navigation", label: "Navigation", icon: Waypoints },
+              { href: "/adminpanel/industries", label: "Industries", icon: Factory },
               { href: "/adminpanel/home", label: "Homepage", icon: Sparkles },
               { href: "/adminpanel/products", label: "Products", icon: Package },
               { href: "/adminpanel/blog", label: "Blog", icon: FileText },

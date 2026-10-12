@@ -4,6 +4,7 @@ import { blogCategories, blogPosts } from "../src/lib/blog";
 import {
   faqs,
   footerLinks,
+  industriesMegamenu,
   marqueeItems,
   navLeft,
   navRight,
@@ -42,6 +43,17 @@ async function main() {
       where: { id: `marquee_${i}` },
       update: { text: marqueeItems[i], sortOrder: i, isActive: true },
       create: { id: `marquee_${i}`, text: marqueeItems[i], sortOrder: i, isActive: true },
+    });
+  }
+
+  // Industries (header megamenu)
+  for (let i = 0; i < industriesMegamenu.categories.length; i++) {
+    const c = industriesMegamenu.categories[i];
+    const slug = slugify(c.name);
+    await prisma.industry.upsert({
+      where: { slug },
+      update: {},
+      create: { slug, name: c.name, subtitle: c.sub, imageUrl: c.image, sortOrder: i, isActive: true },
     });
   }
 

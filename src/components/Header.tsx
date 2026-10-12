@@ -4,7 +4,7 @@ import BrandLogo from "@/components/BrandLogo";
 import IndustriesMegamenu from "@/components/IndustriesMegamenu";
 import PackagingStylesMegamenu from "@/components/PackagingStylesMegamenu";
 import TrendsMegamenu from "@/components/TrendsMegamenu";
-import { industriesMegamenu, packagingStylesMegamenu, trendsMegamenu, navLeft, navRight, topBar } from "@/lib/data";
+import { packagingStylesMegamenu, trendsMegamenu, navLeft, navRight, topBar } from "@/lib/data";
 import {
   ArrowRight,
   ChevronDown,
@@ -20,6 +20,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { openQuoteDrawer } from "@/lib/quoteDrawer";
+import { useIndustries } from "@/components/IndustriesProvider";
 
 type NavItem = {
   label: string;
@@ -205,6 +206,7 @@ function HeaderIcons() {
 }
 
 export default function Header() {
+  const industries = useIndustries();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileOpenItem, setMobileOpenItem] = useState<string | null>(null);
   const [activeMegamenu, setActiveMegamenu] = useState<
@@ -233,7 +235,7 @@ export default function Header() {
   const hasMobileDropdown = (link: NavItem) => !!(link.children?.length || link.megamenu);
   const getMobileItems = (link: NavItem) => {
     if (link.megamenu === "industries") {
-      return industriesMegamenu.categories.map((c) => ({ title: c.name, href: c.href, sub: c.sub }));
+      return industries.map((c) => ({ title: c.name, href: c.href, sub: c.sub }));
     }
 
     if (link.megamenu === "packaging-styles") {

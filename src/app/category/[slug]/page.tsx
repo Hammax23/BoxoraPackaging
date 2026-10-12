@@ -1,7 +1,8 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import StarRating from "@/components/ui/StarRating";
-import { categories, packagingStyles, trendsMegamenu } from "@/lib/data";
+import { packagingStyles, trendsMegamenu } from "@/lib/data";
+import { getIndustries } from "@/lib/queries/industries";
 import { listActiveProducts } from "@/lib/queries/products";
 import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
@@ -9,14 +10,7 @@ import type { Metadata } from "next";
 import { Grid2X2, List, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-function slugify(input: string) {
-  return input
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
+import { notFound } from "next/navigation";
 
 function productInCategory(productCategory: string | undefined, categoryName: string) {
   if (!productCategory) return false;
@@ -32,7 +26,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const activeCategory = categories.find((c) => slugify(c.name) === slug) ?? categories[0];
+  const industries = await getIndustries();
+  const activeCategory = industries.find((c) => c.slug === slug);
+  if (!activeCategory) return {};
   return buildPageMetadata({
     title: `${activeCategory.name} Packaging`,
     description: `Browse custom ${activeCategory.name.toLowerCase()} packaging solutions from Boxora.`,
@@ -46,8 +42,9 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const products = await listActiveProducts();
-  const activeCategory = categories.find((c) => slugify(c.name) === slug) ?? categories[0];
+  const [products, industries] = await Promise.all([listActiveProducts(), getIndustries()]);
+  const activeCategory = industries.find((c) => c.slug === slug);
+  if (!activeCategory) notFound();
 
   const results = products.filter((p) => productInCategory(p.category, activeCategory.name));
 
@@ -83,12 +80,13 @@ export default async function CategoryPage({
                     Industries
                   </h3>
                   <div className="mt-4 space-y-1">
-                    {categories.map((cat) => {
-                      const isActive = cat.name === activeCategory.name;
+                    {industries.map((cat) => {
+                      const isActive = cat.slug === activeCategory.slug;
+                      const count = products.filter((p) => productInCategory(p.category, cat.name)).length;
                       return (
                         <Link
-                          key={cat.name}
-                          href={`/category/${slugify(cat.name)}`}
+                          key={cat.slug}
+                          href={cat.href}
                           className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition ${
                             isActive
                               ? "bg-background-field text-primary"
@@ -101,7 +99,7 @@ export default async function CategoryPage({
                               isActive ? "bg-primary text-white" : "bg-background-field text-lighter"
                             }`}
                           >
-                            {cat.count}
+                            {count}
                           </span>
                         </Link>
                       );

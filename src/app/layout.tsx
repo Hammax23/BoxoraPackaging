@@ -3,6 +3,7 @@ import { Figtree, Marcellus } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import JsonLd from "@/components/JsonLd";
+import { getIndustries } from "@/lib/queries/industries";
 import { getSiteUrl, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const marcellus = Marcellus({
@@ -32,16 +33,18 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const industries = await getIndustries();
+
   return (
     <html lang="en" className={`${marcellus.variable} ${figtree.variable}`}>
       <body className="antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-        <Providers>{children}</Providers>
+        <Providers industries={industries}>{children}</Providers>
       </body>
     </html>
   );

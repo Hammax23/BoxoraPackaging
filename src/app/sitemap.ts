@@ -1,19 +1,15 @@
 import type { MetadataRoute } from "next";
 import { listBlogSlugs } from "@/lib/queries/blog";
 import { listProductSlugs } from "@/lib/queries/products";
-import { categories } from "@/lib/data";
+import { getIndustries } from "@/lib/queries/industries";
 import { absoluteUrl } from "@/lib/seo";
 
-function slugify(input: string) {
-  return input
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productSlugs, blogSlugs] = await Promise.all([listProductSlugs(), listBlogSlugs()]);
+  const [productSlugs, blogSlugs, industries] = await Promise.all([
+    listProductSlugs(),
+    listBlogSlugs(),
+    getIndustries(),
+  ]);
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -36,8 +32,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const categoryRoutes = categories.map((c) => ({
-    url: absoluteUrl(`/category/${slugify(c.name)}`),
+  const categoryRoutes = industries.map((c) => ({
+    url: absoluteUrl(c.href),
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.6,

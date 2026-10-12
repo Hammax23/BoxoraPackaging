@@ -1,10 +1,14 @@
+"use client";
+
+import { useIndustries } from "@/components/IndustriesProvider";
 import { industriesMegamenu } from "@/lib/data";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function IndustriesMegamenu() {
-  const { categories, banners } = industriesMegamenu;
+  const categories = useIndustries();
+  const { banners } = industriesMegamenu;
 
   return (
     <div className="mx-auto w-full max-w-[1320px] px-6 py-8 xl:px-8">
@@ -13,17 +17,19 @@ export default function IndustriesMegamenu() {
         <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2 xl:gap-x-14 xl:gap-y-6">
           {categories.map((item) => (
             <Link
-              key={item.name}
+              key={item.slug}
               href={item.href}
               className="group flex items-center gap-4 transition hover:opacity-80"
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl xl:h-[60px] xl:w-[60px]">
+                {/* unoptimized: admin can paste image URLs from any host */}
                 <Image
                   src={item.image}
                   alt={item.name}
                   fill
                   className="object-cover"
                   sizes="60px"
+                  unoptimized
                 />
               </div>
               <div className="min-w-0">
