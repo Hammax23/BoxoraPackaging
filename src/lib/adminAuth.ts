@@ -5,13 +5,24 @@ import { prisma } from "@/lib/db";
 
 const COOKIE_NAME = "boxora_admin_session";
 
+const PLACEHOLDER_SECRET = /change|example|placeholder|dev-insecure|your[-_ ]?secret|secret123|test/i;
+
+export function sessionSecretProblem(secret = process.env.ADMIN_SESSION_SECRET): string | null {
+  if (!secret) return "ADMIN_SESSION_SECRET is not set.";
+  if (secret.length < 32) return "ADMIN_SESSION_SECRET is shorter than 32 characters.";
+  if (PLACEHOLDER_SECRET.test(secret)) return "ADMIN_SESSION_SECRET looks like a placeholder value.";
+  return null;
+}
+
 function getSessionSecret() {
   const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!secret) {
-    // Keep dev workable, but prod should set it.
-    return "dev-insecure-secret-change-me";
+  const problem = sessionSecretProblem(secret);
+  if (problem && process.env.NODE_ENV === "production") {
+    // Never run production with a guessable session secret.
+    throw new Error(`${problem} Set a long random value (e.g. \`openssl rand -hex 32\`).`);
   }
-  return secret;
+  // Development stays usable, with a fallback when nothing is set.
+  return secret || "dev-insecure-secret-change-me";
 }
 
 export function hashPasswordScrypt(password: string) {
@@ -59,6 +70,17 @@ export async function createAdminSession(userId: string) {
     secure: process.env.NODE_ENV === "production",
     path: "/",
     expires: expiresAt,
+  });
+}
+
+/** Signs out every session of this user except the one making the request. */
+export async function revokeOtherAdminSessions(userId: string) {
+  const c = await cookies();
+  const token = c.get(COOKIE_NAME)?.value;
+  const currentHash = token ? hashSessionToken(token) : "";
+  await prisma.adminSession.updateMany({
+    where: { userId, status: "ACTIVE", NOT: { tokenHash: currentHash } },
+    data: { status: "REVOKED", revokedAt: new Date() },
   });
 }
 

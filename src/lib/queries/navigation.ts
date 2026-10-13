@@ -20,11 +20,11 @@ const footerHrefMap: Record<string, string> = {
   "My account": "#",
   Wishlist: "#",
   Compare: "#",
-  "About Us": "#",
+  "About Us": "/about",
   "Our Services": "#",
-  "Contact Us": "#contact",
+  "Contact Us": "/contact",
   Blog: "/blog",
-  FAQ: "#faq",
+  FAQ: "/faq",
   "Shipping & Delivery": "#",
   Returns: "#",
   "Privacy Policy": "#",
@@ -38,6 +38,16 @@ function mapStaticFooter(): FooterLinksView {
   };
 }
 
+// Older admin-saved rows still point at the home-page anchor.
+const fixHref = (href: string, megamenu?: string | null, label?: string) => {
+  if (href === "#packaging-styles") return "/styles";
+  if (href !== "#") return href;
+  if (megamenu === "trends") return "/trends";
+  if (megamenu === "industries" || label?.toUpperCase() === "INDUSTRIES") return "/products";
+  if (label?.toUpperCase() === "ABOUT US") return "/about";
+  return href;
+};
+
 export async function getNavLeft(): Promise<NavItemView[]> {
   try {
     const rows = await prisma.navigationItem.findMany({
@@ -48,7 +58,7 @@ export async function getNavLeft(): Promise<NavItemView[]> {
     if (rows.length > 0) {
       return rows.map((r) => ({
         label: r.label,
-        href: r.href,
+        href: fixHref(r.href, r.megamenu, r.label),
         megamenu: (r.megamenu as NavItemView["megamenu"]) ?? undefined,
         children: r.children.length > 0 ? r.children.map((c) => c.label) : undefined,
       }));
@@ -69,7 +79,7 @@ export async function getNavRight(): Promise<NavItemView[]> {
     if (rows.length > 0) {
       return rows.map((r) => ({
         label: r.label,
-        href: r.href,
+        href: fixHref(r.href, r.megamenu, r.label),
         megamenu: (r.megamenu as NavItemView["megamenu"]) ?? undefined,
         children: r.children.length > 0 ? r.children.map((c) => c.label) : undefined,
       }));

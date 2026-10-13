@@ -11,7 +11,7 @@ import JsonLd from "@/components/JsonLd";
 import PackagingStyles from "@/components/PackagingStyles";
 import Products from "@/components/Products";
 import Testimonials from "@/components/Testimonials";
-import { getFaqs, getMarqueeItems, getTestimonials } from "@/lib/queries/content";
+import { getFaqs, getMarqueeItems, getSiteSetting, getTestimonials } from "@/lib/queries/content";
 import { listActiveProducts } from "@/lib/queries/products";
 import { buildPageMetadata, faqJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -24,12 +24,14 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function Home() {
-  const [marqueeItems, products, faqs, testimonials] = await Promise.all([
+  const [marqueeItems, products, faqs, showTestimonials] = await Promise.all([
     getMarqueeItems(),
     listActiveProducts(),
     getFaqs(),
-    getTestimonials(),
+    getSiteSetting<boolean>("showTestimonials", false),
   ]);
+  // Hidden until the admin switches it on (Admin → FAQs & reviews), so no placeholder reviews go live.
+  const testimonials = showTestimonials === true ? await getTestimonials() : [];
 
   return (
     <main>
@@ -38,12 +40,12 @@ export default async function Home() {
       <Hero />
       <FeatureMarquee items={marqueeItems} />
       <PackagingStyles />
-      <Categories />
+      <Categories products={products} />
       <Features />
       <InstantQuote />
       <Products products={products} />
       <GoGreen />
-      <Testimonials testimonials={testimonials} />
+      {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
       <FAQs faqs={faqs} />
       <Footer />
     </main>

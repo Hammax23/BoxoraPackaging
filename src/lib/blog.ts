@@ -37,7 +37,7 @@ export const blogPosts: BlogPost[] = [
     author: "Boxora Team",
     date: "Mar 12, 2026",
     readTime: "6 min read",
-    image: images.packagingStyles[0],
+    image: images.photo(18),
     featured: true,
     content: [
       "Mailer boxes are one of the most versatile formats in modern e-commerce. They ship flat, assemble quickly, and create a strong first impression when customers open their order.",
@@ -72,7 +72,7 @@ export const blogPosts: BlogPost[] = [
     author: "James Cooper",
     date: "Feb 28, 2026",
     readTime: "7 min read",
-    image: images.megamenuCategories[9],
+    image: images.photo(20),
     content: [
       "Cosmetic packaging is judged in seconds on shelf and in unboxing videos. Finish selection is as important as structural design.",
       "Matte laminate feels modern and reduces glare under retail lighting. It pairs well with minimal typography and pastel color palettes.",
@@ -89,7 +89,7 @@ export const blogPosts: BlogPost[] = [
     author: "Boxora Team",
     date: "Feb 20, 2026",
     readTime: "8 min read",
-    image: images.megamenuCategories[0],
+    image: images.photo(17),
     content: [
       "Fresh coffee needs oxygen and moisture protection. That is why most specialty coffee bags use multi-layer barrier laminates.",
       "A typical structure includes PET for print and stiffness, aluminum for barrier performance, and PE for heat-seal compatibility.",
@@ -106,7 +106,7 @@ export const blogPosts: BlogPost[] = [
     author: "Elena Ruiz",
     date: "Feb 14, 2026",
     readTime: "4 min read",
-    image: images.services[2],
+    image: images.photo(14),
     content: [
       "Damage in transit is often a fit problem, not a strength problem. Products that move inside the pack absorb impact repeatedly until something fails.",
       "Add targeted clearance only where needed — not uniformly on every axis. Snug trays and folded inserts often outperform generic void fill.",
@@ -123,7 +123,7 @@ export const blogPosts: BlogPost[] = [
     author: "Boxora Team",
     date: "Feb 3, 2026",
     readTime: "6 min read",
-    image: images.megamenuCategories[8],
+    image: images.photo(11),
     content: [
       "Stand-up pouches look simple until artwork meets production. Small layout decisions become expensive if discovered after plates are made.",
       "Confirm fill volume and headspace with your co-packer before finalizing panel dimensions. Shelf presence changes dramatically with gusset width.",
@@ -140,7 +140,7 @@ export const blogPosts: BlogPost[] = [
     author: "Michael Chen",
     date: "Jan 22, 2026",
     readTime: "5 min read",
-    image: images.packagingStyles[3],
+    image: images.photo(19),
     content: [
       "Folding cartons are efficient, print-friendly, and excellent for retail velocity. They are often the right first pack for new SKU launches.",
       "Rigid setup boxes signal luxury through structure and weight. They are common in cosmetics, electronics accessories, and limited editions.",
@@ -157,7 +157,7 @@ export const blogPosts: BlogPost[] = [
     author: "Boxora Team",
     date: "Jan 10, 2026",
     readTime: "7 min read",
-    image: images.services[4],
+    image: images.specialOffer,
     content: [
       "Short runs used to mean compromise. Digital print for packaging has closed much of the quality gap for many board and label applications.",
       "Flexo remains strong at volume, especially when spot colors, metallics, or very specific brand color standards are non-negotiable.",

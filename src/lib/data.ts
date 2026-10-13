@@ -16,12 +16,12 @@ export const navLeft = [
   },
   {
     label: "INDUSTRIES",
-    href: "#",
+    href: "/products",
     megamenu: "industries" as const,
   },
   {
     label: "PACKAGING STYLES",
-    href: "#packaging-styles",
+    href: "/styles",
     megamenu: "packaging-styles" as const,
     children: [
       "Shop - Sidebar",
@@ -35,13 +35,13 @@ export const navLeft = [
 export const navRight = [
   {
     label: "TRENDS",
-    href: "#",
+    href: "/trends",
     megamenu: "trends" as const,
   },
   { label: "BLOG", href: "/blog" },
   {
     label: "ABOUT US",
-    href: "#",
+    href: "/about",
     children: ["About Us", "FAQ", "Our Team", "Contact"],
   },
 ];
@@ -128,31 +128,123 @@ export const industriesMegamenu = {
   ],
 };
 
+export type PackagingTrend = {
+  slug: string;
+  title: string;
+  /** Short line shown in menus and cards. */
+  description: string;
+  image: string;
+  href: string;
+  overview: string[];
+  keyPoints: string[];
+  materials: string[];
+  bestFor: string[];
+  /** Slugs of packagingStyles that suit this trend. */
+  styles: string[];
+};
+
+export const packagingTrends: PackagingTrend[] = [
+  {
+    slug: "minimalist-packaging",
+    title: "Minimalist Packaging",
+    description:
+      "Clean, eco-forward designs with simplified typography and premium whitespace — ideal for modern D2C brands.",
+    image: images.photo(16),
+    href: "/trends/minimalist-packaging",
+    overview: [
+      "Minimalist packaging lets the product and a single confident brand mark do the talking. Fewer colors, generous whitespace and restrained typography signal quality and confidence.",
+      "It also tends to be easier to produce and recycle: fewer inks, simpler structures and less decoration mean less material and a calmer unboxing experience.",
+    ],
+    keyPoints: ["One or two brand colors", "Generous whitespace and simple type", "Matte and uncoated textures", "Less ink, less waste"],
+    materials: ["Uncoated kraft or white board", "Matte laminate", "Soft-touch finish", "Single-color print"],
+    bestFor: ["Skincare & wellness", "D2C start-ups", "Premium food & beverage", "Lifestyle brands"],
+    styles: ["custom-mailer-boxes", "stand-up-pouches", "rigid-setup-boxes"],
+  },
+  {
+    slug: "eco-luxury-packaging",
+    title: "Eco‑Luxury Packaging",
+    description:
+      "Sustainable materials paired with elevated finishes — soft-touch, foil, and texture without extra waste.",
+    image: images.packagingStyles[9],
+    href: "/trends/eco-luxury-packaging",
+    overview: [
+      "Eco-luxury proves that sustainable and premium are not opposites. Responsibly sourced paper and board are elevated with tactile finishes so the pack feels special without relying on plastic.",
+      "Brands use it to justify premium pricing while backing it with a credible sustainability story: recyclable structures, FSC-certified fibre and plant-based coatings.",
+    ],
+    keyPoints: ["Premium feel from natural materials", "Embossing and tactile textures", "Foil used sparingly for contrast", "Recyclable or compostable by design"],
+    materials: ["FSC-certified board", "Textured and linen stock", "Plant-based coatings", "Soy-based inks"],
+    bestFor: ["Gifting", "Beauty & fragrance", "Specialty coffee & tea", "Premium retail"],
+    styles: ["paper-based-packaging", "rigid-setup-boxes", "flat-bottom-bags"],
+  },
+  {
+    slug: "subscription-boxes",
+    title: "Subscription Boxes",
+    description:
+      "Recurring delivery packaging built for durability, brand storytelling, and share-worthy unboxing moments.",
+    image: images.photo(19),
+    href: "/trends/subscription-boxes",
+    overview: [
+      "Subscription brands win or lose on the unboxing moment, month after month. The box has to survive shipping, look great on camera and make the customer feel looked after.",
+      "Printed interiors, inserts and thoughtful opening sequences turn a delivery into a ritual, and a strong structure keeps damage and returns low.",
+    ],
+    keyPoints: ["Printed inside and out", "Sturdy, ship-ready construction", "Inserts that hold products in place", "Designed to be photographed and shared"],
+    materials: ["Corrugated mailer board", "Full-color print", "Custom paper inserts", "Matte or gloss laminate"],
+    bestFor: ["Beauty & snack boxes", "Meal kits", "Book & hobby clubs", "Pet subscriptions"],
+    styles: ["custom-mailer-boxes", "rigid-setup-boxes", "window-pouches"],
+  },
+  {
+    slug: "bold-expressive-print",
+    title: "Bold Expressive Print",
+    description:
+      "Saturated color, playful illustration and oversized type that stop shoppers mid-scroll and mid-aisle.",
+    image: images.photo(20),
+    href: "/trends/bold-expressive-print",
+    overview: [
+      "As shelves and feeds get busier, brands are answering with confident color, hand-drawn illustration and oversized typography that is impossible to scroll past.",
+      "Digital and short-run printing make it practical to launch limited editions and seasonal designs without large minimums.",
+    ],
+    keyPoints: ["High-saturation color palettes", "Illustration and custom lettering", "Limited-edition runs", "Strong shelf and social impact"],
+    materials: ["Full-color CMYK print", "Spot colors and metallic inks", "Gloss or matte laminate", "Spot UV highlights"],
+    bestFor: ["Snacks & beverages", "Youth-focused brands", "Seasonal drops", "Collaborations"],
+    styles: ["stand-up-pouches", "zipper-pouches", "side-gusset-bags"],
+  },
+  {
+    slug: "plastic-free-mono-material",
+    title: "Plastic‑Free & Mono‑Material",
+    description:
+      "Paper-based and single-material structures designed to be easy to recycle or compost.",
+    image: images.photo(14),
+    href: "/trends/plastic-free-mono-material",
+    overview: [
+      "Retailers and regulators are pushing packaging toward simpler, recyclable structures. Paper-based formats and mono-material films replace hard-to-recycle laminates.",
+      "The goal is packaging that does its job, protecting product and shelf life, while ending its life in the right bin.",
+    ],
+    keyPoints: ["Single-material films that recycle cleanly", "Paper-based alternatives to plastic", "Clear disposal guidance on pack", "Lower material weight"],
+    materials: ["Recyclable mono-PE film", "Compostable film", "Kraft paper with barrier coating", "Water-based inks"],
+    bestFor: ["Food & snacks", "Retail bags", "Brands with ESG targets", "Plastic-reduction programs"],
+    styles: ["paper-based-packaging", "roll-stock-film", "flat-bottom-bags"],
+  },
+  {
+    slug: "smart-connected-packaging",
+    title: "Smart & Connected Packaging",
+    description:
+      "QR codes and scannable details that connect a physical pack to stories, offers and reorders.",
+    image: images.specialOffer,
+    href: "/trends/smart-connected-packaging",
+    overview: [
+      "A simple QR code can turn packaging into a channel: customers scan for usage guides, recipes, authenticity checks or a one-tap reorder.",
+      "It also gives brands a way to share sustainability and sourcing information without crowding the pack.",
+    ],
+    keyPoints: ["QR codes linking to product stories", "Reorder and loyalty touchpoints", "Authenticity and traceability info", "Less text on pack, more value online"],
+    materials: ["High-contrast print areas", "Matte finishes that scan well", "Variable data printing", "Digital short runs"],
+    bestFor: ["Food provenance", "Supplements", "Subscription brands", "Premium gifting"],
+    styles: ["custom-mailer-boxes", "stand-up-pouches", "spout-pouches"],
+  },
+];
+
 export const trendsMegamenu = {
-  title: "2024–2025 Packaging Trends",
-  items: [
-    {
-      title: "Minimalist Packaging",
-      description:
-        "Clean, eco-forward designs with simplified typography and premium whitespace — ideal for modern D2C brands.",
-      image: images.megamenuCategories[3],
-      href: "#",
-    },
-    {
-      title: "Eco‑Luxury Packaging",
-      description:
-        "Sustainable materials paired with elevated finishes — soft-touch, foil, and texture without extra waste.",
-      image: images.megamenuCategories[7],
-      href: "#",
-    },
-    {
-      title: "Subscription Boxes",
-      description:
-        "Recurring delivery packaging built for durability, brand storytelling, and share-worthy unboxing moments.",
-      image: images.megamenuCategories[1],
-      href: "#",
-    },
-  ],
+  title: "Packaging Trends",
+  items: packagingTrends,
   cta: {
     title: "Get Help With Expert Guidance",
     description:
@@ -160,11 +252,11 @@ export const trendsMegamenu = {
     phoneLabel: "Call Us Toll Free",
     phone: "1-800-726-9660",
     buttonLabel: "Get Free Quote",
-    buttonHref: "#quote",
+    buttonHref: "/quote",
   },
   viewAll: {
     label: "View All Trends",
-    href: "#",
+    href: "/trends",
   },
 };
 
@@ -196,85 +288,152 @@ export const marqueeItems = [
 export const packagingStyles = [
   {
     title: "Stand-Up Pouches",
+    slug: "stand-up-pouches",
     description:
       "Shelf-ready flexible packaging engineered for food, beverage, and consumer goods with superior barrier performance.",
     image: images.packagingStyles[0],
     specs: ["Food Safe", "Custom Print", "MOQ 500"],
-    href: "#",
+    href: "/styles/stand-up-pouches",
   },
   {
     title: "Flat Bottom Bags",
+    slug: "flat-bottom-bags",
     description:
       "Premium retail presentation with reinforced base structure for stability, visibility, and high-speed filling lines.",
     image: images.packagingStyles[1],
     specs: ["Retail Ready", "High Barrier", "Eco Options"],
-    href: "#",
+    href: "/styles/flat-bottom-bags",
   },
   {
     title: "Side Gusset Bags",
+    slug: "side-gusset-bags",
     description:
       "Expandable-volume packaging ideal for coffee, tea, grains, and specialty products requiring extended shelf life.",
     image: images.packagingStyles[2],
     specs: ["Degassing Valve", "Foil Lined", "Bulk Volume"],
-    href: "#",
+    href: "/styles/side-gusset-bags",
   },
   {
     title: "Custom Mailer Boxes",
+    slug: "custom-mailer-boxes",
     description:
       "Branded unboxing experiences built for e-commerce durability, product protection, and consistent brand recall.",
     image: images.packagingStyles[3],
     specs: ["E-Commerce", "Rigid Build", "Full Color"],
-    href: "#",
+    href: "/styles/custom-mailer-boxes",
   },
   {
     title: "Roll Stock Film",
+    slug: "roll-stock-film",
     description:
       "High-performance flexible film for automated packaging lines — precision printing with minimal material waste.",
     image: images.packagingStyles[4],
     specs: ["Automated Fill", "Wide Web", "Short Runs"],
-    href: "#",
+    href: "/styles/roll-stock-film",
   },
   {
     title: "Zipper Pouches",
+    slug: "zipper-pouches",
     description:
       "Resealable consumer convenience with tamper-evident options for snacks, supplements, and multi-use products.",
     image: images.packagingStyles[5],
     specs: ["Resealable", "Child Resistant", "Clear Window"],
-    href: "#",
+    href: "/styles/zipper-pouches",
   },
   {
     title: "Rigid Setup Boxes",
+    slug: "rigid-setup-boxes",
     description:
       "Luxury rigid packaging for premium retail, corporate gifting, and high-value product launches worldwide.",
     image: images.packagingStyles[6],
     specs: ["Luxury Finish", "Magnetic Close", "Emboss / Foil"],
-    href: "#",
+    href: "/styles/rigid-setup-boxes",
   },
   {
     title: "Paper-Based Packaging",
+    slug: "paper-based-packaging",
     description:
       "Sustainable, compostable paper solutions aligned with enterprise ESG goals and plastic-reduction mandates.",
     image: images.packagingStyles[7],
     specs: ["Compostable", "FSC Certified", "Plastic Free"],
-    href: "#",
+    href: "/styles/paper-based-packaging",
   },
   {
     title: "Spout Pouches",
+    slug: "spout-pouches",
     description:
       "Convenient, spill-resistant packaging ideal for liquids, sauces, concentrates, and refill products.",
-    image: images.packagingStyles[5],
+    image: images.packagingStyles[8],
     specs: ["Spill Proof", "Custom Fitments", "High Barrier"],
-    href: "#",
+    href: "/styles/spout-pouches",
   },
   {
     title: "Window Pouches",
+    slug: "window-pouches",
     description:
       "Showcase your product with a clear window — great for snacks, coffee, and retail-ready shelf appeal.",
-    image: images.packagingStyles[0],
+    image: images.packagingStyles[9],
     specs: ["Clear Window", "Shelf Ready", "Custom Print"],
-    href: "#",
+    href: "/styles/window-pouches",
   },
 ];
+
+
+export const packagingStyleDetails: Record<
+  string,
+  { benefits: string[]; bestFor: string[]; materials: string[] }
+> = {
+  "stand-up-pouches": {
+    benefits: ["Stands on shelf for strong retail presence", "Resealable zipper and tear-notch options", "Large, high-impact print area", "Light and cost-efficient to ship"],
+    bestFor: ["Snacks & granola", "Supplements & powders", "Pet treats", "Dry goods"],
+    materials: ["Kraft paper laminate", "PET / PE barrier film", "Compostable film", "Matte or gloss finish"],
+  },
+  "flat-bottom-bags": {
+    benefits: ["Box-like stability with five printable panels", "Reinforced base for stable shelf display", "Works with side zips and valves", "Premium look at retail"],
+    bestFor: ["Coffee & tea", "Granola & nuts", "Pet food", "Premium dry goods"],
+    materials: ["Kraft paper laminate", "Foil barrier layer", "Matte or soft-touch finish", "Degassing valve"],
+  },
+  "side-gusset-bags": {
+    benefits: ["Expands to hold more product", "Classic format for coffee and tea", "Foil-lined options protect freshness", "Efficient to pack and ship flat"],
+    bestFor: ["Whole-bean coffee", "Loose-leaf tea", "Grains & rice", "Bulk specialty foods"],
+    materials: ["Foil-lined kraft", "PET / PE film", "One-way degassing valve", "Tin-tie or zipper closure"],
+  },
+  "custom-mailer-boxes": {
+    benefits: ["Branded unboxing experience", "Sturdy construction for e-commerce shipping", "Full-color print inside and out", "Custom sizes fit your product snugly"],
+    bestFor: ["Subscription boxes", "Apparel & accessories", "Cosmetics & skincare", "Gift sets"],
+    materials: ["Corrugated board", "White or kraft paper", "Matte or gloss laminate", "Spot UV and foil"],
+  },
+  "roll-stock-film": {
+    benefits: ["Made for automated filling lines", "Precision registration printing", "Minimal material waste", "Wide-web and short-run options"],
+    bestFor: ["Snack manufacturers", "Co-packers", "Sachets & stick packs", "Automated lines"],
+    materials: ["PET / PE laminate", "Metallized film", "Compostable film", "Matte or gloss finish"],
+  },
+  "zipper-pouches": {
+    benefits: ["Resealable to keep contents fresh", "Tamper-evident options available", "Clear window options", "Child-resistant closures available"],
+    bestFor: ["Snacks", "Supplements", "Herbs & tea", "Multi-use products"],
+    materials: ["PET / PE barrier film", "Kraft paper laminate", "Press-to-close zipper", "Matte or gloss finish"],
+  },
+  "rigid-setup-boxes": {
+    benefits: ["Luxury feel with a thick, rigid structure", "Magnetic, ribbon or lift-off lids", "Embossing, debossing and foil stamping", "Custom inserts hold products in place"],
+    bestFor: ["Premium retail", "Corporate gifting", "Cosmetics & fragrance", "Product launches"],
+    materials: ["Rigid greyboard", "Wrapped specialty paper", "Foil and emboss", "EVA or paper inserts"],
+  },
+  "paper-based-packaging": {
+    benefits: ["Compostable and recyclable material choices", "FSC-certified paper options", "Plastic-free structures", "Supports sustainability goals"],
+    bestFor: ["Eco-minded brands", "Food & beverage", "Retail bags", "Plastic-reduction programs"],
+    materials: ["FSC-certified kraft", "Plant-based coatings", "Compostable liners", "Soy-based inks"],
+  },
+  "spout-pouches": {
+    benefits: ["Spill-resistant pouring spout", "Lightweight alternative to rigid containers", "Good barrier for liquids", "Custom fitments and caps"],
+    bestFor: ["Sauces & concentrates", "Juices & beverages", "Refill products", "Baby food"],
+    materials: ["PET / PE laminate", "High-barrier film", "Custom spouts & caps", "Matte or gloss finish"],
+  },
+  "window-pouches": {
+    benefits: ["Shows off the product inside", "Builds shopper trust at a glance", "Shelf-ready presentation", "Custom window shapes"],
+    bestFor: ["Snacks & candy", "Coffee & tea", "Pet treats", "Baked goods"],
+    materials: ["Kraft with clear window", "PET / PE film", "Resealable zipper", "Matte or gloss finish"],
+  },
+};
 
 export const packagingStylesMegamenu = {
   styles: packagingStyles,
@@ -283,13 +442,13 @@ export const packagingStylesMegamenu = {
       title: "Premium packaging for modern brands",
       description: "Explore finishes, materials, and fast turnaround options.",
       image: images.headerBanners[0],
-      href: "#packaging-styles",
+      href: "/quote",
     },
     {
       title: "Sustainable options, same quality",
       description: "Compostable and FSC-certified packaging styles available.",
       image: images.headerBanners[1],
-      href: "#packaging-styles",
+      href: "/styles/paper-based-packaging",
     },
   ],
 };
@@ -574,14 +733,14 @@ export const testimonials = [
   },
   {
     title: "Great quality of products",
-    text: "Great expertise, innovation and quality focused. The team at Bocpak are really supportive and efficient, providing excellent solutions and quality packaging.",
+    text: "Great expertise, innovation and quality focused. The team at Boxora are really supportive and efficient, providing excellent solutions and quality packaging.",
     name: "Rabea Holzfurtner",
     role: "Assistant Manager",
     image: images.testimonials[1],
   },
   {
     title: "High-quality products",
-    text: "High-quality products, accurate production timelines, clear expectations. We've had great experiences working with Bocpak and recommend them for custom packaging needs.",
+    text: "High-quality products, accurate production timelines, clear expectations. We've had great experiences working with Boxora and recommend them for custom packaging needs.",
     name: "Allie Stauss",
     role: "Co-General Manager",
     image: images.testimonials[2],

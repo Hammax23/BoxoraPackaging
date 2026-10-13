@@ -13,6 +13,7 @@ import { Check, ChevronDown, Loader2, Search, Sparkles, X } from "lucide-react";
 import {
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
@@ -33,14 +34,24 @@ export default function IndustryCombobox({ value, onChange, className = "" }: Pr
   const [query, setQuery] = useState(value);
   const [activeIdx, setActiveIdx] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [source, setSource] = useState<"local" | "ai">("local");
-  const [suggestions, setSuggestions] = useState<IndustrySuggestion[]>(() =>
-    suggestIndustriesLocal(value || "", 8),
-  );
+  // Richer AI matches, kept together with the text they were computed for.
+  const [ai, setAi] = useState<{
+    q: string;
+    suggestions: IndustrySuggestion[];
+    source: "local" | "ai";
+  } | null>(null);
 
-  useEffect(() => {
+  // Keep the text box in sync when the parent changes the value (adjust state during render).
+  const [prevValue, setPrevValue] = useState(value);
+  if (value !== prevValue) {
+    setPrevValue(value);
     setQuery(value);
-  }, [value]);
+  }
+
+  const localSuggestions = useMemo(() => suggestIndustriesLocal(query, 8), [query]);
+  const aiFresh = ai && ai.q === query.trim() ? ai : null;
+  const suggestions = aiFresh ? aiFresh.suggestions : localSuggestions;
+  const source = aiFresh ? aiFresh.source : "local";
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -49,13 +60,6 @@ export default function IndustryCombobox({ value, onChange, className = "" }: Pr
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    setSuggestions(suggestIndustriesLocal(query, 8));
-    setActiveIdx(0);
-    setSource("local");
-  }, [query, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -84,8 +88,7 @@ export default function IndustryCombobox({ value, onChange, className = "" }: Pr
           source?: "local" | "ai";
         };
         if (data.suggestions?.length) {
-          setSuggestions(data.suggestions);
-          setSource(data.source ?? "local");
+          setAi({ q, suggestions: data.suggestions, source: data.source ?? "local" });
           setActiveIdx(0);
         }
       } catch (err) {
@@ -150,11 +153,12 @@ export default function IndustryCombobox({ value, onChange, className = "" }: Pr
           autoComplete="off"
           onFocus={() => {
             setOpen(true);
-            setSuggestions(suggestIndustriesLocal(query, 8));
+            setActiveIdx(0);
           }}
           onChange={(e) => {
             const next = e.target.value;
             setQuery(next);
+            setActiveIdx(0);
             setOpen(true);
             if (allSelectableLabels().includes(next)) onChange(next);
           }}
@@ -174,7 +178,7 @@ export default function IndustryCombobox({ value, onChange, className = "" }: Pr
                 setOpen(true);
                 inputRef.current?.focus();
               }}
-              className="rounded-md p-1 text-lighter transition hover:bg-background-field hover:text-dark"
+              className="rounded-md p-2.5 text-lighter transition hover:bg-background-field hover:text-dark"
             >
               <X className="h-3.5 w-3.5" />
             </button>

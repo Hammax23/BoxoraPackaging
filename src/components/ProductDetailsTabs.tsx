@@ -1,15 +1,39 @@
 "use client";
 
 import type { Product } from "@/lib/data";
-import { Box, FileText, Layers, MessageSquare, Scan, Star } from "lucide-react";
+import { Box, FileText, Layers, MessageSquare, Palette, Scan, Star } from "lucide-react";
 import { useState } from "react";
 
-type TabId = "additional" | "description" | "reviews";
+type TabId = "additional" | "design" | "description" | "reviews";
 
 const tabs: { id: TabId; label: string }[] = [
   { id: "additional", label: "Additional Information" },
+  { id: "design", label: "Design & Artwork" },
   { id: "description", label: "Description" },
   { id: "reviews", label: "Reviews" },
+];
+
+const designCards = [
+  {
+    icon: FileText,
+    title: "File formats",
+    text: "Upload print-ready PDF, AI or EPS files. High-resolution PNG or JPG also works.",
+  },
+  {
+    icon: Palette,
+    title: "Color & resolution",
+    text: "Use CMYK color mode and 300 dpi images. Tell us your PMS colors for exact brand matches.",
+  },
+  {
+    icon: Scan,
+    title: "Bleed & safe area",
+    text: "Add bleed past the cut line and keep key text and logos inside the safe area.",
+  },
+  {
+    icon: Layers,
+    title: "Need help with design?",
+    text: "Our team can prepare dielines and check your artwork. We send a proof for approval before printing.",
+  },
 ];
 
 const infoCards = [
@@ -120,6 +144,14 @@ export default function ProductDetailsTabs({ product }: { product: Product }) {
         {activeTab === "additional" && (
           <div className="grid gap-4 md:grid-cols-2 md:gap-5">
             {infoCards.map((card) => (
+              <InfoCard key={card.title} {...card} />
+            ))}
+          </div>
+        )}
+
+        {activeTab === "design" && (
+          <div className="grid gap-4 md:grid-cols-2 md:gap-5">
+            {designCards.map((card) => (
               <InfoCard key={card.title} {...card} />
             ))}
           </div>

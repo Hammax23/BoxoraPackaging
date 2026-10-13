@@ -256,6 +256,10 @@ model QuoteRequest {
   company   String?
   notes     String?
   source    String?
+  /// Extra customer choices (text on box, needed-by date, ship-to, finish ...)
+  details     Json?
+  /// Uploaded design files: [{ name, storedName, size, type }]
+  attachments Json?
   status    QuoteStatus @default(NEW)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -263,6 +267,26 @@ model QuoteRequest {
   items     QuoteRequestItem[]
 
   @@index([status, createdAt])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  topic     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead, createdAt])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?
+  createdAt DateTime @default(now())
 }
 
 model QuoteRequestItem {

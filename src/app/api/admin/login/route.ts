@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { createAdminSession, verifyPasswordScrypt } from "@/lib/adminAuth";
+import { createAdminSession, hashPasswordScrypt, verifyPasswordScrypt } from "@/lib/adminAuth";
+import { clearFailures, clientIp, isLocked, recordFailure } from "@/lib/leads/rateLimit";
+
+const WINDOW = 15 * 60 * 1000;
+// Used to spend the same time when the email is unknown (prevents guessing which emails exist).
+const DUMMY_HASH = hashPasswordScrypt("not-a-real-password");
 
 export async function POST(req: Request) {
   try {
@@ -12,15 +17,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
+    // Brute-force protection: only FAILED attempts count, per IP and per account.
+    const ipKey = `admin-login-ip:${clientIp(req)}`;
+    const emailKey = `admin-login-email:${email}`;
+    if (isLocked(ipKey, 10) || isLocked(emailKey, 6)) {
+      return NextResponse.json(
+        { error: "Too many login attempts. Please wait 15 minutes and try again." },
+        { status: 429, headers: { "Retry-After": "900" } },
+      );
+    }
+
     const user = await prisma.adminUser.findUnique({ where: { email } });
     if (!user || !user.isActive) {
+      verifyPasswordScrypt(password, DUMMY_HASH);
+      recordFailure(ipKey, WINDOW);
+      recordFailure(emailKey, WINDOW);
       return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
     }
 
     const ok = verifyPasswordScrypt(password, user.passwordHash);
     if (!ok) {
+      recordFailure(ipKey, WINDOW);
+      recordFailure(emailKey, WINDOW);
       return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
     }
+    clearFailures(ipKey);
+    clearFailures(emailKey);
 
     await createAdminSession(user.id);
     await prisma.auditLog.create({

@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const promises = [
   {
-    title: "The Bocpak Promise",
+    title: "The Boxora Promise",
     text: "We guarantee the highest quality products and customer experience with every order!",
   },
   {
@@ -17,7 +17,7 @@ const promises = [
 
 export default function GoGreen() {
   return (
-    <section className="section-padding bg-white">
+    <section className="section-padding bg-background-field">
       <div className="container-main">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch">
           <AnimatedSection>
@@ -32,7 +32,7 @@ export default function GoGreen() {
               {promises.map((item) => (
                 <div
                   key={item.title}
-                  className="rounded-[24px] border border-border bg-background-field p-6"
+                  className="rounded-[24px] border border-border bg-white p-6"
                 >
                   <h3 className="font-heading text-2xl text-dark">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-text">{item.text}</p>

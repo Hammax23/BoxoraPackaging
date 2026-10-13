@@ -22,7 +22,7 @@ export default function SpecialOffer() {
               <div className="absolute inset-0 bg-gradient-to-r from-dark/75 via-dark/45 to-transparent" />
               <div className="relative flex h-full min-h-[340px] flex-col justify-center p-8 md:min-h-[380px] md:p-14 lg:max-w-xl">
                 <span className="text-sm font-bold uppercase tracking-[0.15em] text-white/80">
-                  New to Bocpak?
+                  New to Boxora?
                 </span>
                 <h2 className="mt-4 font-heading text-4xl text-white md:text-5xl">
                   Special offer 15% off your first order.

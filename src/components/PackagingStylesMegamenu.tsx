@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function PackagingStylesMegamenu() {
+export default function PackagingStylesMegamenu({ onNavigate }: { onNavigate?: () => void }) {
   const { banners, styles } = packagingStylesMegamenu;
 
   return (
@@ -15,12 +15,13 @@ export default function PackagingStylesMegamenu() {
             <Link
               key={style.title}
               href={style.href}
-              className="group flex items-center gap-4 transition hover:opacity-80"
+              onClick={onNavigate}
+              className="group flex items-center gap-4 rounded-2xl p-1.5 transition hover:bg-background-field/70"
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-background-field xl:h-[60px] xl:w-[60px]">
-                <Image src={style.image} alt={style.title} fill className="object-cover" sizes="60px" />
+                <Image src={style.image} alt={style.title} fill className="object-cover transition duration-300 group-hover:scale-110" sizes="60px" />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h4 className="text-[15px] font-bold leading-tight text-dark transition group-hover:text-primary xl:text-base">
                   {style.title}
                 </h4>
@@ -28,6 +29,10 @@ export default function PackagingStylesMegamenu() {
                   {style.specs.slice(0, 2).join(" • ")}
                 </p>
               </div>
+              <ChevronRight
+                className="h-4 w-4 shrink-0 -translate-x-1 text-primary opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
+                strokeWidth={2.5}
+              />
             </Link>
           ))}
         </div>
@@ -38,6 +43,7 @@ export default function PackagingStylesMegamenu() {
             <Link
               key={banner.title}
               href={banner.href}
+              onClick={onNavigate}
               className="group relative min-h-[160px] overflow-hidden rounded-3xl xl:min-h-[175px]"
             >
               <Image
@@ -68,7 +74,8 @@ export default function PackagingStylesMegamenu() {
           ))}
 
           <Link
-            href="#packaging-styles"
+            href="/styles"
+            onClick={onNavigate}
             className="group inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-primary"
           >
             <ChevronRight className="h-3.5 w-3.5" strokeWidth={3} />

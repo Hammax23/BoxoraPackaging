@@ -16,10 +16,11 @@ import {
   // User,
   X,
 } from "lucide-react";
+import SearchOverlay from "@/components/SearchOverlay";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { openQuoteDrawer } from "@/lib/quoteDrawer";
 import { useIndustries } from "@/components/IndustriesProvider";
 
 type NavItem = {
@@ -30,6 +31,25 @@ type NavItem = {
   megamenu?: "industries" | "packaging-styles" | "trends";
 };
 
+function isActivePath(label: string, pathname: string) {
+  switch (label) {
+    case "HOME":
+      return pathname === "/";
+    case "INDUSTRIES":
+      return pathname.startsWith("/category");
+    case "PACKAGING STYLES":
+      return pathname.startsWith("/styles");
+    case "TRENDS":
+      return pathname.startsWith("/trends");
+    case "BLOG":
+      return pathname.startsWith("/blog");
+    case "ABOUT US":
+      return ["/about", "/team", "/contact", "/faq"].some((p) => pathname.startsWith(p));
+    default:
+      return false;
+  }
+}
+
 function NavMenu({
   items,
   onMegamenuEnter,
@@ -39,9 +59,12 @@ function NavMenu({
   onMegamenuEnter?: (type: "industries" | "packaging-styles" | "trends") => void;
   onMegamenuLeave?: () => void;
 }) {
+  const pathname = usePathname();
   return (
     <ul className="flex items-center gap-3.5 xl:gap-5 2xl:gap-7">
-      {items.map((link) => (
+      {items.map((link) => {
+        const active = isActivePath(link.label, pathname);
+        return (
         <li
           key={link.label}
           className="group relative shrink-0"
@@ -54,13 +77,19 @@ function NavMenu({
         >
           <Link
             href={link.href}
-            className={`flex items-center gap-1.5 whitespace-nowrap py-2.5 text-[13px] font-semibold tracking-[0.08em] text-dark transition-colors duration-200 hover:text-primary xl:text-[14px] ${
-              link.label === "HOME"
-                ? "border-b-2 border-primary text-primary"
-                : ""
+            aria-current={active ? "page" : undefined}
+            className={`flex items-center gap-1.5 whitespace-nowrap py-2.5 text-[13px] font-semibold tracking-[0.1em] transition-colors duration-200 xl:text-[13.5px] ${
+              active ? "text-primary" : "text-dark hover:text-primary"
             }`}
           >
-            {link.label}
+            <span className="relative">
+              {link.label}
+              <span
+                className={`absolute -bottom-1.5 left-1/2 h-[2px] -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-300 ${
+                  active ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
+            </span>
             {(link.children || link.megamenu) && (
               <ChevronDown className="h-3 w-3 opacity-50 transition-transform duration-200 group-hover:rotate-180" strokeWidth={2} />
             )}
@@ -96,7 +125,7 @@ function NavMenu({
               {link.children.map((child) => (
                 <Link
                   key={child}
-                  href="#"
+                  href={childHref(child)}
                   className="group/item flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-[13px] font-semibold text-text transition hover:bg-background-field hover:text-primary"
                 >
                   <span className="whitespace-nowrap">{child}</span>
@@ -111,7 +140,8 @@ function NavMenu({
             </div>
           )}
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }
@@ -165,9 +195,8 @@ function QuoteButton({
   fullWidth?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={() => openQuoteDrawer({ source: "navbar" })}
+    <Link
+      href="/quote"
       className={`btn-slip group inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-primary font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(39,87,255,0.38)] ${
         fullWidth ? "w-full px-6 py-3.5 text-xs" : "px-4 py-2.5 text-[11px] xl:px-5 xl:py-2.5 xl:text-xs"
       } ${className}`}
@@ -178,19 +207,23 @@ function QuoteButton({
         className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
         strokeWidth={2.5}
       />
-    </button>
+    </Link>
   );
 }
 
-function HeaderIcons() {
+function HeaderIcons({ onSearch }: { onSearch: () => void }) {
   return (
     <div className="flex shrink-0 items-center gap-2.5 xl:gap-3">
       <button
         type="button"
-        aria-label="Search"
-        className="text-dark transition-colors duration-200 hover:text-primary"
+        aria-label="Search (Ctrl K)"
+        onClick={onSearch}
+        className="group flex h-10 items-center gap-2 rounded-full border border-border bg-white px-3 text-dark transition-all duration-200 hover:border-primary/40 hover:bg-primary/[0.04] hover:text-primary xl:px-3.5"
       >
-        <Search className="h-5 w-5 xl:h-[22px] xl:w-[22px]" strokeWidth={1.5} />
+        <Search className="h-[18px] w-[18px]" strokeWidth={1.75} />
+        <kbd className="hidden rounded-md border border-border bg-background-field/60 px-1.5 py-0.5 font-body text-[10px] font-bold tracking-wide text-lighter 2xl:inline">
+          Ctrl K
+        </kbd>
       </button>
       <span className="hidden h-5 w-px shrink-0 bg-border/60 xl:block" />
       {/* <Link
@@ -205,6 +238,14 @@ function HeaderIcons() {
   );
 }
 
+function childHref(label: string) {
+  if (label === "About Us") return "/about";
+  if (label === "Our Team") return "/team";
+  if (label === "Contact") return "/contact";
+  if (label === "FAQ") return "/faq";
+  return "#";
+}
+
 export default function Header() {
   const industries = useIndustries();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -213,7 +254,38 @@ export default function Header() {
     "industries" | "packaging-styles" | "trends" | null
   >(null);
   const megamenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const allLinks = [...navLeft, ...navRight];
+
+  useEffect(() => {
+    // Only re-render when the value actually flips, and batch to one check per frame.
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 24);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    check();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const handleMegamenuEnter = (type: "industries" | "packaging-styles" | "trends") => {
     if (megamenuTimer.current) clearTimeout(megamenuTimer.current);
@@ -251,7 +323,7 @@ export default function Header() {
     }
 
     if (link.children?.length) {
-      return link.children.map((child) => ({ title: child, href: "#", sub: "" }));
+      return link.children.map((child) => ({ title: child, href: childHref(child), sub: "" }));
     }
 
     return [];
@@ -259,18 +331,24 @@ export default function Header() {
 
   return (
     <>
+      {/* Top bar scrolls away normally; only the nav below is sticky, so scrolling never changes page height (no jitter). */}
+      <TopBar />
       <header
-        className="sticky top-0 z-[100] w-full bg-white"
+        className={`sticky top-0 z-[100] w-full transition-[background-color,box-shadow] duration-300 ${
+          scrolled
+            ? "bg-white/85 shadow-[0_10px_40px_rgba(8,8,16,0.08)] backdrop-blur-xl"
+            : "bg-white"
+        }`}
         onMouseLeave={() => setActiveMegamenu(null)}
       >
-        <TopBar />
+        <div className="h-[2px] bg-gradient-to-r from-primary via-secondary to-primary" />
 
-        <div className="h-[2px] bg-primary/90" />
-
-        <div className="border-b border-border">
+        <div className="border-b border-border/70">
           <div className="relative mx-auto w-full max-w-[1440px] px-5 xl:px-8">
             {/* Desktop — flex layout (no absolute overlap) */}
-            <div className="hidden min-h-[88px] w-full items-center lg:flex">
+            <div
+              className="hidden min-h-[76px] w-full items-center lg:flex"
+            >
               <div className="flex min-w-0 flex-1 items-center justify-end pr-3 xl:pr-5">
                 <NavMenu
                   items={navLeft}
@@ -279,7 +357,11 @@ export default function Header() {
                 />
               </div>
 
-              <div className="shrink-0 px-3 xl:px-4">
+              <div
+                className={`shrink-0 px-3 transition-transform duration-300 xl:px-4 ${
+                  scrolled ? "scale-[0.92]" : "scale-100"
+                }`}
+              >
                 <BrandLogo size="nav" />
               </div>
 
@@ -291,16 +373,19 @@ export default function Header() {
                     onMegamenuLeave={handleMegamenuLeave}
                   />
                 </div>
-                <HeaderIcons />
+                <HeaderIcons onSearch={() => setSearchOpen(true)} />
               </div>
             </div>
 
             {/* Mobile */}
             <div className="flex h-[68px] items-center justify-between gap-3 lg:hidden">
               <BrandLogo size="sm" />
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <QuoteButton className="!inline-flex lg:!hidden" />
-                <button type="button" aria-label="Menu" onClick={() => setMobileOpen(true)}>
+              <div className="flex items-center gap-1 min-[380px]:gap-2.5 sm:gap-3">
+                <QuoteButton className="!inline-flex lg:!hidden max-[359px]:!px-3 max-[359px]:[&_svg]:hidden" />
+                <button type="button" aria-label="Search" onClick={() => setSearchOpen(true)} className="flex h-11 w-10 items-center justify-center min-[380px]:-mx-1 min-[380px]:w-11">
+                  <Search className="h-6 w-6" strokeWidth={1.5} />
+                </button>
+                <button type="button" aria-label="Menu" onClick={() => setMobileOpen(true)} className="flex h-11 w-10 items-center justify-center min-[380px]:-mx-1 min-[380px]:w-11">
                   <Menu className="h-6 w-6" />
                 </button>
               </div>
@@ -322,14 +407,16 @@ export default function Header() {
               {activeMegamenu === "industries" ? (
                 <IndustriesMegamenu />
               ) : activeMegamenu === "packaging-styles" ? (
-                <PackagingStylesMegamenu />
+                <PackagingStylesMegamenu onNavigate={() => setActiveMegamenu(null)} />
               ) : (
-                <TrendsMegamenu />
+                <TrendsMegamenu onNavigate={() => setActiveMegamenu(null)} />
               )}
             </motion.div>
           )}
         </AnimatePresence>
       </header>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <AnimatePresence>
         {mobileOpen && (

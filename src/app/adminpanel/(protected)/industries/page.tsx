@@ -1,3 +1,4 @@
+import ImageField from "@/components/admin/ImageField";
 import { requireAdmin } from "@/lib/adminAuth";
 import { revalidatePublicContent } from "@/lib/adminRevalidate";
 import { prisma } from "@/lib/db";
@@ -171,7 +172,7 @@ export default async function AdminIndustriesPage() {
         <form action={createIndustry} className="mt-5 grid gap-3 md:grid-cols-2">
           <input name="name" placeholder="Name (e.g. Candle Packaging)" className={input} required />
           <input name="subtitle" placeholder="Subtitle (e.g. Luxury rigid candle boxes)" className={input} />
-          <input name="imageUrl" placeholder="Image URL" className={input} required />
+          <ImageField name="imageUrl" required />
           <input name="slug" placeholder="Slug (optional — generated from name)" className={input} />
           <button
             type="submit"
@@ -207,7 +208,7 @@ export default async function AdminIndustriesPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 <input name="name" defaultValue={item.name} placeholder="Name" className={input} required />
                 <input name="subtitle" defaultValue={item.subtitle} placeholder="Subtitle" className={input} />
-                <input name="imageUrl" defaultValue={item.imageUrl} placeholder="Image URL" className={input} required />
+                <ImageField name="imageUrl" defaultValue={item.imageUrl} required />
                 <input name="slug" defaultValue={item.slug} placeholder="Slug" className={`${input} font-mono`} />
                 <label className="flex items-center gap-2 text-sm font-semibold text-text">
                   <input type="checkbox" name="isActive" defaultChecked={item.isActive} className="h-4 w-4" />

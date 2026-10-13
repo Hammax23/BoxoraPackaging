@@ -6,7 +6,14 @@ import {
   isKnownProductOrIndustry,
   resolveIndustryLine,
 } from "@/lib/boxoraIndustries";
-import BoxPreview3D from "@/components/BoxPreview3D";
+import type { BrandCustom } from "@/components/BoxPreview3D";
+import dynamic from "next/dynamic";
+
+// three.js is heavy: load it only in the browser, after the page is interactive.
+const BoxPreview3D = dynamic(() => import("@/components/BoxPreview3D"), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse rounded-2xl bg-background-field" aria-hidden="true" />,
+});
 import IndustryCombobox from "@/components/IndustryCombobox";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import {
@@ -26,9 +33,12 @@ import {
   Package,
   Ruler,
   ShieldCheck,
+  FileText,
   Sparkles,
+  Upload,
+  X,
 } from "lucide-react";
-import { type FormEvent, useEffect, useMemo, useState } from "react";
+import { type DragEvent, type FormEvent, useEffect, useMemo, useState } from "react";
 
 const fieldClass =
   "w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15";
@@ -41,6 +51,22 @@ const finishes = [
 ];
 
 const quantities = [500, 1000, 2500, 5000, 10000, 25000];
+
+/** One clean font and a dark brown ink that reads well on kraft board. */
+const BRAND_FONT = "Figtree, Arial, Helvetica, sans-serif";
+const BRAND_COLOR = "#3b2412";
+
+/** Kraft board golden brown, so the 3D model looks like the real material. */
+const KRAFT = "#b8864b";
+
+const IMAGE_EXT = /\.(png|jpe?g|svg)$/i;
+
+const MAX_FILES = 5;
+const MAX_FILE_BYTES = 10 * 1024 * 1024;
+const ACCEPTED_EXT = ["pdf", "ai", "eps", "png", "jpg", "jpeg", "svg", "zip"];
+
+const formatBytes = (n: number) =>
+  n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / (1024 * 1024)).toFixed(1)} MB`;
 
 const steps = [
   { id: 1, label: "Your Product", icon: Ruler },
@@ -89,24 +115,90 @@ function riskPlainLabel(label: FitResult["riskLabel"]) {
   return "Easy to ship";
 }
 
-export default function InstantQuote() {
+export default function InstantQuote({
+  defaultIndustry,
+  asPage = false,
+}: {
+  /** Pre-selects the product / industry line when it is one we recognise. */
+  defaultIndustry?: string;
+  /** Render the heading as the page's h1 (used on /quote). */
+  asPage?: boolean;
+}) {
+  const Heading = asPage ? "h1" : "h2";
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [quoteRef, setQuoteRef] = useState("");
-  const [calcFlash, setCalcFlash] = useState(false);
-  const [isComputing, setIsComputing] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-  const [aiFit, setAiFit] = useState<(FitResult & { source?: "ai" | "rules" }) | null>(null);
-  const [aiNotice, setAiNotice] = useState<string | null>(null);
+  // The AI result is stored together with the specs it was computed for, so changing the
+  // specs automatically makes it stale (no effect needed to clear it).
+  const [aiState, setAiState] = useState<{
+    key: string;
+    fit: FitResult & { source?: "ai" | "rules" };
+    notice: string | null;
+  } | null>(null);
 
   const [length, setLength] = useState("8");
   const [width, setWidth] = useState("5");
   const [height, setHeight] = useState("3");
   const [weight, setWeight] = useState("0.8");
-  const [industry, setIndustry] = useState("Cosmetic Boxes");
+  const [industry, setIndustry] = useState(
+    defaultIndustry && isKnownProductOrIndustry(defaultIndustry) ? defaultIndustry : "Cosmetic Boxes",
+  );
   const fragility: Fragility = "medium";
   const [quantity, setQuantity] = useState(1000);
   const [finish, setFinish] = useState<FinishId>("matte");
+
+  // Customisation
+  const [brandText, setBrandText] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const brand = useMemo<BrandCustom | undefined>(
+    () => (brandText.trim() ? { text: brandText, fontFamily: BRAND_FONT, color: BRAND_COLOR } : undefined),
+    [brandText],
+  );
+
+  // First image file becomes the design printed on the 3D box.
+  const artworkFile = files.find((f) => IMAGE_EXT.test(f.name)) ?? null;
+  const artworkUrl = useMemo(
+    () => (artworkFile ? URL.createObjectURL(artworkFile) : undefined),
+    [artworkFile],
+  );
+  useEffect(
+    () => () => {
+      if (artworkUrl) URL.revokeObjectURL(artworkUrl);
+    },
+    [artworkUrl],
+  );
+
+  const addFiles = (incoming: FileList | File[] | null) => {
+    if (!incoming) return;
+    const next = [...files];
+    let error: string | null = null;
+    for (const f of Array.from(incoming)) {
+      const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
+      if (!ACCEPTED_EXT.includes(ext)) {
+        error = `"${f.name}" isn't a supported file type.`;
+      } else if (f.size > MAX_FILE_BYTES) {
+        error = `"${f.name}" is over 10 MB.`;
+      } else if (next.length >= MAX_FILES) {
+        error = `You can add up to ${MAX_FILES} files.`;
+      } else if (!next.some((x) => x.name === f.name && x.size === f.size)) {
+        next.push(f);
+      }
+    }
+    setFiles(next);
+    setFileError(error);
+  };
+
+  const onDropFiles = (e: DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    setDragging(false);
+    addFiles(e.dataTransfer.files);
+  };
 
   const l = Number(length) || 0;
   const w = Number(width) || 0;
@@ -128,26 +220,13 @@ export default function InstantQuote() {
     [l, w, h, wt, fragility, industryLine],
   );
 
+  const specKey = `${l}|${w}|${h}|${wt}|${industry}|${fragility}`;
+  const aiFit = aiState && aiState.key === specKey ? aiState.fit : null;
+  const aiNotice = aiState && aiState.key === specKey ? aiState.notice : null;
+  const isComputing = aiLoading;
   const fit = aiFit ?? localFit;
-
-  // Live recalc pulse when model inputs change
-  useEffect(() => {
-    if (step !== 2) return;
-    setIsComputing(true);
-    setCalcFlash(true);
-    const t1 = setTimeout(() => setIsComputing(false), 280);
-    const t2 = setTimeout(() => setCalcFlash(false), 700);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [quantity, finish, fit.skuHint, fit.moq, step]);
-
-  // Specs changed → clear cached AI result so next preview re-runs
-  useEffect(() => {
-    setAiFit(null);
-    setAiNotice(null);
-  }, [l, w, h, wt, industry, fragility]);
+  // Re-keying this value restarts the small "recalculated" pulse animation.
+  const pulseKey = `${quantity}-${finish}-${fit.skuHint}-${fit.moq}`;
 
   const canGoStep2 = l > 0 && w > 0 && h > 0 && isKnownProductOrIndustry(industry);
   const sizeFit = useMemo(
@@ -174,8 +253,7 @@ export default function InstantQuote() {
   const runAiPreview = async () => {
     if (!canGoStep2 || aiLoading) return;
     setAiLoading(true);
-    setIsComputing(true);
-    setAiNotice(null);
+    const key = specKey;
     try {
       const res = await fetch("/api/packaging/recommend", {
         method: "POST",
@@ -192,41 +270,79 @@ export default function InstantQuote() {
       });
       if (res.ok) {
         const data = (await res.json()) as FitResult & { source?: "ai" | "rules" };
-        setAiFit(data);
-        if (data.source === "rules") {
-          setAiNotice("AI temporarily unavailable — showing catalog scoring instead.");
-        }
+        setAiState({
+          key,
+          fit: data,
+          notice: data.source === "rules" ? "AI temporarily unavailable — showing catalog scoring instead." : null,
+        });
       } else {
-        setAiFit({ ...localFit, source: "rules" });
-        setAiNotice("Could not reach AI — showing catalog scoring instead.");
+        setAiState({
+          key,
+          fit: { ...localFit, source: "rules" },
+          notice: "Could not reach AI — showing catalog scoring instead.",
+        });
       }
       setStep(2);
     } catch {
-      setAiFit({ ...localFit, source: "rules" });
-      setAiNotice("Could not reach AI — showing catalog scoring instead.");
+      setAiState({
+        key,
+        fit: { ...localFit, source: "rules" },
+        notice: "Could not reach AI — showing catalog scoring instead.",
+      });
       setStep(2);
     } finally {
       setAiLoading(false);
-      setIsComputing(false);
     }
   };
 
-  const handleExactQuote = (e: FormEvent<HTMLFormElement>) => {
+  const handleExactQuote = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const ref = makeQuoteRef();
-    setQuoteRef(ref);
-    setSubmitted(true);
+    if (submitting) return;
+
+    // Contact fields come from the form itself; the rest is the customer's model + choices.
+    const fd = new FormData(e.currentTarget);
+    fd.set("type", "quote");
+    fd.set("source", "instant-quote");
+    fd.set("productName", defaultIndustry && !isKnownProductOrIndustry(defaultIndustry) ? defaultIndustry : industry);
+    fd.set("industry", industry);
+    fd.set("boxType", fit.boxType);
+    fd.set("quantity", String(quantity));
+    fd.set("length", String(l));
+    fd.set("width", String(w));
+    fd.set("height", String(h));
+    fd.set("weight", String(wt));
+    fd.set("finish", finishes.find((f) => f.id === finish)?.label ?? finish);
+    fd.set("material", "Kraft board");
+    fd.set("brandText", brandText.trim());
+    for (const f of files) fd.append("files", f);
+
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/leads", { method: "POST", body: fd });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; reference?: string; error?: string } | null;
+      if (!res.ok || !data?.ok) {
+        setSubmitError(data?.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setQuoteRef(data.reference ?? makeQuoteRef());
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Could not reach the server. Check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <section id="quote" className="section-padding bg-background-field !pb-10 md:!pb-14">
+    <section id="quote" className="section-padding bg-background-field">
       <div className="container-main">
-        <div className="grid gap-10 lg:grid-cols-[minmax(240px,340px)_1fr] lg:items-start lg:gap-10 xl:gap-12">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(240px,340px)_minmax(0,1fr)] lg:items-start lg:gap-10 xl:gap-12">
           <AnimatedSection>
             <span className="section-label text-primary">Instant packaging check</span>
-            <h2 className="mt-4 font-heading text-[34px] leading-tight text-dark md:text-[42px] lg:text-[46px]">
+            <Heading className="mt-4 font-heading text-[34px] leading-tight text-dark md:text-[42px] lg:text-[46px]">
               See how your product fits
-            </h2>
+            </Heading>
             <p className="mt-3 text-base leading-relaxed text-text md:text-lg">
               Enter your size, pick a finish, and get an AI packaging recommendation with a live
               preview. Final pricing comes only in your quote response.
@@ -333,11 +449,110 @@ export default function InstantQuote() {
                       <p className="text-[12px] text-emerald-700">{sizeFit.message}</p>
                     ) : null}
 
+                    <div className="grid gap-4 md:grid-cols-2 md:items-start">
                     <div>
                       <label className="mb-1.5 block text-[13px] font-semibold text-dark">
                         Product / industry line <span className="text-secondary">*</span>
                       </label>
                       <IndustryCombobox value={industry} onChange={setIndustry} />
+                    </div>
+
+                    <div>
+                      <label htmlFor="brand-text" className="mb-1.5 block text-[13px] font-semibold text-dark">
+                        Text on box <span className="font-normal text-lighter">(optional)</span>
+                      </label>
+                      <input
+                        id="brand-text"
+                        value={brandText}
+                        onChange={(e) => setBrandText(e.target.value)}
+                        maxLength={40}
+                        className={fieldClass}
+                        placeholder="e.g. Luna Skincare"
+                      />
+                      <p className="mt-1 text-[12px] text-lighter">Shown on the live 3D box in the next step.</p>
+                    </div>
+                    </div>
+
+                    <div>
+                      <p className="mb-1 text-[12px] font-semibold text-dark">
+                        Upload your design <span className="font-normal text-lighter">(optional)</span>
+                      </p>
+                      <label
+                        htmlFor="design-upload"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setDragging(true);
+                        }}
+                        onDragLeave={() => setDragging(false)}
+                        onDrop={onDropFiles}
+                        className={`flex cursor-pointer items-center gap-3 rounded-xl border border-dashed px-3 py-2 transition ${
+                          dragging
+                            ? "border-primary bg-primary/5"
+                            : "border-border bg-background-field/50 hover:border-primary/40"
+                        }`}
+                      >
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                          <Upload className="h-4 w-4" />
+                        </span>
+                        <span className="min-w-0 flex-1 leading-tight">
+                          <span className="block text-[13px] font-semibold text-dark">
+                            Drop artwork or <span className="text-primary underline">browse</span>
+                          </span>
+                          <span className="block text-[11px] text-lighter">
+                            PDF, AI, EPS, PNG, JPG, SVG, ZIP · max {MAX_FILES} files · 10 MB each
+                          </span>
+                        </span>
+                      </label>
+                      <input
+                        id="design-upload"
+                        type="file"
+                        multiple
+                        accept={ACCEPTED_EXT.map((e) => `.${e}`).join(",")}
+                        className="sr-only"
+                        onChange={(e) => {
+                          addFiles(e.target.files);
+                          e.target.value = "";
+                        }}
+                      />
+                      {fileError && (
+                        <p role="alert" className="mt-2 text-[13px] font-semibold text-secondary">
+                          {fileError}
+                        </p>
+                      )}
+                      {files.length > 0 && !artworkFile && (
+                        <p className="mt-2 text-[12px] text-lighter">
+                          Your files are attached for our team. The live 3D box shows PNG, JPG or SVG designs.
+                        </p>
+                      )}
+                      {artworkFile && (
+                        <p className="mt-2 text-[12px] font-semibold text-primary">
+                          “{artworkFile.name}” will be shown on your 3D box in the next step.
+                        </p>
+                      )}
+                      {files.length > 0 && (
+                        <ul className="mt-2 space-y-1.5">
+                          {files.map((f) => (
+                            <li
+                              key={`${f.name}-${f.size}`}
+                              className="flex items-center gap-2 rounded-lg border border-border bg-white px-2.5 py-1.5"
+                            >
+                              <FileText className="h-4 w-4 shrink-0 text-primary" />
+                              <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-dark">
+                                {f.name}
+                              </span>
+                              <span className="shrink-0 text-[12px] text-lighter">{formatBytes(f.size)}</span>
+                              <button
+                                type="button"
+                                aria-label={`Remove ${f.name}`}
+                                onClick={() => setFiles((prev) => prev.filter((x) => x !== f))}
+                                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-lighter transition hover:bg-background-field hover:text-dark"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
 
                     {/* Live preview strip even on step 1 */}
@@ -402,10 +617,11 @@ export default function InstantQuote() {
                           {aiFit?.source === "ai" ? "AI recommendation" : "Catalog scoring"}
                         </div>
                         <div
+                          key={pulseKey}
                           className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] transition ${
-                            isComputing || calcFlash
+                            isComputing
                               ? "border-primary/30 bg-primary/10 text-primary"
-                              : "border-border bg-white text-lighter"
+                              : "animate-[pulse_0.7s_ease-out_1] border-border bg-white text-lighter"
                           }`}
                         >
                           <Gauge className="h-3.5 w-3.5" />
@@ -555,6 +771,9 @@ export default function InstantQuote() {
                           boxType={fit.boxType}
                           styleId={fit.styleId}
                           industry={industry}
+                          brand={brand}
+                          baseColor={KRAFT}
+                          artworkUrl={artworkUrl}
                         />
                       </div>
                     </div>
@@ -626,6 +845,10 @@ export default function InstantQuote() {
 
                 {step === 3 && !submitted && (
                   <form onSubmit={handleExactQuote} className="space-y-5">
+                    {/* Honeypot: hidden from people, bots fill it in */}
+                    <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                      <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                    </div>
                     <div>
                       <h3 className="font-heading text-2xl text-dark">Exact quote request</h3>
                       <p className="mt-1 text-sm text-lighter">
@@ -640,9 +863,30 @@ export default function InstantQuote() {
                         {finishes.find((f) => f.id === finish)?.label} ·{" "}
                         {riskPlainLabel(fit.riskLabel)} · from {fit.moq.toLocaleString()} pcs
                       </div>
+                      <p className="mt-2 text-[13px]">
+                        {brandText.trim() ? `Text on box: “${brandText.trim()}”` : "No text on box"}
+                      </p>
+                      {files.length > 0 && (
+                        <p className="mt-2 text-[13px]">
+                          Design files: {files.map((f) => f.name).join(", ")}
+                        </p>
+                      )}
                       <p className="mt-2 text-[12px] text-lighter">
                         Your quote response will include final pricing.
                       </p>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <label className="mb-1.5 block text-[13px] font-semibold text-dark">Needed by</label>
+                        <input name="neededBy" type="date" className={fieldClass} />
+                      </div>
+                      <div>
+                        <label className="mb-1.5 block text-[13px] font-semibold text-dark">
+                          Ship to (city / ZIP / country)
+                        </label>
+                        <input name="shipTo" type="text" className={fieldClass} placeholder="e.g. Brooklyn, NY 11201, USA" />
+                      </div>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -685,6 +929,11 @@ export default function InstantQuote() {
                       <textarea
                         name="notes"
                         rows={3}
+                        defaultValue={
+                          defaultIndustry && !isKnownProductOrIndustry(defaultIndustry)
+                            ? `Interested in: ${defaultIndustry}. `
+                            : undefined
+                        }
                         className={`${fieldClass} resize-y`}
                         placeholder="Print colors, finish preferences, ship-by date, artwork readiness..."
                       />
@@ -700,12 +949,26 @@ export default function InstantQuote() {
                       </button>
                       <button
                         type="submit"
-                        className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-primary/90"
+                        disabled={submitting}
+                        className="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                       >
-                        Submit Quote Request
-                        <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+                        {submitting ? (
+                          <>
+                            Sending <Loader2 className="h-4 w-4 animate-spin" />
+                          </>
+                        ) : (
+                          <>
+                            Submit Quote Request
+                            <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+                          </>
+                        )}
                       </button>
                     </div>
+                    {submitError && (
+                      <p role="alert" className="text-sm font-semibold text-secondary">
+                        {submitError}
+                      </p>
+                    )}
                   </form>
                 )}
 

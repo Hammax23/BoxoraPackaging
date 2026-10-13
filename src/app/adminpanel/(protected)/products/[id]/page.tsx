@@ -1,3 +1,4 @@
+import ImageField from "@/components/admin/ImageField";
 import { revalidatePublicContent } from "@/lib/adminRevalidate";
 import { requireAdmin } from "@/lib/adminAuth";
 import { prisma } from "@/lib/db";
@@ -84,7 +85,7 @@ export default async function AdminProductEditPage({ params }: { params: { id: s
           </div>
           <div className="md:col-span-2">
             <label className="mb-1.5 block text-sm font-semibold text-dark">Image URL</label>
-            <input name="imageUrl" defaultValue={product.imageUrl} className={input} required />
+            <ImageField name="imageUrl" defaultValue={product.imageUrl} required />
           </div>
           <div className="md:col-span-2">
             <label className="mb-1.5 block text-sm font-semibold text-dark">Description</label>

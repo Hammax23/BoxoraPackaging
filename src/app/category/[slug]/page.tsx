@@ -187,24 +187,24 @@ export default async function CategoryPage({
                 <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {results.map((p) => (
                     <article
-                      key={p.name}
-                      className="overflow-hidden rounded-[22px] border border-border bg-white transition hover:shadow-[0_20px_55px_rgba(0,0,0,0.08)]"
+                      key={p.slug}
+                      className="group relative overflow-hidden rounded-[22px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_55px_rgba(39,87,255,0.12)]"
                     >
-                      <div className="relative bg-white p-4">
+                      <Link href={`/products/${p.slug}`} aria-label={`View ${p.name}`} className="relative block bg-white p-4">
                         <div className="relative mx-auto aspect-square max-w-[260px]">
                           <Image
                             src={p.image}
                             alt={p.name}
                             fill
-                            className="object-contain p-2"
+                            className="object-contain p-2 transition duration-500 group-hover:scale-105"
                             sizes="260px"
                           />
                         </div>
-                      </div>
+                      </Link>
 
                       <div className="space-y-2 px-5 pb-5">
                         <h3 className="font-heading text-[18px] leading-snug text-dark">
-                          <Link href="#" className="transition hover:text-primary">
+                          <Link href={`/products/${p.slug}`} className="transition hover:text-primary">
                             {p.name}
                           </Link>
                         </h3>
@@ -236,6 +236,14 @@ export default async function CategoryPage({
                         </div>
 
                         <StarRating rating={p.rating} reviews={p.reviews} />
+
+                        <Link
+                          href={`/products/${p.slug}`}
+                          className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-[0.08em] text-primary"
+                        >
+                          View specs &amp; order
+                          <ChevronRight className="h-4 w-4 transition group-hover:translate-x-1" strokeWidth={2.5} />
+                        </Link>
                       </div>
                     </article>
                   ))}

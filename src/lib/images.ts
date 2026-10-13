@@ -46,15 +46,20 @@ export const images = {
     img("2024/05/megamenu-5.jpg"),
     img("2024/05/megamenu-categories-1.jpg"),
   ],
+  /** Large (768px) product photo by catalogue number (11-20). */
+  photo: (n: number) => img(`2024/05/product-${n}-1-768x768.jpg`),
+  // Real, high-resolution photography, one per packaging style (same order as packagingStyles in data.ts).
   packagingStyles: [
-    img("2024/05/megamenu-1.jpg"),
-    img("2024/05/megamenu-2.jpg"),
-    img("2024/05/megamenu-3.jpg"),
-    img("2024/05/megamenu-4.jpg"),
-    img("2024/05/megamenu-5.jpg"),
-    img("2024/05/megamenu-categories-2.jpg"),
-    img("2024/05/megamenu-categories-3.jpg"),
-    img("2024/05/megamenu-categories-4.jpg"),
+    img("2024/05/product-11-1-768x768.jpg"), // stand-up pouch
+    img("2024/05/product-17-1-768x768.jpg"), // kraft flat bottom bag
+    img("2024/05/product-13-1-768x768.jpg"), // side gusset style bag
+    img("2024/05/product-18-1-768x768.jpg"), // mailer box
+    img("2024/05/product-20-1-768x768.jpg"), // roll stock / printed tubes
+    img("2024/05/banner-megamenu-2.jpg"), // zipper pouch lifestyle
+    img("2024/05/product-19-1-768x768.jpg"), // rigid box
+    img("2024/05/product-14-1-768x768.jpg"), // paper-based carrier
+    img("2024/05/product-15-1-768x768.jpg"), // spout pouch
+    img("2024/05/h1-banner09.jpg"), // window pouches lifestyle
   ],
   ecoBanner: img("2024/05/h1-banner09.jpg"),
   specialOffer: img("2024/05/h1-banner10.jpg"),

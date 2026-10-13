@@ -1,3 +1,4 @@
+import ImageField from "@/components/admin/ImageField";
 import { requireAdmin } from "@/lib/adminAuth";
 import { revalidatePublicContent } from "@/lib/adminRevalidate";
 import { prisma } from "@/lib/db";
@@ -103,7 +104,7 @@ export default async function AdminBlogEditPage({ params }: { params: { id: stri
           </select>
           <input name="authorName" defaultValue={post.authorName} className={input} />
           <input name="readTime" defaultValue={post.readTime} className={input} />
-          <input name="coverImageUrl" defaultValue={post.coverImageUrl} className={`${input} md:col-span-2`} required />
+          <div className="md:col-span-2"><ImageField name="coverImageUrl" defaultValue={post.coverImageUrl} required /></div>
           <textarea name="excerpt" defaultValue={post.excerpt} rows={3} className={`${input} md:col-span-2`} required />
           <textarea name="content" defaultValue={content} rows={10} className={`${input} md:col-span-2`} placeholder="Separate paragraphs with blank lines" />
         </div>

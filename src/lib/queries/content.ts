@@ -47,7 +47,8 @@ export async function getTestimonials(): Promise<TestimonialView[]> {
         const [name, role] = r.name.includes("|") ? r.name.split("|", 2) : [r.name, "Customer"];
         return {
           title: r.title,
-          text: r.text,
+          // Older entries were written for the template's former brand name.
+          text: r.text.replace(/bocpak/gi, "Boxora"),
           name: name.trim(),
           role: (role ?? "Customer").trim(),
           image: r.imageUrl ?? "/images/placeholder-avatar.png",

@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function TrendsMegamenu() {
+export default function TrendsMegamenu({ onNavigate }: { onNavigate?: () => void }) {
   const { title, items, cta, viewAll } = trendsMegamenu;
 
   return (
@@ -16,10 +16,11 @@ export default function TrendsMegamenu() {
           </h3>
 
           <div className="mt-5 space-y-4">
-            {items.map((item) => (
+            {items.slice(0, 3).map((item) => (
               <Link
                 key={item.title}
                 href={item.href}
+                onClick={onNavigate}
                 className="group flex items-center gap-4 rounded-3xl border border-border bg-white p-5 transition hover:bg-background-field"
               >
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-background-field xl:h-[60px] xl:w-[60px]">
@@ -41,6 +42,7 @@ export default function TrendsMegamenu() {
           <div className="mt-6 flex justify-center lg:justify-end">
             <Link
               href={viewAll.href}
+              onClick={onNavigate}
               className="btn-slip inline-flex items-center justify-center rounded-full bg-primary px-10 py-4 text-sm font-bold uppercase tracking-[0.08em] text-white transition hover:bg-primary/90"
             >
               {viewAll.label}
@@ -57,10 +59,16 @@ export default function TrendsMegamenu() {
             <p className="mt-6 text-[12px] font-bold uppercase tracking-[0.12em] text-white/85">
               {cta.phoneLabel}
             </p>
-            <p className="mt-2 font-heading text-2xl text-white">{cta.phone}</p>
+            <a
+              href={`tel:${cta.phone.replace(/[^\d+]/g, "")}`}
+              className="mt-2 block font-heading text-2xl text-white transition hover:opacity-80"
+            >
+              {cta.phone}
+            </a>
 
             <Link
               href={cta.buttonHref}
+              onClick={onNavigate}
               className="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-bold uppercase tracking-[0.08em] text-primary transition hover:bg-white/95"
             >
               {cta.buttonLabel}

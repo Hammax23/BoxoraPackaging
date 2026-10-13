@@ -1,0 +1,31 @@
+"use client";
+
+import { openQuoteDrawer } from "@/lib/quoteDrawer";
+import { ArrowRight } from "lucide-react";
+
+export default function AboutCTAButton({
+  label = "Get a free quote",
+  variant = "primary",
+  source = "about",
+  productName,
+}: {
+  label?: string;
+  variant?: "primary" | "light";
+  source?: string;
+  productName?: string;
+}) {
+  const styles =
+    variant === "primary"
+      ? "bg-primary text-white shadow-[0_12px_36px_rgba(39,87,255,0.4)] hover:bg-[#1f47d6]"
+      : "bg-white text-dark hover:bg-background-field";
+  return (
+    <button
+      type="button"
+      onClick={() => openQuoteDrawer({ source, productName })}
+      className={`group inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-[15px] font-bold transition ${styles}`}
+    >
+      {label}
+      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+    </button>
+  );
+}

@@ -25,6 +25,7 @@ import {
   ArrowLeftRight,
   ArrowDownUp,
   Layers,
+  Upload,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -81,11 +82,61 @@ export default function ProductPageClient({
     finish: "",
     message: "",
   });
+  const [artworkFiles, setArtworkFiles] = useState<File[]>([]);
+  const [ordered, setOrdered] = useState(false);
+  const [ordering, setOrdering] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    if (ordering) return;
+
+    const fd = new FormData(e.currentTarget); // includes the hidden honeypot field
+    fd.set("type", "order");
+    fd.set("source", `product:${product.slug}`);
+    fd.set("name", formData.name);
+    fd.set("email", formData.email);
+    fd.set("phone", formData.phone);
+    fd.set("productName", formData.productType);
+    const picked = allProducts.find((p) => p.name === formData.productType);
+    fd.set("productSlug", picked?.slug ?? product.slug);
+    fd.set("length", formData.length);
+    fd.set("width", formData.width);
+    fd.set("height", formData.height);
+    fd.set("quantity", formData.quantity);
+    fd.set("material", formData.material);
+    fd.set("color", formData.color);
+    fd.set("finish", formData.finish);
+    fd.set("notes", formData.message);
+    for (const f of artworkFiles) fd.append("files", f);
+
+    setOrdering(true);
+    setOrderError(null);
+    try {
+      const res = await fetch("/api/leads", { method: "POST", body: fd });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!res.ok || !data?.ok) {
+        setOrderError(data?.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+      setOrdered(true);
+    } catch {
+      setOrderError("Could not reach the server. Check your connection and try again.");
+    } finally {
+      setOrdering(false);
+    }
   };
+
+  const summary = [
+    formData.length && formData.width && formData.height
+      ? `${formData.length} × ${formData.width} × ${formData.height} in`
+      : null,
+    formData.quantity ? `${Number(formData.quantity).toLocaleString()} units` : null,
+    formData.material || null,
+    formData.color || null,
+    formData.finish || null,
+    artworkFiles.length ? `${artworkFiles.length} design file${artworkFiles.length > 1 ? "s" : ""}` : null,
+  ].filter(Boolean) as string[];
 
   const inputClass =
     "w-full min-h-[48px] rounded-xl border border-border bg-white px-4 py-3 text-[16px] text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15 sm:text-sm";
@@ -167,6 +218,9 @@ export default function ProductPageClient({
               onSubmit={handleSubmit}
               className="mt-6 space-y-5 rounded-2xl border border-border bg-background-field/30 p-4 sm:mt-8 sm:p-5 md:p-6 lg:border-0 lg:bg-transparent lg:p-0"
             >
+              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+              </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-lighter" />
@@ -324,12 +378,40 @@ export default function ProductPageClient({
                 />
               </div>
 
+              <label className="block">
+                <span className="mb-1.5 flex items-center gap-2 text-sm font-semibold text-dark">
+                  <Upload className="h-4 w-4 text-primary" /> Your design / artwork (optional)
+                </span>
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.ai,.eps,.png,.jpg,.jpeg,.svg,.zip"
+                  onChange={(e) => setArtworkFiles(Array.from(e.target.files ?? []).slice(0, 5))}
+                  className={`${inputClass} cursor-pointer p-2.5 file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-background-field file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-primary`}
+                />
+              </label>
+
+              <div className="rounded-2xl border border-primary/15 bg-primary/5 px-4 py-3">
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-primary">Your order</p>
+                <p className="mt-1 text-sm font-semibold text-dark">{product.name}</p>
+                <p className="mt-0.5 text-[13px] text-text">
+                  {summary.length ? summary.join(" · ") : "Choose size, quantity and options above."}
+                </p>
+              </div>
+
               <button
                 type="submit"
-                className="btn-slip w-full min-h-[52px] rounded-xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(39,87,255,0.38)]"
+                disabled={ordering || ordered}
+                className="btn-slip w-full min-h-[52px] rounded-xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(39,87,255,0.38)] disabled:cursor-not-allowed disabled:opacity-80"
               >
-                Get Instant Quote
+                {ordering ? "Sending…" : ordered ? "Request sent" : "Order this product"}
               </button>
+              <p role="status" aria-live="polite" className="min-h-[1.25rem] text-center text-sm font-semibold">
+                {ordered && (
+                  <span className="text-[#16a34a]">Thanks! Our team will confirm your order details within 1 business day.</span>
+                )}
+                {orderError && <span className="text-secondary">{orderError}</span>}
+              </p>
             </form>
           </div>
         </div>

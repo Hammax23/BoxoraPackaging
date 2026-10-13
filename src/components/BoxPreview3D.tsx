@@ -17,7 +17,9 @@ import {
 } from "@react-three/postprocessing";
 import { Download } from "lucide-react";
 import {
+  createContext,
   Suspense,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -93,6 +95,33 @@ const finishStyles: Record<
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
+}
+
+type FinishStyle = (typeof finishStyles)[FinishId];
+
+/** Material colour for the whole model (kraft, white board ...). null = original finish colours. */
+const LookContext = createContext<string | null>(null);
+
+function deriveStyle(base: string | null, finish: FinishId): FinishStyle {
+  const orig = finishStyles[finish];
+  if (!base) return orig;
+  const c = new THREE.Color(base);
+  const hsl = { h: 0, s: 0, l: 0 };
+  c.getHSL(hsl);
+  const shade = (dl: number, ds = 0) =>
+    new THREE.Color().setHSL(hsl.h, clamp(hsl.s + ds, 0, 1), clamp(hsl.l + dl, 0.04, 0.96)).getStyle();
+  const lift = finish === "gloss" ? 0.03 : finish === "soft" ? -0.02 : 0;
+  return {
+    ...orig,
+    board: shade(lift),
+    secondary: shade(lift - 0.07),
+    accent: finish === "foil" ? "#d4af37" : shade(lift - 0.16),
+  };
+}
+
+function useStyle(finish: FinishId): FinishStyle {
+  const base = useContext(LookContext);
+  return useMemo(() => deriveStyle(base, finish), [base, finish]);
 }
 
 function toSceneSize(L: number, W: number, H: number): [number, number, number] {
@@ -176,6 +205,9 @@ const exportTargets: Record<ExportQuality, { label: string; longEdge: number }> 
   "4k": { label: "4K", longEdge: 3840 },
 };
 
+/** Customer branding shown on the printed face of the model. */
+export type BrandCustom = { text: string; fontFamily: string; color: string };
+
 type Props = {
   length: number;
   width: number;
@@ -185,6 +217,11 @@ type Props = {
   /** Catalog style id from AI / rules engine — preferred over name matching */
   styleId?: string;
   industry?: string;
+  brand?: BrandCustom;
+  /** Board / material colour (e.g. kraft golden brown). */
+  baseColor?: string;
+  /** Object URL of the customer's uploaded artwork (image files only). */
+  artworkUrl?: string;
 };
 
 export type PreviewKind =
@@ -292,6 +329,7 @@ function createPrintFaceMap(opts: {
   finishLabel: string;
   title: string;
   sizeLabel: string;
+  brand?: BrandCustom;
 }) {
   const w = 1024;
   const h = 1280;
@@ -325,9 +363,17 @@ function createPrintFaceMap(opts: {
   roundRect(ctx, 120, 220, w - 240, 280, 28);
   ctx.fill();
 
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "700 42px Figtree, Arial, sans-serif";
-  ctx.fillText("YOUR BRAND", 160, 300);
+  const brandText = opts.brand?.text.trim() ? opts.brand.text.trim().slice(0, 40) : "YOUR BRAND";
+  const brandFamily = opts.brand?.fontFamily ?? "Figtree, Arial, sans-serif";
+  ctx.fillStyle = opts.brand?.color ?? "#ffffff";
+  // Shrink to fit the brand block so long names never overflow.
+  let brandSize = opts.brand?.text.trim() ? 64 : 42;
+  ctx.font = `700 ${brandSize}px ${brandFamily}`;
+  while (ctx.measureText(brandText).width > w - 320 && brandSize > 22) {
+    brandSize -= 2;
+    ctx.font = `700 ${brandSize}px ${brandFamily}`;
+  }
+  ctx.fillText(brandText, 160, 300);
   ctx.font = "600 28px Figtree, Arial, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.85)";
   ctx.fillText(opts.title.slice(0, 28), 160, 350);
@@ -359,6 +405,67 @@ function createPrintFaceMap(opts: {
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
   map.anisotropy = 16;
+  map.needsUpdate = true;
+  return map;
+}
+
+/**
+ * Clean print face for a customer's own design: board colour + their artwork and/or text,
+ * drawn at the exact aspect ratio of the panel it is applied to (no stretching).
+ */
+function createCustomFaceMap(opts: {
+  aspect: number;
+  baseHex: string;
+  accent: string;
+  artwork: HTMLImageElement | null;
+  brand?: BrandCustom;
+  margin?: number;
+}) {
+  const w = 1024;
+  const h = Math.round(clamp(w / Math.max(0.2, opts.aspect), 256, 2048));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d")!;
+
+  // Transparent background: the design is printed straight onto the board colour of the model.
+  ctx.clearRect(0, 0, w, h);
+
+  const m = (opts.margin ?? 0.04) * Math.min(w, h);
+  const hasText = !!opts.brand?.text.trim();
+  const textZone = hasText ? (opts.artwork ? h * 0.2 : h) : 0;
+  const artBox = { x: m, y: m, w: w - m * 2, h: (opts.artwork && hasText ? h - textZone : h) - m * 2 };
+
+  if (opts.artwork) {
+    const iw = opts.artwork.naturalWidth || 512;
+    const ih = opts.artwork.naturalHeight || 512;
+    const k = Math.min(artBox.w / iw, artBox.h / ih);
+    const dw = iw * k;
+    const dh = ih * k;
+    ctx.drawImage(opts.artwork, artBox.x + (artBox.w - dw) / 2, artBox.y + (artBox.h - dh) / 2, dw, dh);
+  }
+
+  if (hasText && opts.brand) {
+    const text = opts.brand.text.trim().slice(0, 40);
+    const family = opts.brand.fontFamily;
+    const zoneTop = opts.artwork ? h - textZone : 0;
+    const zoneH = opts.artwork ? textZone : h;
+    let size = Math.min(zoneH * 0.62, w * 0.16);
+    ctx.font = `700 ${size}px ${family}`;
+    while (ctx.measureText(text).width > w - m * 2 && size > 18) {
+      size -= 2;
+      ctx.font = `700 ${size}px ${family}`;
+    }
+    ctx.fillStyle = opts.brand.color;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, w / 2, zoneTop + zoneH / 2);
+  }
+
+  const map = new THREE.CanvasTexture(canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  map.anisotropy = 16;
+  map.userData.custom = true;
   map.needsUpdate = true;
   return map;
 }
@@ -408,6 +515,7 @@ function StandUpPouchMesh({
   dims,
   variant = "doypack",
   industryLabel,
+  brand,
 }: {
   size: [number, number, number];
   finish: FinishId;
@@ -415,8 +523,9 @@ function StandUpPouchMesh({
   dims: { L: number; W: number; H: number };
   variant?: Extract<PreviewKind, "doypack" | "flat-bottom-pouch" | "block-bag" | "sachet" | "spouted" | "hybrid">;
   industryLabel?: string;
+  brand?: BrandCustom;
 }) {
-  const style = finishStyles[finish];
+  const style = useStyle(finish);
   const [l, h, w] = size;
 
   const isSachet = variant === "sachet";
@@ -458,8 +567,9 @@ function StandUpPouchMesh({
       finishLabel: style.label,
       title,
       sizeLabel: `${dims.L}" × ${dims.W}" × ${dims.H}"${industryLabel ? ` · ${industryLabel}` : ""}`,
+      brand,
     });
-  }, [style.board, style.secondary, style.label, title, dims.L, dims.W, dims.H, industryLabel]);
+  }, [style.board, style.secondary, style.label, title, dims.L, dims.W, dims.H, industryLabel, brand]);
 
   const pouchGeom = useMemo(() => {
     const shape = isSachet
@@ -696,6 +806,8 @@ function FoldingCartonMesh({
   lidOpen,
   paper,
   printMap,
+  sideMap,
+  topMap,
 }: {
   size: [number, number, number];
   finish: FinishId;
@@ -704,8 +816,10 @@ function FoldingCartonMesh({
   lidOpen: number;
   paper: { map: THREE.CanvasTexture; roughnessMap: THREE.CanvasTexture } | null;
   printMap: THREE.CanvasTexture | null;
+  sideMap?: THREE.CanvasTexture | null;
+  topMap?: THREE.CanvasTexture | null;
 }) {
-  const style = finishStyles[finish];
+  const style = useStyle(finish);
   const [l, h, w] = size;
   const wall = 0.022;
   const edge = Math.min(0.028, Math.min(l, w, h) * 0.04);
@@ -779,12 +893,38 @@ function FoldingCartonMesh({
         <meshPhysicalMaterial
           color={printMap ? "#ffffff" : finish === "gloss" ? "#1a3fd4" : style.accent}
           map={printMap ?? undefined}
+          transparent={printMap?.userData?.custom === true}
           roughness={finish === "foil" ? 0.18 : 0.4}
           metalness={finish === "foil" ? 1 : 0.08}
           clearcoat={finish === "gloss" ? 1 : 0.25}
           envMapIntensity={1.05}
         />
       </mesh>
+
+      {/* Customer design on the other faces */}
+      {sideMap && (
+        <>
+          <mesh position={[0, h * 0.05, -w / 2 - 0.003]} rotation={[0, Math.PI, 0]}>
+            <planeGeometry args={[l * 0.72, h * 0.58]} />
+            <meshPhysicalMaterial color="#ffffff" map={printMap ?? undefined}
+          transparent={printMap?.userData?.custom === true} roughness={0.5} clearcoat={0.2} />
+          </mesh>
+          <mesh position={[l / 2 + 0.003, h * 0.05, 0]} rotation={[0, Math.PI / 2, 0]}>
+            <planeGeometry args={[w * 0.72, h * 0.58]} />
+            <meshPhysicalMaterial color="#ffffff" map={sideMap} transparent roughness={0.5} clearcoat={0.2} />
+          </mesh>
+          <mesh position={[-l / 2 - 0.003, h * 0.05, 0]} rotation={[0, -Math.PI / 2, 0]}>
+            <planeGeometry args={[w * 0.72, h * 0.58]} />
+            <meshPhysicalMaterial color="#ffffff" map={sideMap} transparent roughness={0.5} clearcoat={0.2} />
+          </mesh>
+        </>
+      )}
+      {topMap && (
+        <mesh position={[0, h / 2 + 0.006, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[l * 0.9, w * 0.9]} />
+          <meshPhysicalMaterial color="#ffffff" map={topMap} transparent roughness={0.5} clearcoat={0.2} />
+        </mesh>
+      )}
 
       {finish === "gloss" && (
         <mesh position={[-l * 0.18, 0.04, w / 2 + 0.006]} rotation={[0, 0, -0.22]}>
@@ -853,7 +993,7 @@ function RigidSetupMesh({
   paper: { map: THREE.CanvasTexture; roughnessMap: THREE.CanvasTexture } | null;
   printMap: THREE.CanvasTexture | null;
 }) {
-  const style = finishStyles[finish];
+  const style = useStyle(finish);
   const [l, h, w] = size;
   const wall = 0.04;
   const edge = Math.min(0.025, Math.min(l, w, h) * 0.035);
@@ -923,6 +1063,7 @@ function RigidSetupMesh({
         <meshPhysicalMaterial
           color={printMap ? "#ffffff" : finish === "foil" ? "#d4af37" : style.accent}
           map={printMap ?? undefined}
+          transparent={printMap?.userData?.custom === true}
           roughness={finish === "foil" ? 0.15 : 0.45}
           metalness={finish === "foil" ? 1 : 0.12}
           clearcoat={finish === "gloss" ? 1 : 0.3}
@@ -968,7 +1109,7 @@ function MailerBoxMesh({
   paper: { map: THREE.CanvasTexture; roughnessMap: THREE.CanvasTexture } | null;
   printMap: THREE.CanvasTexture | null;
 }) {
-  const style = finishStyles[finish];
+  const style = useStyle(finish);
   const [l, h, w] = size;
   const wall = 0.03;
   const edge = Math.min(0.03, Math.min(l, w, h) * 0.045);
@@ -1044,6 +1185,7 @@ function MailerBoxMesh({
         <meshPhysicalMaterial
           color={printMap ? "#ffffff" : finish === "gloss" ? "#1a3fd4" : style.accent}
           map={printMap ?? undefined}
+          transparent={printMap?.userData?.custom === true}
           roughness={finish === "foil" ? 0.18 : 0.4}
           metalness={finish === "foil" ? 1 : 0.1}
           clearcoat={finish === "gloss" ? 1 : 0.25}
@@ -1082,6 +1224,8 @@ function PhotorealCarton({
   boxType,
   dims,
   industry,
+  brand,
+  artworkUrl,
 }: {
   size: [number, number, number];
   finish: FinishId;
@@ -1090,30 +1234,97 @@ function PhotorealCarton({
   boxType: string;
   dims: { L: number; W: number; H: number };
   industry?: string;
+  brand?: BrandCustom;
+  artworkUrl?: string;
 }) {
-  const style = finishStyles[finish];
+  const style = useStyle(finish);
   const group = useRef<THREE.Group>(null);
   const flexible = isFlexiblePreview(previewKind);
 
+  const look = useContext(LookContext);
+
+  // Load the customer's artwork (async, so state is only set from the load callback).
+  const [artState, setArtState] = useState<{ url: string; img: HTMLImageElement } | null>(null);
+  useEffect(() => {
+    if (!artworkUrl) return;
+    let cancelled = false;
+    const img = new Image();
+    img.onload = () => {
+      if (!cancelled) setArtState({ url: artworkUrl, img });
+    };
+    img.src = artworkUrl;
+    return () => {
+      cancelled = true;
+    };
+  }, [artworkUrl]);
+  const artwork = artworkUrl && artState?.url === artworkUrl ? artState.img : null;
+  const customized = !!artwork || !!brand;
+
   const paper = useMemo(() => {
     if (typeof document === "undefined") return null;
-    // Kraft look for shippers
-    if (previewKind === "shipper" || previewKind === "display") {
+    // Kraft look for shippers (unless a material colour was chosen)
+    if (!look && (previewKind === "shipper" || previewKind === "display")) {
       return createPaperMaps("#c4a574");
     }
     return createPaperMaps(style.board);
-  }, [style.board, previewKind]);
+  }, [style.board, previewKind, look]);
+
+  // Panel aspect ratios used by each model, so artwork is never stretched.
+  const [bl, bh, bw] = size;
+  const frontAspect =
+    previewKind === "folding-carton" || previewKind === "carton-sleeve"
+      ? (bl * 0.72) / (bh * 0.58)
+      : previewKind === "rigid-setup" || previewKind === "rigid-drawer"
+        ? (bl * 0.55) / (bw * 0.4)
+        : (bl * 0.7) / (bh * 0.48);
+  const sideAspect = (bw * 0.72) / (bh * 0.58);
+  const topAspect = bl / bw;
+  const hasExtraFaces = previewKind === "folding-carton" || previewKind === "carton-sleeve";
 
   const boxPrint = useMemo(() => {
     if (typeof document === "undefined" || flexible) return null;
+    if (customized) {
+      return createCustomFaceMap({
+        aspect: frontAspect,
+        baseHex: style.board,
+        accent: style.secondary,
+        artwork,
+        brand,
+      });
+    }
     return createPrintFaceMap({
-      hex: previewKind === "shipper" || previewKind === "display" ? "#c4a574" : style.board,
+      hex: !look && (previewKind === "shipper" || previewKind === "display") ? "#c4a574" : style.board,
       accent: style.secondary,
       finishLabel: style.label,
       title: boxType.split("+")[0].trim().slice(0, 28),
       sizeLabel: `${dims.L}" × ${dims.W}" × ${dims.H}"${industry ? ` · ${industry}` : ""}`,
+      brand,
     });
-  }, [style.board, style.secondary, style.label, boxType, dims, flexible, industry, previewKind]);
+  }, [style.board, style.secondary, style.label, boxType, dims, flexible, industry, previewKind, brand, customized, frontAspect, artwork, look]);
+
+  const sideMap = useMemo(() => {
+    if (typeof document === "undefined" || flexible || !customized || !hasExtraFaces) return null;
+    return createCustomFaceMap({
+      aspect: sideAspect,
+      baseHex: style.board,
+      accent: style.secondary,
+      artwork,
+      brand,
+      margin: 0.14,
+    });
+  }, [flexible, customized, hasExtraFaces, sideAspect, style.board, style.secondary, artwork, brand]);
+
+  const topMap = useMemo(() => {
+    if (typeof document === "undefined" || flexible || !customized || !hasExtraFaces) return null;
+    return createCustomFaceMap({
+      aspect: topAspect,
+      baseHex: style.board,
+      accent: style.secondary,
+      artwork,
+      brand,
+      margin: 0.12,
+    });
+  }, [flexible, customized, hasExtraFaces, topAspect, style.board, style.secondary, artwork, brand]);
 
   useEffect(() => {
     return () => {
@@ -1123,6 +1334,9 @@ function PhotorealCarton({
     };
   }, [paper, boxPrint]);
 
+  useEffect(() => () => sideMap?.dispose(), [sideMap]);
+  useEffect(() => () => topMap?.dispose(), [topMap]);
+
   useFrame((state) => {
     if (group.current) {
       group.current.position.y = Math.sin(state.clock.elapsedTime * 0.7) * 0.012;
@@ -1130,7 +1344,7 @@ function PhotorealCarton({
   });
 
   const boardColor =
-    previewKind === "shipper" || previewKind === "display" ? "#c4a574" : style.board;
+    !look && (previewKind === "shipper" || previewKind === "display") ? "#c4a574" : style.board;
 
   const boardProps = useMemo(
     () => ({
@@ -1161,6 +1375,7 @@ function PhotorealCarton({
           dims={dims}
           variant={previewKind as "doypack" | "flat-bottom-pouch" | "block-bag" | "sachet" | "spouted" | "hybrid"}
           industryLabel={industry}
+          brand={brand}
         />
       </group>
     );
@@ -1177,6 +1392,8 @@ function PhotorealCarton({
           lidOpen={lidOpen}
           paper={paper}
           printMap={boxPrint}
+          sideMap={sideMap}
+          topMap={topMap}
         />
       )}
       {previewKind === "rigid-setup" && (
@@ -1321,6 +1538,9 @@ function Scene({
   boxType,
   styleId,
   industry,
+  brand,
+  baseColor,
+  artworkUrl,
   autoRotate,
   lidOpen,
   captureRef,
@@ -1342,7 +1562,7 @@ function Scene({
   const boxLift = flexible ? stageY + 1.15 : stageY + h / 2 + 0.2;
 
   return (
-    <>
+    <LookContext.Provider value={baseColor ?? null}>
       {/* Bright product-studio backdrop */}
       <color attach="background" args={["#eef2f8"]} />
       <fog attach="fog" args={["#e8edf5", 9, 20]} />
@@ -1375,6 +1595,8 @@ function Scene({
           boxType={boxType}
           dims={dims}
           industry={industry}
+          brand={brand}
+          artworkUrl={artworkUrl}
         />
       </group>
 
@@ -1421,7 +1643,7 @@ function Scene({
         enableDamping
         target={[0, Math.max(0.25, h * 0.25), 0]}
       />
-    </>
+    </LookContext.Provider>
   );
 }
 
@@ -1446,6 +1668,9 @@ export default function BoxPreview3D({
   boxType,
   styleId,
   industry,
+  brand,
+  baseColor,
+  artworkUrl,
 }: Props) {
   const style = finishStyles[finish];
   const [autoRotate, setAutoRotate] = useState(true);
@@ -1542,6 +1767,9 @@ export default function BoxPreview3D({
               boxType={boxType}
               styleId={styleId}
               industry={industry}
+              brand={brand}
+              baseColor={baseColor}
+              artworkUrl={artworkUrl}
               autoRotate={autoRotate}
               lidOpen={lidOpen}
               captureRef={captureRef}
