@@ -1,7 +1,8 @@
 "use client";
 
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { features, featuresSection, topBar } from "@/lib/data";
+import { useSiteContent } from "@/components/SiteContentProvider";
+import { features } from "@/lib/data";
 import { openQuoteDrawer } from "@/lib/quoteDrawer";
 import {
   ArrowRight,
@@ -40,6 +41,7 @@ function FeatureIcon({ icon }: { icon: string }) {
 }
 
 export default function Features() {
+  const { features: featuresSection } = useSiteContent();
   return (
     <section className="section-padding border-y border-border bg-white">
       <div className="container-main">

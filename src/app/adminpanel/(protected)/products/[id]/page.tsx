@@ -7,9 +7,10 @@ import { ArrowLeft, Save } from "lucide-react";
 import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-export default async function AdminProductEditPage({ params }: { params: { id: string } }) {
+export default async function AdminProductEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
-  const product = await prisma.product.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const product = await prisma.product.findUnique({ where: { id } });
   if (!product) notFound();
 
   async function save(formData: FormData) {

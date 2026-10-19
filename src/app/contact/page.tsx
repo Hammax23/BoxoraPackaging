@@ -3,7 +3,8 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { topBar, trendsMegamenu } from "@/lib/data";
+import { trendsMegamenu } from "@/lib/data";
+import { getSiteContent } from "@/lib/queries/content";
 import { buildPageMetadata } from "@/lib/seo";
 import { ArrowRight, Clock, Mail, MessageSquareQuote, Phone, PhoneCall } from "lucide-react";
 import type { Metadata } from "next";
@@ -18,7 +19,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 const tollFree = trendsMegamenu.cta.phone;
 
-const channels = [
+const buildChannels = (topBar: { phone: string; email: string }) => [
   {
     icon: Phone,
     label: "Call us",
@@ -42,7 +43,9 @@ const channels = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { topBar } = await getSiteContent();
+  const channels = buildChannels(topBar);
   return (
     <main>
       <Header />

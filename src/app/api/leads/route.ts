@@ -38,8 +38,12 @@ export async function POST(req: Request) {
     return fail("Invalid request.");
   }
 
-  // Honeypot: real visitors never fill this hidden field. Pretend success to bots.
-  if (text(form, "website", 200)) return NextResponse.json({ ok: true });
+  // Bots post instantly; people need a few seconds. (No hidden inputs: browser autofill fills those and
+  // would silently discard real requests.) Older pages that don't send the timer are allowed through.
+  const elapsed = Number(text(form, "elapsed", 12));
+  if (Number.isFinite(elapsed) && text(form, "elapsed", 12) !== "" && elapsed < 1500) {
+    return fail("That was a little quick. Please try again.");
+  }
 
   const type = text(form, "type", 20);
 
@@ -108,6 +112,8 @@ export async function POST(req: Request) {
     color: text(form, "color", 60) || null,
     finish: text(form, "finish", 60) || null,
     boxType: text(form, "boxType", 120) || null,
+    moq: text(form, "moq", 20) || null,
+    risk: text(form, "risk", 40) || null,
     requestType: type,
   };
   const phone = text(form, "phone", 40);

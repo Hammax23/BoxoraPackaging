@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormClock } from "@/lib/formClock";
 import {
   checkProductSizeFit,
   getTypicalProductSize,
@@ -17,7 +18,6 @@ const BoxPreview3D = dynamic(() => import("@/components/BoxPreview3D"), {
 import IndustryCombobox from "@/components/IndustryCombobox";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import {
-  makeQuoteRef,
   runFitEngine,
   type FinishId,
   type FitResult,
@@ -38,7 +38,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { type DragEvent, type FormEvent, useEffect, useMemo, useState } from "react";
+import { type DragEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 const fieldClass =
   "w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15";
@@ -124,8 +124,12 @@ export default function InstantQuote({
   /** Render the heading as the page's h1 (used on /quote). */
   asPage?: boolean;
 }) {
+  const stamp = useFormClock();
   const Heading = asPage ? "h1" : "h2";
   const [step, setStep] = useState(1);
+  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const cardRef = useRef<HTMLDivElement>(null);
+  const firstRender = useRef(true);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -139,15 +143,17 @@ export default function InstantQuote({
     notice: string | null;
   } | null>(null);
 
-  const [length, setLength] = useState("8");
-  const [width, setWidth] = useState("5");
-  const [height, setHeight] = useState("3");
-  const [weight, setWeight] = useState("0.8");
+  const [length, setLength] = useState("0");
+  const [width, setWidth] = useState("0");
+  const [height, setHeight] = useState("0");
+  const [weight, setWeight] = useState("0");
   const [industry, setIndustry] = useState(
-    defaultIndustry && isKnownProductOrIndustry(defaultIndustry) ? defaultIndustry : "Cosmetic Boxes",
+    defaultIndustry && isKnownProductOrIndustry(defaultIndustry) ? defaultIndustry : "",
   );
   const fragility: Fragility = "medium";
   const [quantity, setQuantity] = useState(1000);
+  const [customMode, setCustomMode] = useState(false);
+  const [customQty, setCustomQty] = useState("");
   const [finish, setFinish] = useState<FinishId>("matte");
 
   // Customisation
@@ -194,6 +200,23 @@ export default function InstantQuote({
     setFileError(error);
   };
 
+  // Moving to another step (or finishing) brings the top of the form back into view.
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    // Wait for the new step to lay out first, otherwise a shorter page clamps the scroll part-way.
+    const id = window.setTimeout(() => {
+      const card = cardRef.current;
+      if (!card) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const top = Math.max(0, card.getBoundingClientRect().top + window.scrollY - 96);
+      window.scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
+    }, 80);
+    return () => window.clearTimeout(id);
+  }, [step, submitted]);
+
   const onDropFiles = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragging(false);
@@ -230,7 +253,7 @@ export default function InstantQuote({
 
   const canGoStep2 = l > 0 && w > 0 && h > 0 && isKnownProductOrIndustry(industry);
   const sizeFit = useMemo(
-    () => checkProductSizeFit(industry, l, w, h, wt),
+    () => (industry && l > 0 && w > 0 && h > 0 ? checkProductSizeFit(industry, l, w, h, wt) : null),
     [industry, l, w, h, wt],
   );
   const typicalSize = getTypicalProductSize(industry);
@@ -301,11 +324,14 @@ export default function InstantQuote({
 
     // Contact fields come from the form itself; the rest is the customer's model + choices.
     const fd = new FormData(e.currentTarget);
+    stamp(fd);
     fd.set("type", "quote");
     fd.set("source", "instant-quote");
     fd.set("productName", defaultIndustry && !isKnownProductOrIndustry(defaultIndustry) ? defaultIndustry : industry);
     fd.set("industry", industry);
     fd.set("boxType", fit.boxType);
+    fd.set("moq", String(fit.moq));
+    fd.set("risk", String(fit.riskLabel));
     fd.set("quantity", String(quantity));
     fd.set("length", String(l));
     fd.set("width", String(w));
@@ -325,7 +351,11 @@ export default function InstantQuote({
         setSubmitError(data?.error ?? "Something went wrong. Please try again.");
         return;
       }
-      setQuoteRef(data.reference ?? makeQuoteRef());
+      if (!data.reference) {
+        setSubmitError("We could not confirm your request. Please try again.");
+        return;
+      }
+      setQuoteRef(data.reference);
       setSubmitted(true);
     } catch {
       setSubmitError("Could not reach the server. Check your connection and try again.");
@@ -364,7 +394,7 @@ export default function InstantQuote({
           </AnimatedSection>
 
           <AnimatedSection delay={0.08}>
-            <div className="overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_20px_60px_rgba(30,16,35,0.06)] md:rounded-[32px]">
+            <div ref={cardRef} className="scroll-mt-24 overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_20px_60px_rgba(30,16,35,0.06)] md:rounded-[32px]">
               <div className="border-b border-border bg-background-field/50 px-5 py-4 md:px-7">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                   {steps.map((s, i) => {
@@ -557,6 +587,12 @@ export default function InstantQuote({
 
                     {/* Live preview strip even on step 1 */}
                     <div className="rounded-2xl border border-dashed border-primary/25 bg-primary/[0.03] p-4">
+                      {!canGoStep2 ? (
+                        <p className="flex items-center gap-1.5 text-sm text-text">
+                          <Activity className="h-4 w-4 text-primary" />
+                          Choose a product and enter its size to see your box preview.
+                        </p>
+                      ) : (
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                         <span className="inline-flex items-center gap-1.5 font-semibold text-dark">
                           <Activity className="h-4 w-4 text-primary" />
@@ -570,6 +606,7 @@ export default function InstantQuote({
                         <span className="text-lighter">·</span>
                         <span className={riskColor}>{riskPlainLabel(fit.riskLabel)}</span>
                       </div>
+                      )}
                     </div>
 
                     <div className="flex justify-end border-t border-border pt-5">
@@ -788,9 +825,12 @@ export default function InstantQuote({
                             <button
                               key={q}
                               type="button"
-                              onClick={() => setQuantity(q)}
+                              onClick={() => {
+                                setQuantity(q);
+                                setCustomMode(false);
+                              }}
                               className={`rounded-full px-3.5 py-2 text-[12px] font-bold transition ${
-                                quantity === q
+                                !customMode && quantity === q
                                   ? "bg-primary text-white"
                                   : "border border-border bg-white text-text hover:border-primary/30"
                               }`}
@@ -798,7 +838,44 @@ export default function InstantQuote({
                               {q.toLocaleString()}
                             </button>
                           ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCustomMode(true);
+                              setCustomQty(String(quantity));
+                            }}
+                            className={`rounded-full px-3.5 py-2 text-[12px] font-bold transition ${
+                              customMode
+                                ? "bg-primary text-white"
+                                : "border border-dashed border-primary/40 bg-white text-primary hover:border-primary"
+                            }`}
+                          >
+                            Custom
+                          </button>
                         </div>
+                        {customMode && (
+                          <div className="mt-3">
+                            <input
+                              type="number"
+                              inputMode="numeric"
+                              min={1}
+                              max={10000000}
+                              step={1}
+                              autoFocus
+                              value={customQty}
+                              onChange={(e) => {
+                                const v = e.target.value;
+                                setCustomQty(v);
+                                const n = Math.floor(Number(v));
+                                if (n >= 1) setQuantity(Math.min(n, 10_000_000));
+                              }}
+                              placeholder="Enter your quantity, e.g. 3,500"
+                              aria-label="Custom quantity"
+                              className={fieldClass}
+                            />
+                            <p className="mt-1.5 text-[12px] text-lighter">Any amount from 1 up to 10,000,000 pieces.</p>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <label className="mb-2 block text-[13px] font-semibold text-dark">
@@ -845,10 +922,6 @@ export default function InstantQuote({
 
                 {step === 3 && !submitted && (
                   <form onSubmit={handleExactQuote} className="space-y-5">
-                    {/* Honeypot: hidden from people, bots fill it in */}
-                    <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-                      <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-                    </div>
                     <div>
                       <h3 className="font-heading text-2xl text-dark">Exact quote request</h3>
                       <p className="mt-1 text-sm text-lighter">
@@ -879,7 +952,20 @@ export default function InstantQuote({
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <label className="mb-1.5 block text-[13px] font-semibold text-dark">Needed by</label>
-                        <input name="neededBy" type="date" className={fieldClass} />
+                        <input
+                          name="neededBy"
+                          type="date"
+                          min={today}
+                          className={`${fieldClass} cursor-pointer`}
+                          onClick={(e) => {
+                            // Open the calendar from anywhere in the field, not just the small icon.
+                            try {
+                              e.currentTarget.showPicker();
+                            } catch {
+                              /* older browsers: the native control still works */
+                            }
+                          }}
+                        />
                       </div>
                       <div>
                         <label className="mb-1.5 block text-[13px] font-semibold text-dark">

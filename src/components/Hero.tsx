@@ -1,6 +1,6 @@
 "use client";
 
-import { heroContent } from "@/lib/data";
+import { useSiteContent } from "@/components/SiteContentProvider";
 import { img, images } from "@/lib/images";
 import { openQuoteDrawer } from "@/lib/quoteDrawer";
 import { motion, useReducedMotion } from "framer-motion";
@@ -42,6 +42,7 @@ const boxes = [
 
 export default function Hero() {
   const reduce = useReducedMotion();
+  const { hero: heroContent } = useSiteContent();
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-white to-[#eef1ff] lg:h-[calc(100svh-7.4rem)] lg:max-h-[860px] lg:min-h-[540px]">
       {/* One soft wash of brand color */}

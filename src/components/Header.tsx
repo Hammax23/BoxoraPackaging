@@ -4,7 +4,8 @@ import BrandLogo from "@/components/BrandLogo";
 import IndustriesMegamenu from "@/components/IndustriesMegamenu";
 import PackagingStylesMegamenu from "@/components/PackagingStylesMegamenu";
 import TrendsMegamenu from "@/components/TrendsMegamenu";
-import { packagingStylesMegamenu, trendsMegamenu, navLeft, navRight, topBar } from "@/lib/data";
+import { useSiteContent } from "@/components/SiteContentProvider";
+import { packagingStylesMegamenu, trendsMegamenu } from "@/lib/data";
 import {
   ArrowRight,
   ChevronDown,
@@ -147,6 +148,7 @@ function NavMenu({
 }
 
 function TopBar() {
+  const { topBar } = useSiteContent();
   const phoneHref = `tel:${topBar.phone.replace(/\s/g, "")}`;
 
   return (
@@ -194,6 +196,7 @@ function QuoteButton({
   className?: string;
   fullWidth?: boolean;
 }) {
+  const { topBar } = useSiteContent();
   return (
     <Link
       href="/quote"
@@ -256,6 +259,9 @@ export default function Header() {
   const megamenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const { nav } = useSiteContent();
+  const navLeft = nav.left;
+  const navRight = nav.right;
   const allLinks = [...navLeft, ...navRight];
 
   useEffect(() => {

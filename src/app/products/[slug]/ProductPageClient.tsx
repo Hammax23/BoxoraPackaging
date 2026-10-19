@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormClock } from "@/lib/formClock";
 import Footer from "@/components/Footer";
 import FAQs from "@/components/FAQs";
 import FeatureMarquee from "@/components/FeatureMarquee";
@@ -64,6 +65,7 @@ export default function ProductPageClient({
   marqueeItems: string[];
   faqs: FaqView[];
 }) {
+  const stamp = useFormClock();
   const currentIndex = allProducts.findIndex((item) => item.slug === product.slug);
   const prevProduct = allProducts[currentIndex - 1] ?? allProducts[allProducts.length - 1];
   const nextProduct = allProducts[currentIndex + 1] ?? allProducts[0];
@@ -91,7 +93,8 @@ export default function ProductPageClient({
     e.preventDefault();
     if (ordering) return;
 
-    const fd = new FormData(e.currentTarget); // includes the hidden honeypot field
+    const fd = new FormData(e.currentTarget);
+    stamp(fd);
     fd.set("type", "order");
     fd.set("source", `product:${product.slug}`);
     fd.set("name", formData.name);
@@ -218,9 +221,6 @@ export default function ProductPageClient({
               onSubmit={handleSubmit}
               className="mt-6 space-y-5 rounded-2xl border border-border bg-background-field/30 p-4 sm:mt-8 sm:p-5 md:p-6 lg:border-0 lg:bg-transparent lg:p-0"
             >
-              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-                <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-              </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-lighter" />

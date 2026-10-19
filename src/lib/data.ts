@@ -276,7 +276,7 @@ export const heroContent = {
 };
 
 export const marqueeItems = [
-  "Icons",
+  "Custom printed packaging",
   "Vibrant printed colors",
   "Made for sustainability",
   "Sturdy and rigid packaging",
@@ -853,3 +853,28 @@ export const faqs = [
       "Yes. We deliver worldwide with reliable logistics partners. Free shipping and handling apply on eligible standard domestic orders; international rates and timelines are provided in your custom quote.",
   },
 ];
+
+export type FooterGroupView = { title: string; links: { label: string; href: string }[] };
+
+export const defaultFooterGroups: FooterGroupView[] = [
+  {
+    title: "Explore",
+    links: [
+      { label: "All products", href: "/products" },
+      { label: "Packaging styles", href: "/styles" },
+      { label: "Packaging trends", href: "/trends" },
+      { label: "Blog", href: "/blog" },
+      { label: "Get a quote", href: "/quote" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About us", href: "/about" },
+      { label: "Our team", href: "/team" },
+      { label: "FAQs", href: "/faq" },
+      { label: "Contact us", href: "/contact" },
+    ],
+  },
+];
+

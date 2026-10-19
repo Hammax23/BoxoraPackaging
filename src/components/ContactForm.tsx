@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormClock } from "@/lib/formClock";
 import { ArrowRight, Check, ChevronDown, Loader2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
@@ -9,6 +10,7 @@ const inputClass =
   "w-full rounded-xl border border-border bg-white px-4 py-3 text-[16px] text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15";
 
 export default function ContactForm() {
+  const stamp = useFormClock();
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,6 +20,7 @@ export default function ContactForm() {
     if (sending) return;
     const form = e.currentTarget;
     const fd = new FormData(form);
+    stamp(fd);
     fd.set("type", "contact");
 
     setSending(true);
@@ -41,10 +44,6 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      {/* Honeypot: hidden from people, bots fill it in */}
-      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <input required name="name" autoComplete="name" placeholder="Full name *" className={inputClass} />

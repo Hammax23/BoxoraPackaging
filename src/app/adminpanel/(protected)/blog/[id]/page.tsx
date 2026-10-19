@@ -10,12 +10,13 @@ import { revalidatePath } from "next/cache";
 const input =
   "w-full min-h-[48px] rounded-xl border border-border bg-white px-4 py-3 text-[16px] text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15 sm:text-sm";
 
-export default async function AdminBlogEditPage({ params }: { params: { id: string } }) {
+export default async function AdminBlogEditPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
+  const { id } = await params;
 
   const [post, categories] = await Promise.all([
     prisma.blogPost.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { blocks: { orderBy: { sortOrder: "asc" } } },
     }),
     prisma.blogCategory.findMany({ orderBy: { sortOrder: "asc" } }),

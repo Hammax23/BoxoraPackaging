@@ -3,6 +3,7 @@ import { Figtree, Marcellus } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import JsonLd from "@/components/JsonLd";
+import { getSiteContent } from "@/lib/queries/content";
 import { getIndustries } from "@/lib/queries/industries";
 import { getSiteUrl, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
@@ -38,13 +39,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const industries = await getIndustries();
+  const [industries, siteContent] = await Promise.all([getIndustries(), getSiteContent()]);
 
   return (
     <html lang="en" className={`${marcellus.variable} ${figtree.variable}`}>
       <body className="antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-        <Providers industries={industries}>{children}</Providers>
+        <Providers industries={industries} siteContent={siteContent}>{children}</Providers>
       </body>
     </html>
   );

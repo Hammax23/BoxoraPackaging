@@ -9,9 +9,18 @@ const DUMMY_HASH = hashPasswordScrypt("not-a-real-password");
 
 export async function POST(req: Request) {
   try {
-    const form = await req.formData();
-    const email = String(form.get("email") ?? "").trim().toLowerCase();
-    const password = String(form.get("password") ?? "");
+    let email = "";
+    let password = "";
+    const contentType = req.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const body = await req.json();
+      email = String(body.email ?? "").trim().toLowerCase();
+      password = String(body.password ?? "");
+    } else {
+      const form = await req.formData();
+      email = String(form.get("email") ?? "").trim().toLowerCase();
+      password = String(form.get("password") ?? "");
+    }
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
@@ -58,7 +67,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Admin login failed:", error);
     return NextResponse.json(
-      { error: "Database connection failed. Check Docker and DATABASE_URL in .env." },
+      { error: "Authentication failed. Please check your credentials." },
       { status: 500 }
     );
   }

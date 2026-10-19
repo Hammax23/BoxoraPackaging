@@ -117,7 +117,7 @@ export default async function AdminQuotesPage({
           <div key={quote.id} className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
-                <p className="font-heading text-xl text-dark">{quote.name}</p>
+                <Link href={`/adminpanel/quotes/${quote.id}`} className="font-heading text-xl text-dark transition hover:text-primary">{quote.name}</Link>
                 <p className="mt-1 text-sm text-lighter">
                   {quote.reference} · {quote.email}
                   {quote.phone ? ` · ${quote.phone}` : ""}
@@ -189,6 +189,12 @@ export default async function AdminQuotesPage({
                     Update
                   </SubmitButton>
                 </form>
+                <Link
+                  href={`/adminpanel/quotes/${quote.id}`}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-[12px] font-bold text-primary transition hover:bg-primary hover:text-white"
+                >
+                  View full details{files.length > 0 ? ` · ${files.length} file${files.length === 1 ? "" : "s"}` : ""}
+                </Link>
                 <div className="flex items-center gap-2">
                   <a
                     href={`mailto:${quote.email}?subject=${encodeURIComponent(`Your Boxora quote ${quote.reference}`)}`}

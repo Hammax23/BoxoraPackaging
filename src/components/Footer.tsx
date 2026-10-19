@@ -1,28 +1,14 @@
 "use client";
 
+import { useFormClock } from "@/lib/formClock";
 import BrandLogo from "@/components/BrandLogo";
 import { useIndustries } from "@/components/IndustriesProvider";
-import { topBar } from "@/lib/data";
+import { useSiteContent } from "@/components/SiteContentProvider";
 import { images } from "@/lib/images";
 import { ArrowUp, ArrowUpRight, Check, Mail, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useEffect, useState } from "react";
-
-const explore = [
-  { label: "All products", href: "/products" },
-  { label: "Packaging styles", href: "/styles" },
-  { label: "Packaging trends", href: "/trends" },
-  { label: "Blog", href: "/blog" },
-  { label: "Get a quote", href: "/quote" },
-];
-
-const company = [
-  { label: "About us", href: "/about" },
-  { label: "Our team", href: "/team" },
-  { label: "FAQs", href: "/faq" },
-  { label: "Contact us", href: "/contact" },
-];
 
 const carriers = [
   { src: "/logistics/fedex.svg", alt: "FedEx" },
@@ -51,7 +37,9 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function Footer() {
+  const stamp = useFormClock();
   const industries = useIndustries();
+  const { topBar, footer } = useSiteContent();
   const [showTop, setShowTop] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -71,6 +59,7 @@ export default function Footer() {
     e.preventDefault();
     if (subscribing) return;
     const fd = new FormData(e.currentTarget);
+    stamp(fd);
     fd.set("type", "newsletter");
     fd.set("source", "footer");
 
@@ -149,10 +138,10 @@ export default function Footer() {
             </nav>
 
             <nav aria-label="Explore" className="lg:pt-[15px]">
-              <ColumnTitle>Explore</ColumnTitle>
+              <ColumnTitle>{footer[0].title}</ColumnTitle>
               <ul className="sm:space-y-1.5 lg:space-y-3">
-                {explore.map((l) => (
-                  <li key={l.href}>
+                {footer[0].links.map((l, i) => (
+                  <li key={`${l.href}-${i}`}>
                     <FooterLink href={l.href}>{l.label}</FooterLink>
                   </li>
                 ))}
@@ -160,10 +149,10 @@ export default function Footer() {
             </nav>
 
             <nav aria-label="Company" className="lg:pt-[15px]">
-              <ColumnTitle>Company</ColumnTitle>
+              <ColumnTitle>{footer[1].title}</ColumnTitle>
               <ul className="sm:space-y-1.5 lg:space-y-3">
-                {company.map((l) => (
-                  <li key={l.href}>
+                {footer[1].links.map((l, i) => (
+                  <li key={`${l.href}-${i}`}>
                     <FooterLink href={l.href}>{l.label}</FooterLink>
                   </li>
                 ))}
@@ -186,9 +175,6 @@ export default function Footer() {
                 </p>
               ) : (
                 <form onSubmit={subscribe} className="mt-3 flex gap-2 sm:mt-4">
-                  <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-                    <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-                  </div>
                   <label htmlFor="footer-email" className="sr-only">
                     Email address
                   </label>

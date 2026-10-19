@@ -1,5 +1,8 @@
-import { faqs as staticFaqs, marqueeItems as staticMarquee, testimonials as staticTestimonials } from "@/lib/data";
+import { cache } from "react";
+import { featuresSection as staticFeatures, heroContent as staticHero, topBar as staticTopBar, faqs as staticFaqs, marqueeItems as staticMarquee, testimonials as staticTestimonials } from "@/lib/data";
 import { prisma } from "@/lib/db";
+import type { FooterGroupView } from "@/lib/data";
+import { getFooterGroups, getNavLeft, getNavRight, type NavItemView } from "@/lib/queries/navigation";
 
 export type FaqView = { question: string; answer: string };
 export type TestimonialView = {
@@ -76,3 +79,41 @@ export async function getSiteSetting<T>(key: string, fallback: T): Promise<T> {
   }
   return fallback;
 }
+
+export type SiteContent = {
+  topBar: typeof staticTopBar;
+  hero: Pick<typeof staticHero, "badge" | "titleLine1" | "titleLine2" | "subtitle">;
+  features: typeof staticFeatures;
+  nav: { left: NavItemView[]; right: NavItemView[] };
+  footer: FooterGroupView[];
+};
+
+/** Editable site copy (Admin → Site settings), merged over the built-in defaults so a missing field never blanks the site. */
+export const getSiteContent = cache(async (): Promise<SiteContent> => {
+  const [topBar, hero, features, left, right, footer] = await Promise.all([
+    getSiteSetting<Partial<typeof staticTopBar>>("topBar", {}),
+    getSiteSetting<Partial<SiteContent["hero"]>>("heroContent", {}),
+    getSiteSetting<Partial<typeof staticFeatures>>("featuresSection", {}),
+    getNavLeft(),
+    getNavRight(),
+    getFooterGroups(),
+  ]);
+  const merge = <T extends object>(base: T, over: Partial<T>): T => {
+    const out = { ...base };
+    for (const k of Object.keys(base) as (keyof T)[]) {
+      const v = over?.[k];
+      if (typeof v === "string" && v.trim()) out[k] = v as T[keyof T];
+    }
+    return out;
+  };
+  return {
+    topBar: merge(staticTopBar, topBar),
+    hero: merge(
+      { badge: staticHero.badge, titleLine1: staticHero.titleLine1, titleLine2: staticHero.titleLine2, subtitle: staticHero.subtitle },
+      hero,
+    ),
+    features: merge(staticFeatures, features),
+    nav: { left, right },
+    footer,
+  };
+});
