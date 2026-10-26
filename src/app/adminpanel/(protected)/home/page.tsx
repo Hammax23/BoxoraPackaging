@@ -70,7 +70,7 @@ export default async function AdminHomePage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Homepage</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Marquee, FAQs & testimonials</h2>
         <p className="mt-2 text-sm text-text">
@@ -187,7 +187,7 @@ function Section({
   items: Item[];
 }) {
   return (
-    <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+    <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="font-heading text-2xl text-dark">

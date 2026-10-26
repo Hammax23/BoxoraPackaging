@@ -1,4 +1,4 @@
-import { industriesMegamenu } from "@/lib/data";
+import { shopIndustries } from "@/lib/shopIndustries";
 import { prisma } from "@/lib/db";
 import { slugify } from "@/lib/slug";
 
@@ -15,7 +15,7 @@ export function industryHref(slug: string) {
 }
 
 export function staticIndustries(): IndustryView[] {
-  return industriesMegamenu.categories.map((c) => {
+  return shopIndustries.map((c) => {
     const slug = slugify(c.name);
     return { slug, name: c.name, sub: c.sub, image: c.image, href: industryHref(slug) };
   });

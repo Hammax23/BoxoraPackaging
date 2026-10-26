@@ -5,7 +5,7 @@ import BrandLogo from "@/components/BrandLogo";
 import { useIndustries } from "@/components/IndustriesProvider";
 import { useSiteContent } from "@/components/SiteContentProvider";
 import { images } from "@/lib/images";
-import { ArrowUp, ArrowUpRight, Check, Mail, Phone } from "lucide-react";
+import { ArrowUp, ArrowUpRight, Check, Mail, MapPin, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { type FormEvent, useEffect, useState } from "react";
@@ -15,6 +15,9 @@ const carriers = [
   { src: "/logistics/usps.svg", alt: "USPS" },
   { src: "/logistics/dhl.svg", alt: "DHL" },
 ];
+
+// lucide-react has no brand icons, so show a short text mark.
+const socialMark: Record<string, string> = { Facebook: "f", Instagram: "IG", X: "X", LinkedIn: "in", Pinterest: "P", YouTube: "YT" };
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
@@ -39,7 +42,7 @@ function ColumnTitle({ children }: { children: React.ReactNode }) {
 export default function Footer() {
   const stamp = useFormClock();
   const industries = useIndustries();
-  const { topBar, footer } = useSiteContent();
+  const { topBar, footer, social } = useSiteContent();
   const [showTop, setShowTop] = useState(false);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -83,7 +86,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative overflow-hidden bg-[#080810] text-white">
+      <footer className="relative overflow-hidden bg-[#024540] text-white">
         {/* Brand hairline + soft glows */}
         <div className="h-[3px] bg-gradient-to-r from-primary via-secondary to-primary" />
         <div className="pointer-events-none absolute -left-32 bottom-0 h-[420px] w-[420px] rounded-full bg-primary/15 blur-3xl" />
@@ -96,10 +99,28 @@ export default function Footer() {
             <div className="col-span-2 lg:col-span-1">
               <BrandLogo variant="light" size="md" />
               <p className="mt-5 hidden max-w-xs text-[14.5px] leading-relaxed text-white/60 sm:block">
-                Print custom packaging and pouches. Eco-friendly, fully customisable solutions with worldwide
-                delivery for your brand.
+                {topBar.tagline}
               </p>
+              {social.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-2.5">
+                  {social.map((s) => {
+                    return (
+                      <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 text-white transition hover:bg-primary">
+                        <span className="text-xs font-bold">{socialMark[s.label] ?? s.label[0]}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
               <ul className="mt-4 flex flex-col gap-2.5 text-[13.5px] sm:mt-6 sm:gap-3 sm:text-[14.5px]">
+                {topBar.address && (
+                  <li className="inline-flex items-start gap-3 text-white/75">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 sm:h-9 sm:w-9">
+                      <MapPin className="h-4 w-4" />
+                    </span>
+                    <span className="pt-1.5">{topBar.address}</span>
+                  </li>
+                )}
                 <li>
                   <a
                     href={`mailto:${topBar.email}`}
@@ -193,7 +214,7 @@ export default function Footer() {
                     type="submit"
                     disabled={subscribing}
                     aria-label="Subscribe"
-                    className="btn-slip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-primary to-[#4a3df0] text-white disabled:opacity-70"
+                    className="btn-slip inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-primary to-[#a6dc00] text-white disabled:opacity-70"
                   >
                     <ArrowUpRight className="h-5 w-5" strokeWidth={2.25} />
                   </button>

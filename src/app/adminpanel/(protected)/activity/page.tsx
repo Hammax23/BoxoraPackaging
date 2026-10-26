@@ -14,13 +14,13 @@ export default async function ActivityPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Account</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Activity log</h2>
         <p className="mt-2 text-sm text-text">The last 200 actions taken in the admin panel.</p>
       </div>
 
-      <div className="overflow-hidden rounded-[28px] border border-border bg-white shadow-sm">
+      <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
         {logs.length === 0 ? (
           <div className="flex flex-col items-center gap-3 p-12 text-center text-text">
             <History className="h-8 w-8 text-lighter" />

@@ -5,7 +5,6 @@ import IndustriesMegamenu from "@/components/IndustriesMegamenu";
 import PackagingStylesMegamenu from "@/components/PackagingStylesMegamenu";
 import TrendsMegamenu from "@/components/TrendsMegamenu";
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { packagingStylesMegamenu, trendsMegamenu } from "@/lib/data";
 import {
   ArrowRight,
   ChevronDown,
@@ -200,7 +199,7 @@ function QuoteButton({
   return (
     <Link
       href="/quote"
-      className={`btn-slip group inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-primary font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(39,87,255,0.38)] ${
+      className={`btn-slip group inline-flex shrink-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-primary font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(189,249,6,0.38)] ${
         fullWidth ? "w-full px-6 py-3.5 text-xs" : "px-4 py-2.5 text-[11px] xl:px-5 xl:py-2.5 xl:text-xs"
       } ${className}`}
     >
@@ -259,7 +258,7 @@ export default function Header() {
   const megamenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { nav } = useSiteContent();
+  const { nav, topBar, styles, trends } = useSiteContent();
   const navLeft = nav.left;
   const navRight = nav.right;
   const allLinks = [...navLeft, ...navRight];
@@ -317,7 +316,7 @@ export default function Header() {
     }
 
     if (link.megamenu === "packaging-styles") {
-      return packagingStylesMegamenu.styles.map((s) => ({
+      return styles.map((s) => ({
         title: s.title,
         href: s.href,
         sub: s.specs.slice(0, 2).join(" • "),
@@ -325,7 +324,7 @@ export default function Header() {
     }
 
     if (link.megamenu === "trends") {
-      return trendsMegamenu.items.map((t) => ({ title: t.title, href: t.href, sub: "" }));
+      return trends.map((t) => ({ title: t.title, href: t.href, sub: "" }));
     }
 
     if (link.children?.length) {
@@ -342,44 +341,47 @@ export default function Header() {
       <header
         className={`sticky top-0 z-[100] w-full transition-[background-color,box-shadow] duration-300 ${
           scrolled
-            ? "bg-white/85 shadow-[0_10px_40px_rgba(8,8,16,0.08)] backdrop-blur-xl"
+            ? "bg-white/85 shadow-[0_10px_40px_rgba(3,90,83,0.08)] backdrop-blur-xl"
             : "bg-white"
         }`}
         onMouseLeave={() => setActiveMegamenu(null)}
       >
-        <div className="h-[2px] bg-gradient-to-r from-primary via-secondary to-primary" />
+        <div className="h-[3px] bg-primary" />
 
         <div className="border-b border-border/70">
           <div className="relative mx-auto w-full max-w-[1440px] px-5 xl:px-8">
-            {/* Desktop — flex layout (no absolute overlap) */}
-            <div
-              className="hidden min-h-[76px] w-full items-center lg:flex"
-            >
-              <div className="flex min-w-0 flex-1 items-center justify-end pr-3 xl:pr-5">
+            {/* Desktop: row 1 = logo, search, phone, quote; row 2 = nav links */}
+            <div className="hidden w-full items-center gap-6 py-3 lg:flex xl:gap-10">
+              <BrandLogo size="nav" />
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search (Ctrl K)"
+                className="flex h-12 min-w-0 flex-1 items-center justify-between rounded-full bg-background-field pl-6 pr-1.5 text-left text-sm text-lighter transition hover:ring-2 hover:ring-primary/15"
+              >
+                Search products, styles, articles…
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-white">
+                  <Search className="h-4 w-4" strokeWidth={2} />
+                </span>
+              </button>
+              <a href={`tel:${topBar.phone.replace(/\s/g, "")}`} className="flex shrink-0 items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-background-field text-primary">
+                  <Phone className="h-[18px] w-[18px]" strokeWidth={2} />
+                </span>
+                <span className="leading-tight">
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-lighter">Call us</span>
+                  <span className="block text-[15px] font-bold text-dark">{topBar.phone}</span>
+                </span>
+              </a>
+              <QuoteButton />
+            </div>
+            <div className="nav-dark -mx-5 hidden bg-dark lg:block xl:-mx-8">
+              <div className="flex justify-center">
                 <NavMenu
-                  items={navLeft}
+                  items={[...navLeft, ...navRight]}
                   onMegamenuEnter={handleMegamenuEnter}
                   onMegamenuLeave={handleMegamenuLeave}
                 />
-              </div>
-
-              <div
-                className={`shrink-0 px-3 transition-transform duration-300 xl:px-4 ${
-                  scrolled ? "scale-[0.92]" : "scale-100"
-                }`}
-              >
-                <BrandLogo size="nav" />
-              </div>
-
-              <div className="flex min-w-0 flex-1 items-center gap-3 xl:gap-4">
-                <div className="flex min-w-0 flex-1 items-center pl-3 xl:pl-5">
-                  <NavMenu
-                    items={navRight}
-                    onMegamenuEnter={handleMegamenuEnter}
-                    onMegamenuLeave={handleMegamenuLeave}
-                  />
-                </div>
-                <HeaderIcons onSearch={() => setSearchOpen(true)} />
               </div>
             </div>
 

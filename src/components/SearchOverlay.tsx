@@ -94,7 +94,7 @@ export default function SearchOverlay({ open, onClose }: { open: boolean; onClos
             type="button"
             aria-label="Close search"
             onClick={onClose}
-            className="absolute inset-0 cursor-default bg-[#080810]/60 backdrop-blur-sm"
+            className="absolute inset-0 cursor-default bg-[#024540]/60 backdrop-blur-sm"
           />
 
           <motion.div
@@ -105,7 +105,7 @@ export default function SearchOverlay({ open, onClose }: { open: boolean; onClos
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="relative w-full max-w-[680px] overflow-hidden rounded-[28px] border border-white/60 bg-white shadow-[0_40px_120px_rgba(8,8,16,0.45)]"
+            className="relative w-full max-w-[680px] overflow-hidden rounded-[20px] border border-white/60 bg-white shadow-[0_40px_120px_rgba(3,90,83,0.45)]"
           >
             <div className="h-[3px] bg-gradient-to-r from-primary via-secondary to-primary" />
             <div className="flex items-center gap-3 border-b border-border px-5">

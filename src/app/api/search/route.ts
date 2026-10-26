@@ -1,4 +1,4 @@
-import { packagingStyles, packagingTrends } from "@/lib/data";
+import { getStyles, getTrends } from "@/lib/queries/pageContent";
 import { listPublishedPosts } from "@/lib/queries/blog";
 import { listActiveProducts } from "@/lib/queries/products";
 import { NextResponse } from "next/server";
@@ -27,6 +27,7 @@ export async function GET(req: Request) {
     return terms.every((t) => hay.includes(t));
   };
 
+  const [packagingStyles, packagingTrends] = await Promise.all([getStyles(), getTrends()]);
   const styleItems: Item[] = packagingStyles.map((s) => ({
     title: s.title,
     subtitle: s.specs.slice(0, 2).join(" • "),

@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import crypto from "node:crypto";
+import { shopIndustries } from "../src/lib/shopIndustries";
 import { blogCategories, blogPosts } from "../src/lib/blog";
 import {
   faqs,
   footerLinks,
-  industriesMegamenu,
   marqueeItems,
   navLeft,
   navRight,
@@ -47,8 +47,8 @@ async function main() {
   }
 
   // Industries (header megamenu)
-  for (let i = 0; i < industriesMegamenu.categories.length; i++) {
-    const c = industriesMegamenu.categories[i];
+  for (let i = 0; i < shopIndustries.length; i++) {
+    const c = shopIndustries[i];
     const slug = slugify(c.name);
     await prisma.industry.upsert({
       where: { slug },

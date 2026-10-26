@@ -27,6 +27,8 @@ export default async function AdminSiteSettingsPage() {
       tagline: String(formData.get("tagline") ?? ""),
       email: String(formData.get("email") ?? ""),
       phone: String(formData.get("phone") ?? ""),
+      tollFree: String(formData.get("tollFree") ?? ""),
+      address: String(formData.get("address") ?? ""),
       helpText: String(formData.get("helpText") ?? ""),
       quoteHref: String(formData.get("quoteHref") ?? ""),
       quoteLabel: String(formData.get("quoteLabel") ?? ""),
@@ -74,31 +76,33 @@ export default async function AdminSiteSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Global</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Site settings</h2>
         <p className="mt-2 text-sm text-text">Top bar, hero copy, and feature section headings.</p>
       </div>
 
       <form action={save} className="space-y-6">
-        <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+        <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
           <h3 className="font-heading text-2xl text-dark">Site URL</h3>
           <input name="siteUrl" defaultValue={siteUrl} className={`${input} mt-4`} placeholder="https://boxorapackaging.com" />
         </div>
 
-        <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+        <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
           <h3 className="font-heading text-2xl text-dark">Top bar</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <input name="tagline" defaultValue={topBarVal.tagline} className={input} placeholder="Tagline" />
             <input name="email" defaultValue={topBarVal.email} className={input} placeholder="Email" />
             <input name="phone" defaultValue={topBarVal.phone} className={input} placeholder="Phone" />
+            <input name="address" defaultValue={topBarVal.address ?? ""} className={input} placeholder="Business address (footer)" />
+            <input name="tollFree" defaultValue={topBarVal.tollFree ?? ""} className={input} placeholder="Toll-free number (contact page)" />
             <input name="helpText" defaultValue={topBarVal.helpText} className={input} placeholder="Help text" />
             <input name="quoteHref" defaultValue={topBarVal.quoteHref} className={input} placeholder="Quote href" />
             <input name="quoteLabel" defaultValue={topBarVal.quoteLabel} className={input} placeholder="Quote label" />
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+        <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
           <h3 className="font-heading text-2xl text-dark">Hero section</h3>
           <div className="mt-4 grid gap-4">
             <input name="heroBadge" defaultValue={heroVal.badge} className={input} placeholder="Badge" />
@@ -108,7 +112,7 @@ export default async function AdminSiteSettingsPage() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+        <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
           <h3 className="font-heading text-2xl text-dark">Features section</h3>
           <div className="mt-4 grid gap-4">
             <input name="featuresLabel" defaultValue={featuresVal.label} className={input} placeholder="Label" />

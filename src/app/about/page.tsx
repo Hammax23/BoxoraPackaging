@@ -3,9 +3,9 @@ import FeatureMarquee from "@/components/FeatureMarquee";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { businessBenefits } from "@/lib/data";
 import { img, images } from "@/lib/images";
 import { getMarqueeItems } from "@/lib/queries/content";
+import { getContent } from "@/lib/queries/pageContent";
 import { buildPageMetadata } from "@/lib/seo";
 import {
   ArrowRight,
@@ -16,6 +16,7 @@ import {
   Palette,
   Rocket,
   ShieldCheck,
+  type LucideIcon,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -28,53 +29,6 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/about",
 });
 
-const stats = [
-  { value: "50+", label: "Customization options" },
-  { value: "100%", label: "Recyclable & compostable materials" },
-  { value: "Free", label: "Standard shipping" },
-  { value: "Rush", label: "Orders & short runs welcome" },
-];
-
-const values = [
-  {
-    icon: Gem,
-    title: "Quality first",
-    text: "Sturdy structures, crisp printing and finishes that hold up from the production line to the customer's hands.",
-  },
-  {
-    icon: Leaf,
-    title: "Made to be sustainable",
-    text: "Paper-based, plant-based and waste-based materials, so great packaging never costs the planet.",
-  },
-  {
-    icon: Palette,
-    title: "Your brand, front and center",
-    text: "Every pouch and box is a canvas. We help your story read at a single glance on the shelf.",
-  },
-  {
-    icon: Rocket,
-    title: "Speed to market",
-    text: "Short runs and rush orders for launches, seasonal drops and niche products, without the long waits.",
-  },
-  {
-    icon: Handshake,
-    title: "A real partner",
-    text: "Quick responses, honest guidance and one point of contact from first sketch to final delivery.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Promise kept",
-    text: "We guarantee the highest quality products and customer experience with every order.",
-  },
-];
-
-const steps = [
-  { n: "01", title: "Tell us what you need", text: "Share your product, quantity and goals, or use our instant quote tool to get started in minutes." },
-  { n: "02", title: "Design & proof", text: "Pick from 50+ options and approve a clear proof so nothing is left to guesswork." },
-  { n: "03", title: "Print & craft", text: "Your packaging is printed in vibrant color on the materials you chose and carefully quality checked." },
-  { n: "04", title: "Ship to your door", text: "Standard shipping is free, and rush options are there when your launch date is tight." },
-];
-
 // Small stack of tilted photos inside the hero card. Offsets are in % of the stack box.
 const heroStack = [
   { src: images.photo(19), alt: "Printed rigid box", cls: "left-[2%] top-[14%] h-[62%] w-[34%]", rotate: -7, z: "z-10" },
@@ -82,18 +36,27 @@ const heroStack = [
   { src: images.photo(11), alt: "Stand-up pouch", cls: "right-[2%] top-[16%] h-[62%] w-[34%]", rotate: 7, z: "z-10" },
 ] as { src: string; alt: string; cls: string; rotate: number; z: string; pos?: string }[];
 
+const icons: Record<string, LucideIcon> = { Gem, Leaf, Palette, Rocket, Handshake, ShieldCheck };
+
 export default async function AboutPage() {
-  const marqueeItems = await getMarqueeItems();
+  const [marqueeItems, stats, rawValues, steps, benefits] = await Promise.all([
+    getMarqueeItems(),
+    getContent<{ value: string; label: string }[]>("aboutStats"),
+    getContent<{ icon: string; title: string; text: string }[]>("aboutValues"),
+    getContent<{ n: string; title: string; text: string }[]>("aboutSteps"),
+    getContent<{ text: string }[]>("aboutBenefits"),
+  ]);
+  const values = rawValues.map((v) => ({ ...v, icon: icons[v.icon] ?? Gem }));
 
   return (
     <main>
       <Header />
 
       {/* Hero: compact banner card */}
-      <section className="bg-gradient-to-b from-white to-[#eef1ff] py-8 sm:py-10">
+      <section className="bg-gradient-to-b from-white to-[#f3f1de] py-8 sm:py-10">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[32px] border border-white bg-white/80 shadow-[0_24px_70px_rgba(39,87,255,0.12)] sm:rounded-[40px]">
+            <div className="relative overflow-hidden rounded-[16px] border border-white bg-white/80 shadow-[0_24px_70px_rgba(189,249,6,0.12)] sm:rounded-[20px]">
               <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-gradient-to-br from-primary/20 to-secondary/25 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
 
@@ -105,7 +68,7 @@ export default async function AboutPage() {
                   </span>
                   <h1 className="mt-4 font-heading text-[30px] leading-[1.1] text-dark sm:text-[40px] lg:text-[46px]">
                     We make packaging{" "}
-                    <span className="whitespace-nowrap bg-[linear-gradient(100deg,#2757ff_0%,#7a4dff_50%,#f865dc_100%)] bg-clip-text font-body font-extrabold tracking-tight text-transparent">
+                    <span className="whitespace-nowrap bg-[linear-gradient(100deg,#035a53_0%,#0b7a6e_100%)] bg-clip-text font-body font-extrabold tracking-tight text-transparent">
                       worth keeping
                     </span>
                   </h1>
@@ -115,7 +78,7 @@ export default async function AboutPage() {
                   <div className="mt-5 flex items-center justify-center gap-5 md:justify-start">
                     <Link
                       href="/quote"
-                      className="btn-slip group inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_rgba(39,87,255,0.3)] transition-all duration-300 hover:bg-primary/90"
+                      className="btn-slip group inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_rgba(189,249,6,0.3)] transition-all duration-300 hover:bg-primary/90"
                     >
                       Start your project
                       <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.5} />
@@ -134,7 +97,7 @@ export default async function AboutPage() {
                   {heroStack.map((p) => (
                     <div
                       key={p.src}
-                      className={`absolute overflow-hidden rounded-2xl border-[4px] border-white bg-background-field shadow-[0_16px_40px_rgba(39,87,255,0.2)] ${p.cls} ${p.z}`}
+                      className={`absolute overflow-hidden rounded-2xl border-[4px] border-white bg-background-field shadow-[0_16px_40px_rgba(189,249,6,0.2)] ${p.cls} ${p.z}`}
                       style={{ transform: `rotate(${p.rotate}deg)` }}
                     >
                       <Image
@@ -148,7 +111,7 @@ export default async function AboutPage() {
                       />
                     </div>
                   ))}
-                  <div className="absolute -bottom-1 right-2 z-30 flex items-center gap-2 rounded-xl border border-white bg-white px-3 py-2 shadow-[0_12px_30px_rgba(39,87,255,0.2)]">
+                  <div className="absolute -bottom-1 right-2 z-30 flex items-center gap-2 rounded-xl border border-white bg-white px-3 py-2 shadow-[0_12px_30px_rgba(189,249,6,0.2)]">
                     <span className="font-heading text-[22px] leading-none text-primary">50+</span>
                     <span className="text-[11px] font-semibold leading-tight text-dark">
                       custom
@@ -169,7 +132,7 @@ export default async function AboutPage() {
       <section className="section-padding bg-white">
         <div className="container-main grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <AnimatedSection className="relative">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[40px] shadow-[0_30px_80px_rgba(39,87,255,0.18)]">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgba(189,249,6,0.18)]">
               <Image
                 src={images.goGreen}
                 alt="Eco-friendly custom packaging by Boxora"
@@ -179,12 +142,12 @@ export default async function AboutPage() {
                 priority
               />
             </div>
-            <div className="absolute -bottom-6 right-4 hidden w-[46%] overflow-hidden rounded-[28px] border-[6px] border-white shadow-xl sm:block">
+            <div className="absolute -bottom-6 right-4 hidden w-[46%] overflow-hidden rounded-[20px] border-[6px] border-white shadow-xl sm:block">
               <div className="relative aspect-square">
                 <Image src={images.specialOffer} alt="" fill className="object-cover" sizes="25vw" />
               </div>
             </div>
-            <div className="absolute -left-3 top-8 rounded-2xl bg-primary px-5 py-4 text-white shadow-[0_16px_40px_rgba(39,87,255,0.45)] sm:-left-6">
+            <div className="absolute -left-3 top-8 rounded-2xl bg-primary px-5 py-4 text-white shadow-[0_16px_40px_rgba(189,249,6,0.45)] sm:-left-6">
               <p className="font-heading text-3xl leading-none">50+</p>
               <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-white/85">
                 Options to
@@ -210,7 +173,7 @@ export default async function AboutPage() {
               materials you can feel good about.
             </p>
             <ul className="mt-7 space-y-3">
-              {businessBenefits.map((b) => (
+              {benefits.map(({ text: b }) => (
                 <li key={b} className="flex items-start gap-3 text-[15px] text-dark">
                   <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                     <Check className="h-3.5 w-3.5" strokeWidth={3} />
@@ -247,8 +210,8 @@ export default async function AboutPage() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {values.map((v, i) => (
               <AnimatedSection key={v.title} delay={(i % 3) * 0.08}>
-                <div className="group h-full rounded-[28px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(39,87,255,0.12)]">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background-field text-primary transition group-hover:bg-primary group-hover:text-white">
+                <div className="group h-full rounded-[20px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.12)]">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background-field text-primary transition group-hover:bg-primary group-hover:text-dark">
                     <v.icon className="h-6 w-6" />
                   </span>
                   <h3 className="mt-5 font-heading text-2xl text-dark">{v.title}</h3>
@@ -272,8 +235,8 @@ export default async function AboutPage() {
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
               <AnimatedSection key={s.n} delay={i * 0.08}>
-                <div className="group relative h-full rounded-[28px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(39,87,255,0.12)]">
-                  <span className="font-heading text-[56px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(39,87,255,0.6)] transition group-hover:[-webkit-text-stroke:1px_rgba(248,101,220,0.9)]">
+                <div className="group relative h-full rounded-[20px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.12)]">
+                  <span className="font-heading text-[56px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)] transition group-hover:[-webkit-text-stroke:1px_rgba(3,90,83,1)]">
                     {s.n}
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-dark">{s.title}</h3>
@@ -289,11 +252,11 @@ export default async function AboutPage() {
       <section className="section-padding bg-white">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-primary via-[#4a3df0] to-secondary px-6 py-16 text-center md:px-16 md:py-20">
-              <div className="pointer-events-none absolute -right-10 -top-10 hidden h-64 w-64 rotate-12 overflow-hidden rounded-[32px] opacity-40 md:block">
+            <div className="relative overflow-hidden rounded-[20px] bg-dark ring-1 ring-primary/30 px-6 py-16 text-center md:px-16 md:py-20">
+              <div className="pointer-events-none absolute -right-10 -top-10 hidden h-64 w-64 rotate-12 overflow-hidden rounded-[16px] opacity-40 md:block">
                 <Image src={images.packagingStyles[0]} alt="" fill className="object-cover" sizes="260px" />
               </div>
-              <div className="pointer-events-none absolute -bottom-12 -left-8 hidden h-56 w-56 -rotate-12 overflow-hidden rounded-[32px] opacity-40 md:block">
+              <div className="pointer-events-none absolute -bottom-12 -left-8 hidden h-56 w-56 -rotate-12 overflow-hidden rounded-[16px] opacity-40 md:block">
                 <Image src={images.packagingStyles[2]} alt="" fill className="object-cover" sizes="230px" />
               </div>
               <div className="relative">

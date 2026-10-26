@@ -30,47 +30,47 @@ enum QuoteStatus {
 }
 
 model AdminUser {
-  id             String    @id @default(cuid())
-  email          String    @unique
-  passwordHash   String
-  role           AdminRole @default(SUPERADMIN)
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  role         AdminRole @default(SUPERADMIN)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  sessions       AdminSession[]
-  auditLogs      AuditLog[]
+  sessions  AdminSession[]
+  auditLogs AuditLog[]
 
   @@index([isActive])
 }
 
 model AdminSession {
-  id           String             @id @default(cuid())
-  userId       String
-  tokenHash    String             @unique
-  status       AdminSessionStatus @default(ACTIVE)
-  ip           String?
-  userAgent    String?
-  createdAt    DateTime           @default(now())
-  expiresAt    DateTime
-  revokedAt    DateTime?
+  id        String             @id @default(cuid())
+  userId    String
+  tokenHash String             @unique
+  status    AdminSessionStatus @default(ACTIVE)
+  ip        String?
+  userAgent String?
+  createdAt DateTime           @default(now())
+  expiresAt DateTime
+  revokedAt DateTime?
 
-  user         AdminUser          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status, expiresAt])
 }
 
 model AuditLog {
-  id          String    @id @default(cuid())
-  userId      String?
-  action      String
-  entityType  String?
-  entityId    String?
-  meta        Json?
-  createdAt   DateTime  @default(now())
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String?
+  entityId   String?
+  meta       Json?
+  createdAt  DateTime @default(now())
 
-  user        AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId, createdAt])
   @@index([entityType, entityId])
@@ -78,7 +78,7 @@ model AuditLog {
 
 model MediaAsset {
   id        String   @id @default(cuid())
-  provider  String   // "local" | "remote"
+  provider  String // "local" | "remote"
   url       String
   alt       String?
   width     Int?
@@ -98,19 +98,19 @@ model SiteSetting {
 }
 
 model NavigationItem {
-  id          String   @id @default(cuid())
-  area        String   // left | right
-  label       String
-  href        String
-  sortOrder   Int      @default(0)
-  parentId    String?
-  megamenu    String?  // industries | packaging-styles | trends
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  area      String // left | right
+  label     String
+  href      String
+  sortOrder Int      @default(0)
+  parentId  String?
+  megamenu  String? // industries | packaging-styles | trends
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  parent      NavigationItem? @relation("NavParent", fields: [parentId], references: [id], onDelete: SetNull)
-  children    NavigationItem[] @relation("NavParent")
+  parent   NavigationItem?  @relation("NavParent", fields: [parentId], references: [id], onDelete: SetNull)
+  children NavigationItem[] @relation("NavParent")
 
   @@index([area, sortOrder])
   @@index([parentId])
@@ -123,7 +123,7 @@ model FooterLinkGroup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  links     FooterLink[]
+  links FooterLink[]
 }
 
 model FooterLink {
@@ -135,7 +135,7 @@ model FooterLink {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  group     FooterLinkGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group FooterLinkGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([groupId, sortOrder])
 }
@@ -178,22 +178,22 @@ model Testimonial {
 }
 
 model Product {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  name      String
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
   description String
-  category  String?
-  price     Float?
-  salePrice Float?
-  discount  String?
-  rating    Float    @default(0)
-  reviews   Int      @default(0)
-  imageUrl  String
-  onSale    Boolean  @default(false)
-  hot       Boolean  @default(false)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  category    String?
+  price       Float?
+  salePrice   Float?
+  discount    String?
+  rating      Float    @default(0)
+  reviews     Int      @default(0)
+  imageUrl    String
+  onSale      Boolean  @default(false)
+  hot         Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([isActive])
 }
@@ -207,28 +207,28 @@ model BlogCategory {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts     BlogPost[]
+  posts BlogPost[]
 
   @@index([isActive, sortOrder])
 }
 
 model BlogPost {
-  id          String        @id @default(cuid())
-  slug        String        @unique
-  title       String
-  excerpt     String
-  authorName  String
-  publishedAt DateTime?
-  readTime    String
-  featured    Boolean       @default(false)
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  title         String
+  excerpt       String
+  authorName    String
+  publishedAt   DateTime?
+  readTime      String
+  featured      Boolean        @default(false)
   coverImageUrl String
-  status      BlogPostStatus @default(DRAFT)
-  categoryId  String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  status        BlogPostStatus @default(DRAFT)
+  categoryId    String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  category    BlogCategory  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  blocks      BlogPostBlock[]
+  category BlogCategory    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  blocks   BlogPostBlock[]
 
   @@index([status, publishedAt])
   @@index([categoryId])
@@ -237,34 +237,41 @@ model BlogPost {
 model BlogPostBlock {
   id        String   @id @default(cuid())
   postId    String
-  type      String   // paragraph | ...
+  type      String // paragraph | ...
   content   String
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId, sortOrder])
 }
 
 model QuoteRequest {
-  id        String     @id @default(cuid())
-  reference String     @unique
-  name      String
-  email     String
-  phone     String?
-  company   String?
-  notes     String?
-  source    String?
+  id                String      @id @default(cuid())
+  reference         String      @unique
+  name              String
+  email             String
+  phone             String?
+  company           String?
+  notes             String?
+  source            String?
   /// Extra customer choices (text on box, needed-by date, ship-to, finish ...)
-  details     Json?
+  details           Json?
   /// Uploaded design files: [{ name, storedName, size, type }]
-  attachments Json?
-  status    QuoteStatus @default(NEW)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  attachments       Json?
+  status            QuoteStatus @default(NEW)
+  /// Order tracking (null = not an order yet). One of ORDER_STAGES in src/lib/orderTracking.ts.
+  orderStage        String?
+  carrier           String?
+  trackingNumber    String?
+  trackingUrl       String?
+  estimatedDelivery DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
-  items     QuoteRequestItem[]
+  items   QuoteRequestItem[]
+  updates OrderUpdate[]
 
   @@index([status, createdAt])
 }
@@ -290,21 +297,20 @@ model NewsletterSubscriber {
 }
 
 model QuoteRequestItem {
-  id            String   @id @default(cuid())
+  id             String  @id @default(cuid())
   quoteRequestId String
-  productSlug   String?
-  productName   String?
-  quantity      Int?
-  finishId      String?
-  dimensions    Json?
-  industry      String?
-  estimator     Json?
+  productSlug    String?
+  productName    String?
+  quantity       Int?
+  finishId       String?
+  dimensions     Json?
+  industry       String?
+  estimator      Json?
 
   quoteRequest QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
 
   @@index([quoteRequestId])
 }
-
 
 model Industry {
   id        String   @id @default(cuid())
@@ -318,4 +324,16 @@ model Industry {
   updatedAt DateTime @updatedAt
 
   @@index([isActive, sortOrder])
+}
+
+model OrderUpdate {
+  id        String   @id @default(cuid())
+  quoteId   String
+  stage     String
+  message   String
+  createdAt DateTime @default(now())
+
+  quote QuoteRequest @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId, createdAt])
 }

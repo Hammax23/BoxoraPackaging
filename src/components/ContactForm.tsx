@@ -75,7 +75,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={sending}
-        className="btn-slip inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[#4a3df0] py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:shadow-[0_8px_28px_rgba(39,87,255,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="btn-slip inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[#a6dc00] py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] transition hover:shadow-[0_8px_28px_rgba(189,249,6,0.4)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {sending ? (
           <>

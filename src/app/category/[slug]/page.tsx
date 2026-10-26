@@ -1,7 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import StarRating from "@/components/ui/StarRating";
-import { packagingStyles, trendsMegamenu } from "@/lib/data";
+import { getStyles, getTrends } from "@/lib/queries/pageContent";
 import { getIndustries } from "@/lib/queries/industries";
 import { listActiveProducts } from "@/lib/queries/products";
 import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
@@ -42,7 +42,7 @@ export default async function CategoryPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [products, industries] = await Promise.all([listActiveProducts(), getIndustries()]);
+  const [products, industries, packagingStyles, trends] = await Promise.all([listActiveProducts(), getIndustries(), getStyles(), getTrends()]);
   const activeCategory = industries.find((c) => c.slug === slug);
   if (!activeCategory) notFound();
 
@@ -130,7 +130,7 @@ export default async function CategoryPage({
                     Trends
                   </h3>
                   <div className="mt-4 space-y-1">
-                    {trendsMegamenu.items.map((trend) => (
+                    {trends.map((trend) => (
                       <Link
                         key={trend.title}
                         href={trend.href}
@@ -188,7 +188,7 @@ export default async function CategoryPage({
                   {results.map((p) => (
                     <article
                       key={p.slug}
-                      className="group relative overflow-hidden rounded-[22px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_55px_rgba(39,87,255,0.12)]"
+                      className="group relative overflow-hidden rounded-[22px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_55px_rgba(189,249,6,0.12)]"
                     >
                       <Link href={`/products/${p.slug}`} aria-label={`View ${p.name}`} className="relative block bg-white p-4">
                         <div className="relative mx-auto aspect-square max-w-[260px]">

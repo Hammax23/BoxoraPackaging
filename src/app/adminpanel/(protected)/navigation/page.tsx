@@ -54,7 +54,7 @@ export default async function AdminNavigationPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Structure</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Navigation & footer</h2>
         <p className="mt-2 text-sm text-text">
@@ -62,7 +62,7 @@ export default async function AdminNavigationPage() {
         </p>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <h3 className="font-heading text-2xl text-dark">Main menu ({navItems.length})</h3>
         <form action={createNav} className="mt-4 grid gap-3 rounded-2xl bg-background-field/50 p-4 md:grid-cols-2">
           <select name="area" className={input}>
@@ -142,7 +142,7 @@ export default async function AdminNavigationPage() {
       </div>
 
       {footerGroups.map((group) => (
-        <div key={group.id} className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+        <div key={group.id} className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
           <h3 className="font-heading text-2xl text-dark">
             Footer · {group.title} ({group.links.length})
           </h3>

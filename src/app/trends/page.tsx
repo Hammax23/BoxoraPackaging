@@ -2,7 +2,7 @@ import AboutCTAButton from "@/components/AboutCTAButton";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { packagingTrends } from "@/lib/data";
+import { getTrends } from "@/lib/queries/pageContent";
 import { buildPageMetadata } from "@/lib/seo";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
@@ -16,7 +16,8 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/trends",
 });
 
-export default function TrendsPage() {
+export default async function TrendsPage() {
+  const packagingTrends = await getTrends();
   const [lead, ...rest] = packagingTrends;
 
   return (
@@ -51,7 +52,7 @@ export default function TrendsPage() {
           <AnimatedSection>
             <Link
               href={lead.href}
-              className="group grid overflow-hidden rounded-[36px] border border-border bg-white transition duration-300 hover:border-primary/30 hover:shadow-[0_28px_70px_rgba(39,87,255,0.13)] lg:grid-cols-2"
+              className="group grid overflow-hidden rounded-[36px] border border-border bg-white transition duration-300 hover:border-primary/30 hover:shadow-[0_28px_70px_rgba(189,249,6,0.13)] lg:grid-cols-2"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-background-field lg:aspect-auto lg:min-h-[380px]">
                 <Image
@@ -83,7 +84,7 @@ export default function TrendsPage() {
               <AnimatedSection key={t.slug} delay={(i % 3) * 0.07}>
                 <Link
                   href={t.href}
-                  className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(39,87,255,0.13)]"
+                  className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.13)]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
                     <Image

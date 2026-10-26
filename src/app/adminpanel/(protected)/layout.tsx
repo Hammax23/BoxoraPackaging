@@ -1,7 +1,8 @@
 import AdminNav from "@/components/admin/AdminNav";
 import { requireAdmin, sessionSecretProblem, verifyPasswordScrypt } from "@/lib/adminAuth";
 import { prisma } from "@/lib/db";
-import { Shield, ShieldAlert } from "lucide-react";
+import BrandLogo from "@/components/BrandLogo";
+import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
   }
 
   return (
-    <div className="min-h-screen bg-background-field/40">
+    <div className="min-h-screen bg-background-field">
       {warnings.length > 0 && (
         <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-900">
           <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4">
@@ -43,25 +44,20 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
         </div>
       )}
 
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[264px_1fr] md:gap-8 md:px-6 md:py-8">
-        <aside className="rounded-[28px] border border-border bg-white p-5 shadow-sm md:sticky md:top-6 md:h-[calc(100vh-3rem)] md:self-start md:overflow-y-auto md:p-6">
+      <div className="grid min-h-screen grid-cols-1 md:grid-cols-[264px_1fr]">
+        <aside className="bg-dark p-5 md:sticky md:top-0 md:h-screen md:overflow-y-auto md:p-6">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-primary">Boxora</p>
-              <h1 className="mt-1 font-heading text-xl text-dark">Admin Panel</h1>
-            </div>
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10">
-              <Shield className="h-5 w-5 text-primary" strokeWidth={2} />
-            </span>
+            <BrandLogo variant="light" size="sm" href="/adminpanel" />
+            <span className="rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-dark">Admin</span>
           </div>
-          <p className="mt-3 truncate rounded-xl bg-background-field/70 px-3 py-2 text-[12px] text-text" title={admin.email}>
-            Signed in as <span className="font-semibold text-dark">{admin.email}</span>
+          <p className="mt-4 truncate rounded-xl bg-white/10 px-3 py-2 text-[12px] text-white/70" title={admin.email}>
+            Signed in as <span className="font-semibold text-white">{admin.email}</span>
           </p>
 
           <AdminNav newQuotes={newQuotes} unreadMessages={unreadMessages} />
         </aside>
 
-        <main className="min-w-0 [&_.grid>*]:min-w-0 [&_form]:min-w-0">{children}</main>
+        <main className="min-w-0 p-4 md:p-8 [&_.grid>*]:min-w-0 [&_form]:min-w-0">{children}</main>
       </div>
     </div>
   );

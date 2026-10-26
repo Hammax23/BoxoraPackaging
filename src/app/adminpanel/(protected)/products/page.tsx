@@ -6,6 +6,7 @@ import { ArrowUpRight, Plus, Search, Trash2 } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import ImageField from "@/components/admin/ImageField";
 import ConfirmButton from "@/components/admin/ConfirmButton";
+import CategoryPicker from "@/components/admin/CategoryPicker";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { logAction } from "@/lib/adminAudit";
 
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireAdmin();
   const q = ((await searchParams).q ?? "").trim();
+  const industryNames = (await prisma.industry.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, select: { name: true } })).map((i) => i.name);
   const products = await prisma.product.findMany({
     where: q
       ? { OR: [{ name: { contains: q, mode: "insensitive" } }, { slug: { contains: q, mode: "insensitive" } }] }
@@ -40,7 +42,14 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
     const slug = String(formData.get("slug") ?? "").trim();
     const imageUrl = String(formData.get("imageUrl") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
-    if (!name || !slug || !imageUrl || !description) return;
+    const category = formData.getAll("category").map((c) => String(c).trim()).filter(Boolean).join(", ");
+    const price = Number(formData.get("price") ?? "");
+    const salePrice = Number(formData.get("salePrice") ?? "");
+    const onSale = formData.get("onSale") === "on";
+    if (!name || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || !imageUrl || !description || !category) return;
+    if (!Number.isFinite(price) || price <= 0) return;
+    if (onSale && !(Number.isFinite(salePrice) && salePrice > 0 && salePrice < price)) return;
+    if (await prisma.product.findUnique({ where: { slug }, select: { id: true } })) return;
 
     await prisma.product.create({
       data: {
@@ -48,9 +57,14 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         slug,
         imageUrl,
         description,
+        category,
+        price,
+        salePrice: onSale ? salePrice : null,
+        onSale,
+        hot: formData.get("hot") === "on",
         rating: 0,
         reviews: 0,
-        isActive: true,
+        isActive: formData.get("isActive") === "on",
       },
     });
     await logAction(admin.id, "Product created", "Product", slug);
@@ -71,7 +85,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="section-label text-primary">Catalog</p>
@@ -92,7 +106,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <h3 className="font-heading text-2xl text-dark">Add new product</h3>
         <form action={createProduct} className="mt-5 grid gap-3 md:grid-cols-2">
           <input
@@ -103,7 +117,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
           />
           <input
             name="slug"
-            placeholder="Slug (e.g. mailer-box)"
+            placeholder="Slug (e.g. mailer-box)" pattern="[a-z0-9]+(-[a-z0-9]+)*" title="Lowercase letters, numbers and hyphens"
             className="w-full rounded-xl border border-border px-4 py-3 text-[16px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 md:text-sm"
             required
           />
@@ -117,9 +131,29 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
             className="w-full rounded-xl border border-border px-4 py-3 text-[16px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 md:col-span-2 md:text-sm"
             required
           />
+          <div className="md:col-span-2">
+            <p className="mb-1.5 text-sm font-semibold text-dark">Industries * <span className="font-normal text-lighter">(tick all that apply)</span></p>
+            <CategoryPicker industries={industryNames} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <input name="price" type="number" step="0.01" min="0.01" placeholder="Price" className="w-full rounded-xl border border-border px-4 py-3 text-[16px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 md:text-sm" required />
+            <input name="salePrice" type="number" step="0.01" min="0.01" placeholder="Sale price (if on sale)" className="w-full rounded-xl border border-border px-4 py-3 text-[16px] outline-none focus:border-primary focus:ring-2 focus:ring-primary/15 md:text-sm" />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3 md:col-span-2">
+            {[
+              { name: "isActive", label: "Visible on site", checked: true },
+              { name: "onSale", label: "Sale badge", checked: false },
+              { name: "hot", label: "Hot badge", checked: false },
+            ].map((c) => (
+              <label key={c.name} className="flex items-center justify-between rounded-xl border border-border bg-background-field/40 px-4 py-3 text-sm font-semibold text-dark">
+                {c.label}
+                <input type="checkbox" name={c.name} defaultChecked={c.checked} className="h-5 w-5 accent-primary" />
+              </label>
+            ))}
+          </div>
           <SubmitButton
             pendingText="Creating…"
-            className="btn-slip rounded-xl bg-primary px-5 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] md:col-span-2"
+            className="btn-slip rounded-xl bg-primary px-5 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] md:col-span-2"
           >
             <Plus className="h-4 w-4" />
             Create product
@@ -127,7 +161,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
         </form>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex items-center justify-between gap-4">
           <h3 className="font-heading text-2xl text-dark">All products</h3>
           <form action="/adminpanel/products" className="flex items-center gap-2 rounded-full border border-border bg-white px-3 py-2 text-sm text-lighter">

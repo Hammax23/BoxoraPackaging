@@ -2,13 +2,12 @@
 
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { features } from "@/lib/data";
-import { openQuoteDrawer } from "@/lib/quoteDrawer";
 import {
-  ArrowRight,
   Banknote,
   Calculator,
   Calendar,
+  Headset,
+  Leaf,
   Paintbrush,
   ShieldCheck,
   Target,
@@ -23,6 +22,8 @@ const iconMap: Record<string, LucideIcon> = {
   paintbrush: Paintbrush,
   calendar: Calendar,
   truck: Truck,
+  leaf: Leaf,
+  headset: Headset,
 };
 
 function FeatureIcon({ icon }: { icon: string }) {
@@ -32,7 +33,7 @@ function FeatureIcon({ icon }: { icon: string }) {
   return (
     <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
       <div className="absolute inset-0 rounded-2xl bg-primary/[0.08]" />
-      <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-[0_4px_16px_rgba(39,87,255,0.1)]">
+      <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-[0_4px_16px_rgba(189,249,6,0.1)]">
         <Icon className="h-6 w-6 text-primary" strokeWidth={1.75} />
         <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-white bg-secondary" />
       </div>
@@ -40,61 +41,29 @@ function FeatureIcon({ icon }: { icon: string }) {
   );
 }
 
-export default function Features() {
-  const { features: featuresSection } = useSiteContent();
+type Feature = { title: string; description: string; icon: string };
+
+export default function Features({ features }: { features: Feature[] }) {
+  const { features: heading } = useSiteContent();
   return (
-    <section className="section-padding border-y border-border bg-white">
+    <section className="section-padding bg-dark">
       <div className="container-main">
-        <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-stretch lg:gap-14 xl:gap-16">
-          <AnimatedSection className="flex h-full flex-col">
-            <span className="section-label text-primary">{featuresSection.label}</span>
-            <h2 className="mt-4 font-heading text-[34px] leading-tight text-dark md:text-[40px] lg:text-[44px]">
-              {featuresSection.title}
-            </h2>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-text md:text-lg">
-              {featuresSection.description}
-            </p>
+        <AnimatedSection className="mx-auto max-w-3xl text-center">
+          <span className="section-label text-secondary">{heading.label}</span>
+          <h2 className="mt-3 font-heading text-[34px] leading-tight text-white md:text-[44px]">{heading.title}</h2>
+          <p className="mt-4 text-base text-white/70 md:text-lg">{heading.description}</p>
+        </AnimatedSection>
 
-            <div className="mt-8 flex flex-1 flex-col lg:mt-10">
-              <div className="flex h-full flex-col rounded-[28px] border border-border bg-background-field p-6 md:p-7">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10">
-                  <ShieldCheck className="h-5 w-5 text-primary" strokeWidth={2} />
-                </div>
-                <h3 className="mt-4 font-heading text-xl text-dark md:text-2xl">
-                  Your brand deserves better packaging
-                </h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-text">
-                  Get a free quote and see how Boxora can elevate your product presentation.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => openQuoteDrawer({ source: "features-cta" })}
-                  className="btn-slip mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-primary/90"
-                >
-                  Get Free Quote
-                  <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.5} />
-                </button>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((feature, i) => (
+            <AnimatedSection key={feature.title} delay={(i % 4) * 0.06} className="h-full">
+              <div className="group flex h-full flex-col gap-4 rounded-[16px] border border-white/10 bg-white/[0.06] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:bg-white/10">
+                <FeatureIcon icon={feature.icon} />
+                <h3 className="font-heading text-[19px] leading-snug text-white transition-colors group-hover:text-secondary">{feature.title}</h3>
+                <p className="text-sm leading-relaxed text-white/65">{feature.description}</p>
               </div>
-            </div>
-          </AnimatedSection>
-
-          <div className="grid h-full gap-4 sm:grid-cols-2">
-            {features.map((feature, i) => (
-              <AnimatedSection key={feature.title} delay={i * 0.05} className="h-full">
-                <div className="group flex h-full items-start gap-4 rounded-[24px] border border-border bg-white p-5 transition-all duration-300 hover:border-primary/25 hover:shadow-[0_12px_40px_rgba(39,87,255,0.08)] md:p-6">
-                  <FeatureIcon icon={feature.icon} />
-                  <div className="min-w-0">
-                    <h3 className="font-heading text-[17px] leading-snug text-dark transition-colors group-hover:text-primary md:text-lg">
-                      {feature.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-text">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
+            </AnimatedSection>
+          ))}
         </div>
       </div>
     </section>

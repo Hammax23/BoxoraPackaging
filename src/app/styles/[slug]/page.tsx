@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import JsonLd from "@/components/JsonLd";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { packagingStyleDetails, packagingStyles } from "@/lib/data";
+import { getStyles } from "@/lib/queries/pageContent";
 import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import { ArrowRight, Check, ChevronRight, Layers, Package, Palette, Send, Target } from "lucide-react";
 import type { Metadata } from "next";
@@ -11,8 +11,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return packagingStyles.map((s) => ({ slug: s.slug }));
+export async function generateStaticParams() {
+  return (await getStyles()).map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const style = packagingStyles.find((s) => s.slug === slug);
+  const style = (await getStyles()).find((s) => s.slug === slug);
   if (!style) return {};
   return buildPageMetadata({
     title: `Custom ${style.title}`,
@@ -39,10 +39,11 @@ const steps = [
 
 export default async function StylePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const packagingStyles = await getStyles();
   const index = packagingStyles.findIndex((s) => s.slug === slug);
   if (index === -1) notFound();
   const style = packagingStyles[index];
-  const detail = packagingStyleDetails[slug];
+  const detail = style;
   const others = packagingStyles.filter((s) => s.slug !== slug).slice(0, 4);
 
   return (
@@ -69,7 +70,7 @@ export default async function StylePage({ params }: { params: Promise<{ slug: st
       <section className="bg-white pb-16 pt-10 md:pt-14">
         <div className="container-main grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <AnimatedSection>
-            <div className="relative aspect-square overflow-hidden rounded-[40px] bg-background-field shadow-[0_30px_80px_rgba(39,87,255,0.15)]">
+            <div className="relative aspect-square overflow-hidden rounded-[20px] bg-background-field shadow-[0_30px_80px_rgba(189,249,6,0.15)]">
               <Image
                 src={style.image}
                 alt={style.title}
@@ -132,7 +133,7 @@ export default async function StylePage({ params }: { params: Promise<{ slug: st
       <section className="bg-background-field py-16 md:py-20">
         <div className="container-main grid gap-6 md:grid-cols-2">
           <AnimatedSection>
-            <div className="h-full rounded-[28px] border border-border bg-white p-7">
+            <div className="h-full rounded-[20px] border border-border bg-white p-7">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background-field text-primary">
                 <Target className="h-5 w-5" />
               </span>
@@ -147,7 +148,7 @@ export default async function StylePage({ params }: { params: Promise<{ slug: st
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.08}>
-            <div className="h-full rounded-[28px] border border-border bg-white p-7">
+            <div className="h-full rounded-[20px] border border-border bg-white p-7">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background-field text-primary">
                 <Layers className="h-5 w-5" />
               </span>
@@ -176,7 +177,7 @@ export default async function StylePage({ params }: { params: Promise<{ slug: st
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {steps.map((s, i) => (
               <AnimatedSection key={s.title} delay={i * 0.08}>
-                <div className="h-full rounded-[28px] border border-border p-7 text-center">
+                <div className="h-full rounded-[20px] border border-border p-7 text-center">
                   <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary text-white">
                     <s.icon className="h-6 w-6" />
                   </span>
@@ -204,7 +205,7 @@ export default async function StylePage({ params }: { params: Promise<{ slug: st
               <Link
                 key={o.slug}
                 href={o.href}
-                className="group overflow-hidden rounded-[24px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_50px_rgba(39,87,255,0.12)]"
+                className="group overflow-hidden rounded-[16px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_50px_rgba(189,249,6,0.12)]"
               >
                 <div className="relative aspect-square bg-background-field">
                   <Image

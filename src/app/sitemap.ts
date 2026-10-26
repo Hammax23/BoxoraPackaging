@@ -2,14 +2,17 @@ import type { MetadataRoute } from "next";
 import { listBlogSlugs } from "@/lib/queries/blog";
 import { listProductSlugs } from "@/lib/queries/products";
 import { getIndustries } from "@/lib/queries/industries";
-import { packagingStyles, packagingTrends } from "@/lib/data";
+import { getContent, getStyles, getTrends } from "@/lib/queries/pageContent";
 import { absoluteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [productSlugs, blogSlugs, industries] = await Promise.all([
+  const [productSlugs, blogSlugs, industries, packagingStyles, packagingTrends, policies] = await Promise.all([
     listProductSlugs(),
     listBlogSlugs(),
     getIndustries(),
+    getStyles(),
+    getTrends(),
+    getContent<{ slug: string }[]>("policies"),
   ]);
   const now = new Date();
 
@@ -40,6 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  const policyRoutes = policies.map((p) => ({ url: absoluteUrl(`/policies/${p.slug}`), lastModified: now, changeFrequency: "yearly" as const, priority: 0.3 }));
+
   const productRoutes = productSlugs.map((slug) => ({
     url: absoluteUrl(`/products/${slug}`),
     lastModified: now,
@@ -61,5 +66,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...styleRoutes, ...trendRoutes, ...productRoutes, ...blogRoutes, ...categoryRoutes];
+  return [...staticRoutes, ...styleRoutes, ...trendRoutes, ...productRoutes, ...blogRoutes, ...categoryRoutes, ...policyRoutes];
 }

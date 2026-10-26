@@ -28,7 +28,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[28px] border border-border bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between md:p-8">
+      <div className="flex flex-col gap-4 rounded-[20px] border border-border bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between md:p-8">
         <div>
           <p className="section-label text-primary">Newsletter</p>
           <h2 className="mt-4 font-heading text-3xl text-dark">Subscribers</h2>
@@ -52,7 +52,7 @@ export default async function AdminSubscribersPage({ searchParams }: { searchPar
         />
       </form>
 
-      <div className="overflow-x-auto rounded-[28px] border border-border bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-background-field/60 text-[11px] font-bold uppercase tracking-[0.1em] text-lighter">
             <tr>

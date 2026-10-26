@@ -2,7 +2,7 @@ import AboutCTAButton from "@/components/AboutCTAButton";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { packagingStyles } from "@/lib/data";
+import { getStyles } from "@/lib/queries/pageContent";
 import { buildPageMetadata } from "@/lib/seo";
 import { ArrowRight, Layers } from "lucide-react";
 import type { Metadata } from "next";
@@ -16,7 +16,8 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/styles",
 });
 
-export default function StylesPage() {
+export default async function StylesPage() {
+  const packagingStyles = await getStyles();
   return (
     <main>
       <Header />
@@ -48,7 +49,7 @@ export default function StylesPage() {
           {packagingStyles.map((style, i) => (
             <AnimatedSection key={style.slug} delay={(i % 3) * 0.07}>
               <Link href={style.href} className="group block h-full">
-                <article className="flex h-full flex-col overflow-hidden rounded-[28px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(39,87,255,0.13)]">
+                <article className="flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.13)]">
                   <div className="relative aspect-square overflow-hidden bg-background-field">
                     <Image
                       src={style.image}

@@ -394,7 +394,7 @@ export default function InstantQuote({
           </AnimatedSection>
 
           <AnimatedSection delay={0.08}>
-            <div ref={cardRef} className="scroll-mt-24 overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_20px_60px_rgba(30,16,35,0.06)] md:rounded-[32px]">
+            <div ref={cardRef} className="scroll-mt-24 overflow-hidden rounded-[20px] border border-border/80 bg-white shadow-[0_20px_60px_rgba(3,90,83,0.06)] md:rounded-[16px]">
               <div className="border-b border-border bg-background-field/50 px-5 py-4 md:px-7">
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                   {steps.map((s, i) => {

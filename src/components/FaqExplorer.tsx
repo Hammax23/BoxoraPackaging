@@ -37,7 +37,7 @@ export default function FaqExplorer({ faqs }: { faqs: FaqView[] }) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search questions, e.g. minimum order, samples, shipping"
           aria-label="Search frequently asked questions"
-          className="[&::-webkit-search-cancel-button]:hidden w-full rounded-full border border-border bg-white py-4 pl-14 pr-12 text-[16px] text-dark shadow-[0_12px_40px_rgba(8,8,16,0.1)] outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15"
+          className="[&::-webkit-search-cancel-button]:hidden w-full rounded-full border border-border bg-white py-4 pl-14 pr-12 text-[16px] text-dark shadow-[0_12px_40px_rgba(3,90,83,0.1)] outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15"
         />
         {query && (
           <button
@@ -74,7 +74,7 @@ export default function FaqExplorer({ faqs }: { faqs: FaqView[] }) {
               key={faq.index}
               className={`overflow-hidden rounded-2xl border transition-all duration-300 ${
                 isOpen
-                  ? "border-primary/25 bg-background-field/50 shadow-[0_8px_30px_rgba(39,87,255,0.08)]"
+                  ? "border-primary/25 bg-background-field/50 shadow-[0_8px_30px_rgba(189,249,6,0.08)]"
                   : "border-border bg-white hover:border-primary/20"
               }`}
             >
@@ -125,7 +125,7 @@ export default function FaqExplorer({ faqs }: { faqs: FaqView[] }) {
         })}
 
         {results.length === 0 && (
-          <div className="rounded-[28px] border border-dashed border-border bg-background-field/40 px-6 py-14 text-center">
+          <div className="rounded-[20px] border border-dashed border-border bg-background-field/40 px-6 py-14 text-center">
             <SearchX className="mx-auto h-10 w-10 text-lighter" />
             <h3 className="mt-4 font-heading text-2xl text-dark">No matches for &ldquo;{query}&rdquo;</h3>
             <p className="mt-2 text-text">Try a different word, or ask us directly below.</p>

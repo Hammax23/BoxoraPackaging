@@ -4,6 +4,8 @@ export const topBar = {
   tagline: "Enterprise packaging solutions for modern brands worldwide.",
   email: "support@boxora.com",
   phone: "+1834 123 456 789",
+  tollFree: "",
+  address: "",
   helpText: "Need help? Call Us:",
   quoteHref: "#quote",
   quoteLabel: "Get Free Quote",
@@ -261,7 +263,7 @@ export const trendsMegamenu = {
 };
 
 export const heroContent = {
-  badge: "#1 PRINTING SERVICES NYC",
+  badge: "CUSTOM PACKAGING, MADE FOR YOUR BRAND",
   titleLine1: "We are your best solution for",
   titleLine2: "Product Packaging",
   subtitle: "Packaging is the first impression your brand makes on a customer.",
@@ -558,6 +560,18 @@ export const features = [
     description:
       "Complimentary shipping and handling on eligible standard orders nationwide.",
     icon: "truck",
+  },
+  {
+    title: "Eco-Friendly Materials",
+    description:
+      "Paper-based, recyclable and compostable options so your packaging matches your sustainability goals.",
+    icon: "leaf",
+  },
+  {
+    title: "Dedicated Packaging Support",
+    description:
+      "One specialist guides you from your first question to final delivery, recommending the right structure and materials.",
+    icon: "headset",
   },
 ];
 

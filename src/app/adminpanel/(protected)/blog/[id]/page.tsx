@@ -39,6 +39,12 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
     const featured = formData.get("featured") === "on";
     const content = String(formData.get("content") ?? "").trim();
 
+    if (!title || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || !excerpt || !categoryId || !coverImageUrl || !authorName || !readTime || !content) return;
+    if (!["DRAFT", "PUBLISHED", "ARCHIVED"].includes(status)) return;
+    if (await prisma.blogPost.findFirst({ where: { slug, NOT: { id } }, select: { id: true } })) return;
+    const current = await prisma.blogPost.findUnique({ where: { id }, select: { slug: true, publishedAt: true } });
+    if (!current) return;
+
     await prisma.blogPost.update({
       where: { id },
       data: {
@@ -51,7 +57,8 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
         readTime,
         status,
         featured,
-        publishedAt: status === "PUBLISHED" ? new Date() : null,
+        // keep the original publish date when re-saving a live post
+        publishedAt: status === "PUBLISHED" ? (current.publishedAt ?? new Date()) : null,
       },
     });
 
@@ -66,6 +73,7 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
     revalidatePath("/adminpanel/blog");
     revalidatePath(`/adminpanel/blog/${id}`);
     revalidatePath(`/blog/${slug}`);
+    revalidatePath(`/blog/${current.slug}`);
     revalidatePublicContent();
   }
 
@@ -73,7 +81,7 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="section-label text-primary">Edit</p>
@@ -86,7 +94,7 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      <form action={save} className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <form action={save} className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <input type="hidden" name="id" value={post.id} />
         <div className="grid gap-4 md:grid-cols-2">
           <input name="title" defaultValue={post.title} className={input} required />
@@ -103,11 +111,11 @@ export default async function AdminBlogEditPage({ params }: { params: Promise<{ 
             <option value="PUBLISHED">Published</option>
             <option value="ARCHIVED">Archived</option>
           </select>
-          <input name="authorName" defaultValue={post.authorName} className={input} />
-          <input name="readTime" defaultValue={post.readTime} className={input} />
+          <input name="authorName" defaultValue={post.authorName} className={input} required />
+          <input name="readTime" defaultValue={post.readTime} className={input} required />
           <div className="md:col-span-2"><ImageField name="coverImageUrl" defaultValue={post.coverImageUrl} required /></div>
           <textarea name="excerpt" defaultValue={post.excerpt} rows={3} className={`${input} md:col-span-2`} required />
-          <textarea name="content" defaultValue={content} rows={10} className={`${input} md:col-span-2`} placeholder="Separate paragraphs with blank lines" />
+          <textarea name="content" defaultValue={content} rows={10} className={`${input} md:col-span-2`} placeholder="Separate paragraphs with blank lines" required />
         </div>
         <label className="mt-4 flex items-center gap-3 text-sm font-semibold text-dark">
           <input name="featured" type="checkbox" defaultChecked={post.featured} className="h-5 w-5 accent-primary" />

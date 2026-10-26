@@ -50,7 +50,7 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Inbox</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Contact messages</h2>
         <p className="mt-2 text-sm text-text">{unreadTotal} unread</p>
@@ -86,7 +86,7 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
         {messages.map((m) => (
           <div
             key={m.id}
-            className={`rounded-[28px] border bg-white p-6 shadow-sm ${m.isRead ? "border-border" : "border-primary/40"}`}
+            className={`rounded-[20px] border bg-white p-6 shadow-sm ${m.isRead ? "border-border" : "border-primary/40"}`}
           >
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0">
@@ -138,7 +138,7 @@ export default async function AdminMessagesPage({ searchParams }: { searchParams
           </div>
         ))}
         {messages.length === 0 && (
-          <div className="rounded-[28px] border border-dashed border-border bg-white px-4 py-12 text-center text-sm text-lighter">
+          <div className="rounded-[20px] border border-dashed border-border bg-white px-4 py-12 text-center text-sm text-lighter">
             No messages yet.
           </div>
         )}

@@ -1,37 +1,38 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #2757ff;
-  --color-secondary: #f865dc;
-  --color-text: #555555;
-  --color-dark: #000000;
-  --color-lighter: #999999;
-  --color-border: #e7e7e7;
-  --color-background-field: #e9eeff;
-  --color-navbar-top: #1e1023;
-  --font-heading: var(--font-marcellus);
-  --font-body: var(--font-figtree);
+  --color-primary: #bdf906;
+  --color-secondary: #d8e267;
+  --color-text: #2f5f5a;
+  --color-dark: #035a53;
+  --color-lighter: #5f8883;
+  --color-border: #e0e3c0;
+  --color-background-field: #f3f1de;
+  --color-navbar-top: #035a53;
+  --font-heading: var(--font-poppins);
+  --font-body: var(--font-roboto);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: #ffffff;
-  color: var(--color-text);
-  font-family: var(--font-body), sans-serif;
-  font-size: 16px;
-  line-height: 1.625;
-}
+/* Lime fills carry deep-teal text (white on lime is unreadable); lime text only on dark teal surfaces. */
+.bg-primary { color: #035a53; }
+.bg-primary .text-white { color: #035a53; }
+.bg-primary [class*="text-white/"] { color: rgba(3, 90, 83, 0.8); }
+.bg-secondary, [class*="from-primary"] { color: #035a53; }
+.bg-secondary .text-white, [class*="from-primary"] .text-white, [class*="from-primary"].text-white { color: #035a53; }
+.bg-secondary [class*="text-white/"], [class*="from-primary"] [class*="text-white/"] { color: rgba(3, 90, 83, 0.8); }
+.text-primary { color: #035a53; }
+footer .text-primary, .bg-dark .text-primary, .bg-navbar-top .text-primary, .nav-dark .text-primary { color: #bdf906; }
 
 .font-heading {
-  font-family: var(--font-heading), serif;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
+
+/* Dark nav bar: crisp white links, blue on hover/active. */
+.nav-dark li > a { color: rgba(255,255,255,0.88); }
+.nav-dark li > a:hover, .nav-dark li > a[aria-current] { color: #bdf906; }
+.nav-dark li > a svg { opacity: 0.7; }
 
 .container-main {
   width: 100%;
@@ -98,7 +99,7 @@ body {
 }
 
 .product-card:hover {
-  box-shadow: 0 20px 50px rgba(39, 87, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(189,249,6, 0.1);
   transform: translateY(-4px);
 }
 
@@ -170,7 +171,7 @@ body {
 }
 
 .testimonials-swiper .swiper-pagination-bullet {
-  background: #2757ff;
+  background: #bdf906;
   opacity: 0.25;
 }
 
@@ -182,7 +183,7 @@ body {
 
 /* Hero dark section with side glows */
 .hero-section {
-  background: #080810;
+  background: #024540;
 }
 
 .hero-glow-left {
@@ -191,7 +192,7 @@ body {
   left: -5%;
   width: 55%;
   height: 120%;
-  background: radial-gradient(ellipse at 20% 50%, rgba(39, 87, 255, 0.45) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 20% 50%, rgba(189,249,6, 0.16) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -201,7 +202,7 @@ body {
   right: -5%;
   width: 55%;
   height: 120%;
-  background: radial-gradient(ellipse at 80% 50%, rgba(248, 101, 220, 0.4) 0%, transparent 65%);
+  background: radial-gradient(ellipse at 80% 50%, rgba(216,226,103, 0.14) 0%, transparent 65%);
   pointer-events: none;
 }
 
@@ -209,13 +210,13 @@ body {
 .hero-aurora {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(90px);
+  filter: blur(110px);
   pointer-events: none;
-  opacity: 0.7;
+  opacity: 0.22;
 }
-.hero-aurora-1 { width: 520px; height: 520px; top: -160px; left: -120px; background: #2757ff; animation: hero-drift 14s ease-in-out infinite alternate; }
-.hero-aurora-2 { width: 480px; height: 480px; bottom: -180px; right: -100px; background: #f865dc; animation: hero-drift 16s ease-in-out infinite alternate-reverse; }
-.hero-aurora-3 { width: 340px; height: 340px; top: 30%; left: 48%; background: #7b3fe4; opacity: 0.4; animation: hero-drift 18s ease-in-out infinite alternate; }
+.hero-aurora-1 { width: 520px; height: 520px; top: -160px; left: -120px; background: #bdf906; animation: hero-drift 14s ease-in-out infinite alternate; }
+.hero-aurora-2 { width: 480px; height: 480px; bottom: -180px; right: -100px; background: #d8e267; animation: hero-drift 16s ease-in-out infinite alternate-reverse; }
+.hero-aurora-3 { width: 340px; height: 340px; top: 30%; left: 48%; background: #0a8a7e; opacity: 0.35; animation: hero-drift 18s ease-in-out infinite alternate; }
 
 @keyframes hero-drift {
   from { transform: translate3d(0, 0, 0) scale(1); }
@@ -249,7 +250,7 @@ body {
   height: 6px;
   border-radius: 9999px;
   background: #fff;
-  box-shadow: 0 0 12px 3px rgba(248, 101, 220, 0.8);
+  box-shadow: 0 0 12px 3px rgba(216,226,103, 0.8);
   animation: hero-twinkle 3.2s ease-in-out infinite;
   pointer-events: none;
 }
@@ -277,18 +278,18 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: #f865dc;
-  box-shadow: 0 0 0 0 rgba(248, 101, 220, 0.7);
+  background: #d8e267;
+  box-shadow: 0 0 0 0 rgba(216,226,103, 0.7);
   animation: hero-pulse 2s infinite;
 }
 @keyframes hero-pulse {
-  70% { box-shadow: 0 0 0 10px rgba(248, 101, 220, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(248, 101, 220, 0); }
+  70% { box-shadow: 0 0 0 10px rgba(216,226,103, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(216,226,103, 0); }
 }
 
 .hero-shimmer {
   display: inline-block;
-  background: linear-gradient(100deg, #5b8bff 0%, #f865dc 35%, #ffd6f5 50%, #f865dc 65%, #5b8bff 100%);
+  background: linear-gradient(100deg, #bdf906 0%, #bdf906 35%, #fcfaef 50%, #bdf906 65%, #bdf906 100%);
   background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -308,11 +309,11 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #2757ff, #f865dc);
-  box-shadow: 0 10px 40px rgba(39, 87, 255, 0.45);
+  background: linear-gradient(135deg, #bdf906, #d8e267);
+  box-shadow: 0 10px 40px rgba(189,249,6, 0.45);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 50px rgba(248, 101, 220, 0.5); }
+.hero-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 50px rgba(216,226,103, 0.5); }
 .hero-cta-ghost {
   display: inline-flex;
   align-items: center;
@@ -350,7 +351,7 @@ body {
   width: 62%;
   aspect-ratio: 1;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(248, 101, 220, 0.55), rgba(39, 87, 255, 0.35) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(216,226,103, 0.55), rgba(189,249,6, 0.35) 50%, transparent 70%);
   filter: blur(30px);
 }
 .hero-ring {

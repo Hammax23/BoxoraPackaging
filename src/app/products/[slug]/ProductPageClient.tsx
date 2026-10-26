@@ -402,7 +402,7 @@ export default function ProductPageClient({
               <button
                 type="submit"
                 disabled={ordering || ordered}
-                className="btn-slip w-full min-h-[52px] rounded-xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(39,87,255,0.38)] disabled:cursor-not-allowed disabled:opacity-80"
+                className="btn-slip w-full min-h-[52px] rounded-xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] transition hover:bg-primary/90 hover:shadow-[0_8px_28px_rgba(189,249,6,0.38)] disabled:cursor-not-allowed disabled:opacity-80"
               >
                 {ordering ? "Sending…" : ordered ? "Request sent" : "Order this product"}
               </button>

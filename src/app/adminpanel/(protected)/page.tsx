@@ -38,12 +38,12 @@ function Stat({
   return (
     <Link
       href={href}
-      className="group rounded-[24px] border border-border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+      className="group rounded-[16px] border border-border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
     >
       <div className="flex items-start justify-between">
         <span
           className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
-            accent ? "bg-secondary/15 text-secondary" : "bg-primary/10 text-primary"
+            accent ? "bg-primary text-dark" : "bg-background-field text-dark"
           }`}
         >
           <Icon className="h-5 w-5" strokeWidth={2} />
@@ -121,7 +121,7 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex items-center justify-between gap-3">
           <p className="section-label text-primary">Overview</p>
           <LiveRefresh seconds={30} />
@@ -159,7 +159,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
-        <section className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+        <section className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
           <div className="flex items-baseline justify-between">
             <h3 className="font-heading text-xl text-dark">Leads · last 14 days</h3>
             <span className="text-sm text-text">{total14} total</span>
@@ -180,7 +180,7 @@ export default async function AdminDashboard() {
           </div>
         </section>
 
-        <section className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+        <section className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
           <h3 className="font-heading text-xl text-dark">Setup checklist</h3>
           <ul className="mt-4 space-y-3">
             {health.map((h) => (
@@ -201,7 +201,7 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+        <section className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-xl text-dark">Recent quotes</h3>
             <Link href="/adminpanel/quotes" className="text-[13px] font-semibold text-primary">View all</Link>
@@ -223,7 +223,7 @@ export default async function AdminDashboard() {
           </ul>
         </section>
 
-        <section className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+        <section className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="font-heading text-xl text-dark">Recent messages</h3>
             <Link href="/adminpanel/messages" className="text-[13px] font-semibold text-primary">View all</Link>
@@ -246,7 +246,7 @@ export default async function AdminDashboard() {
         </section>
       </div>
 
-      <section className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+      <section className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <h3 className="font-heading text-xl text-dark">Recent activity</h3>
           <Link href="/adminpanel/activity" className="text-[13px] font-semibold text-primary">Full log</Link>

@@ -2,6 +2,8 @@ import { cache } from "react";
 import { featuresSection as staticFeatures, heroContent as staticHero, topBar as staticTopBar, faqs as staticFaqs, marqueeItems as staticMarquee, testimonials as staticTestimonials } from "@/lib/data";
 import { prisma } from "@/lib/db";
 import type { FooterGroupView } from "@/lib/data";
+import { getContent, getStyles, getTrends, type StyleView } from "@/lib/queries/pageContent";
+import type { PackagingTrend } from "@/lib/data";
 import { getFooterGroups, getNavLeft, getNavRight, type NavItemView } from "@/lib/queries/navigation";
 
 export type FaqView = { question: string; answer: string };
@@ -80,23 +82,40 @@ export async function getSiteSetting<T>(key: string, fallback: T): Promise<T> {
   return fallback;
 }
 
+type Banner = { title: string; description: string; image: string; href: string };
+export type MenusContent = {
+  industriesBanners: Banner[];
+  stylesBanners: Banner[];
+  trendsTitle: string;
+  trendsViewAllLabel: string;
+  trendsCta: { title: string; description: string; phoneLabel: string; phone: string; buttonLabel: string; buttonHref: string };
+};
+
 export type SiteContent = {
   topBar: typeof staticTopBar;
   hero: Pick<typeof staticHero, "badge" | "titleLine1" | "titleLine2" | "subtitle">;
   features: typeof staticFeatures;
   nav: { left: NavItemView[]; right: NavItemView[] };
   footer: FooterGroupView[];
+  social: { label: string; href: string }[];
+  styles: StyleView[];
+  trends: PackagingTrend[];
+  menus: MenusContent;
 };
 
 /** Editable site copy (Admin → Site settings), merged over the built-in defaults so a missing field never blanks the site. */
 export const getSiteContent = cache(async (): Promise<SiteContent> => {
-  const [topBar, hero, features, left, right, footer] = await Promise.all([
+  const [topBar, hero, features, left, right, footer, social, styles, trends, menus] = await Promise.all([
     getSiteSetting<Partial<typeof staticTopBar>>("topBar", {}),
     getSiteSetting<Partial<SiteContent["hero"]>>("heroContent", {}),
     getSiteSetting<Partial<typeof staticFeatures>>("featuresSection", {}),
     getNavLeft(),
     getNavRight(),
     getFooterGroups(),
+    getSiteSetting<{ label: string; href: string }[]>("content:social", []),
+    getStyles(),
+    getTrends(),
+    getContent<MenusContent>("menus"),
   ]);
   const merge = <T extends object>(base: T, over: Partial<T>): T => {
     const out = { ...base };
@@ -115,5 +134,9 @@ export const getSiteContent = cache(async (): Promise<SiteContent> => {
     features: merge(staticFeatures, features),
     nav: { left, right },
     footer,
+    styles,
+    trends,
+    menus,
+    social: Array.isArray(social) ? social.filter((x) => x?.href && /^https?:\/\//i.test(x.href)) : [],
   };
 });

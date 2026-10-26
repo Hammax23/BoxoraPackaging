@@ -1,18 +1,18 @@
-import FAQs from "@/components/FAQs";
-import FeatureMarquee from "@/components/FeatureMarquee";
+import Benefits, { type BenefitsContent } from "@/components/Benefits";
+import Brands, { type BrandsContent } from "@/components/Brands";
+import CtaBand, { type CtaContent } from "@/components/CtaBand";
+import FAQs, { type FaqHeading } from "@/components/FAQs";
 import Features from "@/components/Features";
 import Footer from "@/components/Footer";
-import Categories from "@/components/Categories";
-import GoGreen from "@/components/GoGreen";
+import Gallery, { type GalleryContent } from "@/components/Gallery";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import InstantQuote from "@/components/InstantQuote";
 import JsonLd from "@/components/JsonLd";
-import PackagingStyles from "@/components/PackagingStyles";
-import Products from "@/components/Products";
-import Testimonials from "@/components/Testimonials";
-import { getFaqs, getMarqueeItems, getSiteSetting, getTestimonials } from "@/lib/queries/content";
-import { listActiveProducts } from "@/lib/queries/products";
+import InstantQuote from "@/components/InstantQuote";
+import StyleGrid from "@/components/StyleGrid";
+import Testimonials, { type ReviewsContent } from "@/components/Testimonials";
+import { getFaqs, getSiteContent, getSiteSetting, getTestimonials } from "@/lib/queries/content";
+import { getContent, getStyles } from "@/lib/queries/pageContent";
 import { buildPageMetadata, faqJsonLd } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -24,12 +24,23 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 export default async function Home() {
-  const [marqueeItems, products, faqs, showTestimonials] = await Promise.all([
-    getMarqueeItems(),
-    listActiveProducts(),
-    getFaqs(),
-    getSiteSetting<boolean>("showTestimonials", false),
-  ]);
+  const [faqs, showTestimonials, styles, featureItems, heroImages, heroChecklist, stylesHeading, brands, reviews, portfolio, cta, benefits, faqHeading, { topBar }] =
+    await Promise.all([
+      getFaqs(),
+      getSiteSetting<boolean>("showTestimonials", false),
+      getStyles(),
+      getContent<{ title: string; description: string; icon: string }[]>("featureItems"),
+      getContent<{ image: string; alt: string }[]>("heroImages"),
+      getContent<{ text: string }[]>("heroChecklist"),
+      getContent<{ title: string; highlight: string; text: string; button: string }>("homeStyles"),
+      getContent<BrandsContent>("homeBrands"),
+      getContent<ReviewsContent>("homeReviews"),
+      getContent<GalleryContent>("homePortfolio"),
+      getContent<CtaContent>("homeCta"),
+      getContent<BenefitsContent>("homeBenefits"),
+      getContent<FaqHeading>("homeFaq"),
+      getSiteContent(),
+    ]);
   // Hidden until the admin switches it on (Admin → FAQs & reviews), so no placeholder reviews go live.
   const testimonials = showTestimonials === true ? await getTestimonials() : [];
 
@@ -37,16 +48,16 @@ export default async function Home() {
     <main>
       <JsonLd data={faqJsonLd(faqs)} />
       <Header />
-      <Hero />
-      <FeatureMarquee items={marqueeItems} />
-      <PackagingStyles />
-      <Categories products={products} />
-      <Features />
+      <Hero images={heroImages} checklist={heroChecklist} />
+      <StyleGrid styles={styles} heading={stylesHeading} />
+      <Features features={featureItems} />
+      <Brands content={brands} />
       <InstantQuote />
-      <Products products={products} />
-      <GoGreen />
-      {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
-      <FAQs faqs={faqs} />
+      {testimonials.length > 0 && <Testimonials testimonials={testimonials} heading={reviews} />}
+      <Gallery content={portfolio} />
+      <CtaBand content={cta} phone={topBar.phone} />
+      <Benefits content={benefits} />
+      <FAQs faqs={faqs} heading={faqHeading} />
       <Footer />
     </main>
   );

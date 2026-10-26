@@ -1,10 +1,13 @@
-import { packagingStylesMegamenu } from "@/lib/data";
+"use client";
+
+import { useSiteContent } from "@/components/SiteContentProvider";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function PackagingStylesMegamenu({ onNavigate }: { onNavigate?: () => void }) {
-  const { banners, styles } = packagingStylesMegamenu;
+  const { styles, menus } = useSiteContent();
+  const banners = menus.stylesBanners;
 
   return (
     <div className="mx-auto w-full max-w-[1320px] px-6 py-8 xl:px-8">

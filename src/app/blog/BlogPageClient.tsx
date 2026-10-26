@@ -43,7 +43,7 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_28px_60px_rgba(39,87,255,0.12)]"
+      className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_28px_60px_rgba(189,249,6,0.12)]"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
         <Image
@@ -67,7 +67,7 @@ function PostCard({ post }: { post: BlogPost }) {
         <p className="mt-3 line-clamp-3 flex-1 text-[15px] leading-relaxed text-text">{post.excerpt}</p>
         <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
           <Byline post={post} />
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-dark transition group-hover:border-primary group-hover:bg-primary group-hover:text-white">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-dark transition group-hover:border-primary group-hover:bg-primary group-hover:text-dark">
             <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>
@@ -137,7 +137,7 @@ export default function BlogPageClient({
           <AnimatedSection>
             <Link
               href={`/blog/${featured.slug}`}
-              className="group grid overflow-hidden rounded-[36px] border border-border bg-white shadow-[0_30px_80px_rgba(8,8,16,0.18)] lg:grid-cols-[1.05fr_1fr]"
+              className="group grid overflow-hidden rounded-[36px] border border-border bg-white shadow-[0_30px_80px_rgba(3,90,83,0.18)] lg:grid-cols-[1.05fr_1fr]"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-background-field lg:aspect-auto lg:min-h-[440px]">
                 <Image
@@ -168,7 +168,7 @@ export default function BlogPageClient({
                     <Clock className="h-3.5 w-3.5" /> {featured.readTime}
                   </span>
                 </div>
-                <span className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-[14px] font-bold text-white shadow-[0_12px_36px_rgba(39,87,255,0.35)] transition group-hover:bg-[#1f47d6]">
+                <span className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-[14px] font-bold text-white shadow-[0_12px_36px_rgba(189,249,6,0.35)] transition group-hover:bg-[#8fbf00]">
                   Read the story <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </span>
               </div>
@@ -195,9 +195,9 @@ export default function BlogPageClient({
               <AnimatedSection key={p.slug} delay={i * 0.08}>
                 <Link
                   href={`/blog/${p.slug}`}
-                  className="group flex h-full gap-4 rounded-[24px] border border-border bg-background-field/40 p-4 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(39,87,255,0.1)]"
+                  className="group flex h-full gap-4 rounded-[16px] border border-border bg-background-field/40 p-4 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(189,249,6,0.1)]"
                 >
-                  <span className="font-heading text-[44px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(39,87,255,0.55)]">
+                  <span className="font-heading text-[44px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="min-w-0">
@@ -281,7 +281,7 @@ export default function BlogPageClient({
         </div>
 
         {filtered.length === 0 && (
-          <div className="mt-6 rounded-[28px] border border-dashed border-border bg-background-field/40 px-6 py-16 text-center">
+          <div className="mt-6 rounded-[20px] border border-dashed border-border bg-background-field/40 px-6 py-16 text-center">
             <SearchX className="mx-auto h-10 w-10 text-lighter" />
             <h3 className="mt-4 font-heading text-2xl text-dark">No articles found</h3>
             <p className="mt-2 text-text">Try another keyword or category.</p>
@@ -303,7 +303,7 @@ export default function BlogPageClient({
       <section className="pb-16 md:pb-24">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[40px] bg-[#080810] px-6 py-14 text-center md:px-16 md:py-16">
+            <div className="relative overflow-hidden rounded-[20px] bg-[#024540] px-6 py-14 text-center md:px-16 md:py-16">
               <div className="hero-aurora hero-aurora-1 opacity-40" />
               <div className="hero-aurora hero-aurora-2 opacity-40" />
               <div className="relative z-10">
@@ -316,7 +316,7 @@ export default function BlogPageClient({
                 <button
                   type="button"
                   onClick={() => openQuoteDrawer({ source: "blog" })}
-                  className="btn-slip mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-8 py-4 text-[14px] font-bold text-white shadow-[0_12px_40px_rgba(39,87,255,0.4)]"
+                  className="btn-slip mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-secondary px-8 py-4 text-[14px] font-bold text-white shadow-[0_12px_40px_rgba(189,249,6,0.4)]"
                 >
                   Get a free quote <ArrowUpRight className="h-4 w-4" />
                 </button>

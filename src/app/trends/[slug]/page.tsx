@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import JsonLd from "@/components/JsonLd";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { packagingStyles, packagingTrends } from "@/lib/data";
+import { getStyles, getTrends } from "@/lib/queries/pageContent";
 import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import { ArrowRight, Check, ChevronRight, Layers, Target } from "lucide-react";
 import type { Metadata } from "next";
@@ -11,8 +11,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
-  return packagingTrends.map((t) => ({ slug: t.slug }));
+export async function generateStaticParams() {
+  return (await getTrends()).map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({
@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const trend = packagingTrends.find((t) => t.slug === slug);
+  const trend = (await getTrends()).find((t) => t.slug === slug);
   if (!trend) return {};
   return buildPageMetadata({
     title: `${trend.title}: Packaging Trend`,
@@ -33,6 +33,7 @@ export async function generateMetadata({
 
 export default async function TrendPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const [packagingTrends, packagingStyles] = await Promise.all([getTrends(), getStyles()]);
   const index = packagingTrends.findIndex((t) => t.slug === slug);
   if (index === -1) notFound();
   const trend = packagingTrends[index];
@@ -90,7 +91,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
           </AnimatedSection>
 
           <AnimatedSection delay={0.1}>
-            <div className="relative aspect-square overflow-hidden rounded-[40px] bg-background-field shadow-[0_30px_80px_rgba(39,87,255,0.15)]">
+            <div className="relative aspect-square overflow-hidden rounded-[20px] bg-background-field shadow-[0_30px_80px_rgba(189,249,6,0.15)]">
               <Image
                 src={trend.image}
                 alt={trend.title}
@@ -107,7 +108,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
       <section className="bg-background-field py-16 md:py-20">
         <div className="container-main grid gap-6 lg:grid-cols-3">
           <AnimatedSection>
-            <div className="h-full rounded-[28px] border border-border bg-white p-7">
+            <div className="h-full rounded-[20px] border border-border bg-white p-7">
               <h2 className="font-heading text-2xl text-dark">What defines it</h2>
               <ul className="mt-4 space-y-3">
                 {trend.keyPoints.map((k) => (
@@ -122,7 +123,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.08}>
-            <div className="h-full rounded-[28px] border border-border bg-white p-7">
+            <div className="h-full rounded-[20px] border border-border bg-white p-7">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background-field text-primary">
                 <Layers className="h-5 w-5" />
               </span>
@@ -138,7 +139,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
             </div>
           </AnimatedSection>
           <AnimatedSection delay={0.16}>
-            <div className="h-full rounded-[28px] border border-border bg-white p-7">
+            <div className="h-full rounded-[20px] border border-border bg-white p-7">
               <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background-field text-primary">
                 <Target className="h-5 w-5" />
               </span>
@@ -169,7 +170,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
                 <AnimatedSection key={s.slug} delay={i * 0.08}>
                   <Link
                     href={s.href}
-                    className="group block overflow-hidden rounded-[28px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(39,87,255,0.13)]"
+                    className="group block overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.13)]"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
                       <Image
@@ -205,7 +206,7 @@ export default async function TrendPage({ params }: { params: Promise<{ slug: st
               <Link
                 key={o.slug}
                 href={o.href}
-                className="group flex gap-4 rounded-[24px] border border-border bg-white p-4 transition hover:border-primary/30 hover:shadow-[0_18px_44px_rgba(39,87,255,0.1)]"
+                className="group flex gap-4 rounded-[16px] border border-border bg-white p-4 transition hover:border-primary/30 hover:shadow-[0_18px_44px_rgba(189,249,6,0.1)]"
               >
                 <span className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-background-field">
                   <Image src={o.image} alt="" fill className="object-cover" sizes="80px" />

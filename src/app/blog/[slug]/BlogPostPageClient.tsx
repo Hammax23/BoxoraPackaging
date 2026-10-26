@@ -71,7 +71,7 @@ function ShareBar({ title }: { title: string }) {
   };
 
   const btn =
-    "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-dark transition hover:border-primary hover:bg-primary hover:text-white";
+    "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-dark transition hover:border-primary hover:bg-primary hover:text-dark";
 
   return (
     <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ export default function BlogPostPageClient({
 
       <article ref={articleRef}>
         <div className="container-main">
-          <div className="relative mx-auto aspect-[16/9] max-w-5xl overflow-hidden rounded-[32px] bg-background-field shadow-[0_30px_80px_rgba(8,8,16,0.15)]">
+          <div className="relative mx-auto aspect-[16/9] max-w-5xl overflow-hidden rounded-[16px] bg-background-field shadow-[0_30px_80px_rgba(3,90,83,0.15)]">
             <Image
               src={post.image}
               alt={post.title}
@@ -192,7 +192,7 @@ export default function BlogPostPageClient({
               </div>
 
               {/* Author card */}
-              <div className="flex items-start gap-4 rounded-[28px] border border-border bg-background-field/50 p-6">
+              <div className="flex items-start gap-4 rounded-[20px] border border-border bg-background-field/50 p-6">
                 <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-lg font-bold text-white">
                   {initials(post.author)}
                 </span>
@@ -220,7 +220,7 @@ export default function BlogPostPageClient({
       <section className="py-14 md:py-20">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-primary via-[#4a3df0] to-secondary px-6 py-12 text-center md:px-16 md:py-16">
+            <div className="relative overflow-hidden rounded-[36px] bg-dark ring-1 ring-primary/30 px-6 py-12 text-center md:px-16 md:py-16">
               <h2 className="mx-auto max-w-2xl font-heading text-[28px] leading-tight text-white md:text-[40px]">
                 Put these ideas into your packaging
               </h2>
@@ -258,7 +258,7 @@ export default function BlogPostPageClient({
                 <Link
                   key={item.slug}
                   href={`/blog/${item.slug}`}
-                  className="group overflow-hidden rounded-[28px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_24px_56px_rgba(39,87,255,0.12)]"
+                  className="group overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_24px_56px_rgba(189,249,6,0.12)]"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
                     <Image
@@ -293,7 +293,7 @@ export default function BlogPostPageClient({
 function ShareRail({ title }: { title: string }) {
   const [copied, setCopied] = useState(false);
   const btn =
-    "flex h-10 w-10 items-center justify-center rounded-full text-dark transition hover:bg-primary hover:text-white";
+    "flex h-10 w-10 items-center justify-center rounded-full text-dark transition hover:bg-primary hover:text-dark";
   const open = (build: (url: string, text: string) => string) => {
     const url = encodeURIComponent(window.location.href);
     window.open(build(url, encodeURIComponent(title)), "_blank", "noopener,noreferrer,width=600,height=560");

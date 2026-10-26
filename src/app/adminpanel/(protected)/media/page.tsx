@@ -42,7 +42,7 @@ export default async function AdminMediaPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Library</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Media assets</h2>
         <p className="mt-2 text-sm text-text">
@@ -53,7 +53,7 @@ export default async function AdminMediaPage() {
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <form action={createAsset} className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
           <input name="url" placeholder="Image URL" className={input} required />
           <input name="alt" placeholder="Alt text" className={input} />
@@ -66,7 +66,7 @@ export default async function AdminMediaPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {assets.map((asset) => (
-          <div key={asset.id} className="overflow-hidden rounded-[24px] border border-border bg-white shadow-sm">
+          <div key={asset.id} className="overflow-hidden rounded-[16px] border border-border bg-white shadow-sm">
             <div className="aspect-video bg-background-field">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={asset.url} alt={asset.alt ?? ""} className="h-full w-full object-cover" />
@@ -89,7 +89,7 @@ export default async function AdminMediaPage() {
           </div>
         ))}
         {assets.length === 0 && (
-          <p className="col-span-full rounded-[24px] border border-dashed border-border px-4 py-12 text-center text-sm text-lighter">
+          <p className="col-span-full rounded-[16px] border border-dashed border-border px-4 py-12 text-center text-sm text-lighter">
             No media assets yet.
           </p>
         )}

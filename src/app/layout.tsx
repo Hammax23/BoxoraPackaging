@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Marcellus } from "next/font/google";
+import { Poppins, Roboto } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import JsonLd from "@/components/JsonLd";
@@ -7,15 +7,16 @@ import { getSiteContent } from "@/lib/queries/content";
 import { getIndustries } from "@/lib/queries/industries";
 import { getSiteUrl, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
-const marcellus = Marcellus({
-  weight: "400",
+const poppins = Poppins({
+  weight: ["500", "600", "700", "800"],
   subsets: ["latin"],
-  variable: "--font-marcellus",
+  variable: "--font-poppins",
 });
 
-const figtree = Figtree({
+const roboto = Roboto({
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
-  variable: "--font-figtree",
+  variable: "--font-roboto",
 });
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default async function RootLayout({
   const [industries, siteContent] = await Promise.all([getIndustries(), getSiteContent()]);
 
   return (
-    <html lang="en" className={`${marcellus.variable} ${figtree.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
       <body className="antialiased">
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
         <Providers industries={industries} siteContent={siteContent}>{children}</Providers>

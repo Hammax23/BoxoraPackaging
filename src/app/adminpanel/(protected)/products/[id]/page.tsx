@@ -1,3 +1,4 @@
+import CategoryPicker from "@/components/admin/CategoryPicker";
 import ImageField from "@/components/admin/ImageField";
 import { revalidatePublicContent } from "@/lib/adminRevalidate";
 import { requireAdmin } from "@/lib/adminAuth";
@@ -12,6 +13,7 @@ export default async function AdminProductEditPage({ params }: { params: Promise
   const { id } = await params;
   const product = await prisma.product.findUnique({ where: { id } });
   if (!product) notFound();
+  const industryNames = (await prisma.industry.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, select: { name: true } })).map((i) => i.name);
 
   async function save(formData: FormData) {
     "use server";
@@ -21,12 +23,18 @@ export default async function AdminProductEditPage({ params }: { params: Promise
     const slug = String(formData.get("slug") ?? "").trim();
     const description = String(formData.get("description") ?? "").trim();
     const imageUrl = String(formData.get("imageUrl") ?? "").trim();
-    const category = String(formData.get("category") ?? "").trim();
+    const category = formData.getAll("category").map((c) => String(c).trim()).filter(Boolean).join(", ");
     const onSale = formData.get("onSale") === "on";
     const hot = formData.get("hot") === "on";
     const isActive = formData.get("isActive") === "on";
     const price = Number(formData.get("price") ?? "");
     const salePrice = Number(formData.get("salePrice") ?? "");
+
+    const current = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
+    if (!current || !name || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || !description || !imageUrl || !category) return;
+    if (!Number.isFinite(price) || price <= 0) return;
+    if (onSale && !(Number.isFinite(salePrice) && salePrice > 0 && salePrice < price)) return;
+    if (await prisma.product.findFirst({ where: { slug, NOT: { id } }, select: { id: true } })) return;
 
     await prisma.product.update({
       where: { id },
@@ -47,6 +55,7 @@ export default async function AdminProductEditPage({ params }: { params: Promise
     revalidatePath("/adminpanel/products");
     revalidatePath(`/adminpanel/products/${id}`);
     revalidatePath(`/products/${slug}`);
+    revalidatePath(`/products/${current.slug}`);
     revalidatePublicContent();
   }
 
@@ -55,7 +64,7 @@ export default async function AdminProductEditPage({ params }: { params: Promise
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="section-label text-primary">Edit</p>
@@ -72,7 +81,7 @@ export default async function AdminProductEditPage({ params }: { params: Promise
         </div>
       </div>
 
-      <form action={save} className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <form action={save} className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <input type="hidden" name="id" value={product.id} />
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -100,12 +109,12 @@ export default async function AdminProductEditPage({ params }: { params: Promise
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-dark">Category</label>
-            <input name="category" defaultValue={product.category ?? ""} className={input} />
+            <CategoryPicker industries={industryNames} selected={(product.category ?? "").split(",").map((c) => c.trim()).filter(Boolean)} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-dark">Price</label>
-              <input name="price" type="number" step="0.01" defaultValue={product.price ?? ""} className={input} />
+              <input name="price" type="number" step="0.01" min="0.01" defaultValue={product.price ?? ""} className={input} required />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-semibold text-dark">Sale price</label>
@@ -139,7 +148,7 @@ export default async function AdminProductEditPage({ params }: { params: Promise
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <button
             type="submit"
-            className="btn-slip inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:bg-primary/90"
+            className="btn-slip inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] transition hover:bg-primary/90"
           >
             <Save className="h-4 w-4" />
             Save changes

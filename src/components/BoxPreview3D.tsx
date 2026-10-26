@@ -46,8 +46,8 @@ const finishStyles: Record<
   matte: {
     label: "Matte Laminate",
     board: "#3d6bff",
-    secondary: "#2757ff",
-    accent: "#1a3fd4",
+    secondary: "#bdf906",
+    accent: "#8fbf00",
     roughness: 0.72,
     metalness: 0.06,
     clearcoat: 0.2,
@@ -81,7 +81,7 @@ const finishStyles: Record<
   },
   foil: {
     label: "Foil Accent",
-    board: "#1e1023",
+    board: "#035a53",
     secondary: "#3a243f",
     accent: "#d4af37",
     roughness: 0.22,
@@ -148,7 +148,7 @@ function createPaperMaps(hex: string) {
     ctx.fillRect(x, y, Math.random() > 0.65 ? 2 : 1, Math.random() > 0.65 ? 2 : 1);
   }
 
-  ctx.strokeStyle = "rgba(30,16,35,0.028)";
+  ctx.strokeStyle = "rgba(3,90,83,0.028)";
   for (let i = 0; i < 280; i++) {
     const y = Math.random() * size;
     ctx.beginPath();
@@ -157,7 +157,7 @@ function createPaperMaps(hex: string) {
     ctx.stroke();
   }
 
-  ctx.strokeStyle = "rgba(30,16,35,0.04)";
+  ctx.strokeStyle = "rgba(3,90,83,0.04)";
   ctx.lineWidth = 2;
   for (let x = 128; x < size; x += 160) {
     ctx.beginPath();
@@ -682,7 +682,7 @@ function StandUpPouchMesh({
           <mesh position={[0, zipperY, depth * 0.15]} castShadow>
             <boxGeometry args={[faceW * 0.78, 0.048, depth * 0.55]} />
             <meshPhysicalMaterial
-              color={finish === "foil" ? "#1a1520" : "#eef2f8"}
+              color={finish === "foil" ? "#035a53" : "#e9e7cc"}
               roughness={0.28}
               metalness={0.22}
               clearcoat={0.5}
@@ -891,7 +891,7 @@ function FoldingCartonMesh({
       <mesh position={[0, h * 0.05, w / 2 + 0.003]} castShadow>
         <planeGeometry args={[l * 0.72, h * 0.58]} />
         <meshPhysicalMaterial
-          color={printMap ? "#ffffff" : finish === "gloss" ? "#1a3fd4" : style.accent}
+          color={printMap ? "#ffffff" : finish === "gloss" ? "#8fbf00" : style.accent}
           map={printMap ?? undefined}
           transparent={printMap?.userData?.custom === true}
           roughness={finish === "foil" ? 0.18 : 0.4}
@@ -946,7 +946,7 @@ function FoldingCartonMesh({
           <mesh position={[0, 0, 0]} castShadow>
             <boxGeometry args={[l * 1.025, h * 0.32, w * 1.025]} />
             <meshPhysicalMaterial
-              color={finish === "foil" ? "#1a1520" : style.accent}
+              color={finish === "foil" ? "#035a53" : style.accent}
               roughness={Math.max(0.4, style.roughness - 0.15)}
               metalness={finish === "foil" ? 0.7 : 0.1}
               clearcoat={style.clearcoat}
@@ -1183,7 +1183,7 @@ function MailerBoxMesh({
       <mesh position={[0, -h * 0.1, w / 2 + 0.003]} castShadow>
         <planeGeometry args={[l * 0.7, h * 0.48]} />
         <meshPhysicalMaterial
-          color={printMap ? "#ffffff" : finish === "gloss" ? "#1a3fd4" : style.accent}
+          color={printMap ? "#ffffff" : finish === "gloss" ? "#8fbf00" : style.accent}
           map={printMap ?? undefined}
           transparent={printMap?.userData?.custom === true}
           roughness={finish === "foil" ? 0.18 : 0.4}
@@ -1564,7 +1564,7 @@ function Scene({
   return (
     <LookContext.Provider value={baseColor ?? null}>
       {/* Bright product-studio backdrop */}
-      <color attach="background" args={["#eef2f8"]} />
+      <color attach="background" args={["#e9e7cc"]} />
       <fog attach="fog" args={["#e8edf5", 9, 20]} />
 
       <ambientLight intensity={0.55} />
@@ -1618,11 +1618,11 @@ function Scene({
       {/* Soft radial halo under product */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, stageY - 0.005, 0]}>
         <ringGeometry args={[1.15, 2.55, 96]} />
-        <meshBasicMaterial color="#2757ff" transparent opacity={0.07} />
+        <meshBasicMaterial color="#bdf906" transparent opacity={0.07} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, stageY - 0.004, 0]}>
         <ringGeometry args={[2.65, 2.82, 96]} />
-        <meshBasicMaterial color="#2757ff" transparent opacity={0.14} />
+        <meshBasicMaterial color="#bdf906" transparent opacity={0.14} />
       </mesh>
 
       <CameraFramer size={size} isFlexible={flexible} />
@@ -1651,8 +1651,8 @@ function Loader() {
   return (
     <Html center>
       <div className="flex flex-col items-center gap-2 rounded-2xl bg-white/90 px-5 py-4 shadow-lg backdrop-blur">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2757ff]/30 border-t-[#2757ff]" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#2757ff]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#bdf906]/30 border-t-[#bdf906]" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#bdf906]">
           Rendering studio
         </p>
       </div>
@@ -1697,7 +1697,7 @@ export default function BoxPreview3D({
 
   return (
     <div
-      className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-[#f5f7fb] via-[#eef2f8] to-[#e4eaf4] shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)]"
+      className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-[#f5f7fb] via-[#e9e7cc] to-[#e4eaf4] shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)]"
       onPointerDown={() => setAutoRotate(false)}
       onPointerUp={() => setAutoRotate(true)}
       onPointerLeave={() => setAutoRotate(true)}
@@ -1705,7 +1705,7 @@ export default function BoxPreview3D({
       {/* Soft studio atmosphere wash */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_28%,rgba(39,87,255,0.09),transparent_58%),radial-gradient(ellipse_at_80%_90%,rgba(255,255,255,0.7),transparent_45%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_28%,rgba(189,249,6,0.09),transparent_58%),radial-gradient(ellipse_at_80%_90%,rgba(255,255,255,0.7),transparent_45%)]"
       />
 
       <div className="absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 p-4 md:p-5">

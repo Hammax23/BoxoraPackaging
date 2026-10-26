@@ -1,10 +1,14 @@
-import { trendsMegamenu } from "@/lib/data";
+"use client";
+
+import { useSiteContent } from "@/components/SiteContentProvider";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function TrendsMegamenu({ onNavigate }: { onNavigate?: () => void }) {
-  const { title, items, cta, viewAll } = trendsMegamenu;
+  const { trends: items, menus } = useSiteContent();
+  const { trendsTitle: title, trendsCta: cta } = menus;
+  const viewAll = { label: menus.trendsViewAllLabel, href: "/trends" };
 
   return (
     <div className="mx-auto w-full max-w-[1320px] px-6 py-8 xl:px-8">

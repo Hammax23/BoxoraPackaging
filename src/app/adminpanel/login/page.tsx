@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background-field/60 via-white to-white">
       <div className="container-main flex min-h-screen items-center justify-center py-10">
-        <div className="w-full max-w-[520px] overflow-hidden rounded-[32px] border border-border bg-white shadow-[0_24px_80px_rgba(30,16,35,0.12)]">
+        <div className="w-full max-w-[520px] overflow-hidden rounded-[16px] border border-border bg-white shadow-[0_24px_80px_rgba(3,90,83,0.12)]">
           <div className="border-b border-border bg-white px-6 py-7 sm:px-8">
             <div className="flex items-start justify-between gap-4">
               <div>
@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="btn-slip inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_8px_28px_rgba(39,87,255,0.28)] transition hover:bg-primary/90 disabled:opacity-60"
+              className="btn-slip inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-[0.1em] text-white shadow-[0_8px_28px_rgba(189,249,6,0.28)] transition hover:bg-primary/90 disabled:opacity-60"
             >
               {loading ? "Signing in…" : "Sign in"}
               <ArrowRight className="h-4 w-4" />

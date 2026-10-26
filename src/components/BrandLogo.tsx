@@ -1,4 +1,3 @@
-import { images } from "@/lib/images";
 import Link from "next/link";
 
 type BrandLogoProps = {
@@ -8,42 +7,41 @@ type BrandLogoProps = {
   className?: string;
 };
 
+// Icon box is square-ish (the mark is 485x489).
 const sizeMap = {
-  sm: { iconW: 40, iconH: 38, text: "text-[17px]", gap: "gap-1.5", letterSpacing: "0.04em" },
-  nav: { iconW: 58, iconH: 62, text: "text-[25px]", gap: "gap-2", letterSpacing: "0.045em" },
-  md: { iconW: 50, iconH: 54, text: "text-[22px]", gap: "gap-1.5", letterSpacing: "0.05em" },
-  lg: { iconW: 56, iconH: 60, text: "text-[26px]", gap: "gap-2", letterSpacing: "0.05em" },
+  sm: { icon: 40, text: "text-[17px]", gap: "gap-2", pill: "px-1.5" },
+  nav: { icon: 56, text: "text-[23px]", gap: "gap-2.5", pill: "px-2" },
+  md: { icon: 50, text: "text-[21px]", gap: "gap-2.5", pill: "px-1.5" },
+  lg: { icon: 52, text: "text-[26px]", gap: "gap-3", pill: "px-2" },
 } as const;
 
-export default function BrandLogo({
-  href = "/",
-  variant = "dark",
-  size = "md",
-  className = "",
-}: BrandLogoProps) {
+/** Two-tone cube mark + wordmark. On dark backgrounds the mark and "BOX" flip to cream and "ORA" stays lime. */
+export default function BrandLogo({ href = "/", variant = "dark", size = "md", className = "" }: BrandLogoProps) {
   const s = sizeMap[size];
-  const boxColor = variant === "light" ? "text-white" : "text-[#0B1220]";
+  const onDark = variant === "light";
 
   const content = (
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
-      <span
-        className="flex shrink-0 items-center justify-center overflow-hidden rounded-md"
-        style={{ width: `${s.iconW}px`, height: `${s.iconH}px` }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={images.logo}
-          alt=""
-          className="h-full w-auto max-w-none object-cover object-center"
-        />
-      </span>
-      <span
-        className={`font-body ${s.text} font-extrabold uppercase leading-none`}
-        style={{ letterSpacing: s.letterSpacing }}
-        aria-label="Boxora"
-      >
-        <span className={boxColor}>BOX</span>
-        <span className="text-primary">ORA</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={onDark ? "/logo/mark-dark.png" : "/logo/mark-light.png"}
+        alt=""
+        width={s.icon}
+        height={s.icon}
+        className="shrink-0 object-contain"
+        style={{ width: s.icon, height: s.icon }}
+      />
+      <span className={`font-heading ${s.text} font-extrabold uppercase leading-none tracking-[0.02em]`} aria-label="Boxora">
+        <span className={onDark ? "text-[#fcfaef]" : "text-[#035a53]"}>BOX</span>
+        <span
+          className={
+            onDark
+              ? "text-[#bdf906]"
+              : `ml-0.5 inline-block rounded-md bg-[#bdf906] py-[3px] text-[#035a53] ${s.pill}`
+          }
+        >
+          ORA
+        </span>
       </span>
     </span>
   );

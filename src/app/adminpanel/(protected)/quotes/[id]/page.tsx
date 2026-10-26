@@ -1,8 +1,12 @@
+import TrackingFields from "@/components/admin/TrackingFields";
+import ShareTracking from "@/components/admin/ShareTracking";
 import ConfirmButton from "@/components/admin/ConfirmButton";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { logAction } from "@/lib/adminAudit";
 import { requireAdmin } from "@/lib/adminAuth";
 import { prisma } from "@/lib/db";
+import { ORDER_STAGES, stageIndex } from "@/lib/orderTracking";
+import { deleteUpdate, saveTracking } from "../../orders/actions";
 import { ArrowLeft, Download, FileText, Mail, Phone, Trash2 } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
@@ -39,7 +43,7 @@ function Row({ k, v }: { k: string; v?: React.ReactNode }) {
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-[24px] border border-border bg-white p-6 shadow-sm">
+    <section className="rounded-[16px] border border-border bg-white p-6 shadow-sm">
       <h3 className="font-heading text-xl text-dark">{title}</h3>
       <dl className="mt-4">{children}</dl>
     </section>
@@ -49,7 +53,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   await requireAdmin();
   const { id } = await params;
-  const quote = await prisma.quoteRequest.findUnique({ where: { id }, include: { items: true } });
+  const quote = await prisma.quoteRequest.findUnique({ where: { id }, include: { items: true, updates: { orderBy: { createdAt: "desc" } } } });
   if (!quote) notFound();
 
   async function updateStatus(formData: FormData) {
@@ -83,7 +87,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         <ArrowLeft className="h-4 w-4" /> All quote requests
       </Link>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-3">
@@ -127,6 +131,47 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
           </div>
         </div>
       </div>
+
+      <section className="rounded-[16px] border border-border bg-white p-6 shadow-sm">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="font-heading text-xl text-dark">Order tracking</h3>
+          <p className="text-xs text-text">
+            The customer tracks this at <strong>/track</strong> with reference <strong>{quote.reference}</strong> and their email. Pick a stage to turn tracking on.
+          </p>
+        </div>
+        {quote.orderStage && (
+          <div className="mt-4">
+            <ShareTracking reference={quote.reference} name={quote.name} email={quote.email} />
+          </div>
+        )}
+        <form action={saveTracking} className="mt-4 grid gap-3 md:grid-cols-2">
+          <input type="hidden" name="id" value={quote.id} />
+          <TrackingFields order={quote} />
+          <SubmitButton pendingText="Saving…" className="btn-slip rounded-xl bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white md:col-span-2">
+            Save tracking
+          </SubmitButton>
+        </form>
+        {quote.updates.length > 0 && (
+          <ul className="mt-5 divide-y divide-border rounded-xl border border-border">
+            {quote.updates.map((u) => (
+              <li key={u.id} className="flex items-start justify-between gap-3 p-3 text-sm">
+                <div>
+                  <p className="font-semibold text-dark">{ORDER_STAGES[stageIndex(u.stage)]?.label ?? u.stage}</p>
+                  <p className="text-text">{u.message}</p>
+                  <p className="mt-1 text-xs text-lighter">{when(u.createdAt)}</p>
+                </div>
+                <form action={deleteUpdate}>
+                  <input type="hidden" name="id" value={quote.id} />
+                  <input type="hidden" name="updateId" value={u.id} />
+                  <ConfirmButton message="Remove this update from the customer's timeline?" label="Remove update" className="text-red-600">
+                    <Trash2 className="h-4 w-4" />
+                  </ConfirmButton>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card title="Customer">
@@ -186,7 +231,7 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         )}
       </Card>
 
-      <section className="rounded-[24px] border border-border bg-white p-6 shadow-sm">
+      <section className="rounded-[16px] border border-border bg-white p-6 shadow-sm">
         <h3 className="font-heading text-xl text-dark">Uploaded designs ({files.length})</h3>
         {files.length === 0 ? (
           <p className="mt-4 text-sm text-lighter">The customer did not upload any files.</p>

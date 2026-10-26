@@ -2,6 +2,7 @@
 
 import { IndustriesProvider } from "@/components/IndustriesProvider";
 import { SiteContentProvider } from "@/components/SiteContentProvider";
+import FloatingActions from "@/components/FloatingActions";
 import QuoteDrawerProvider from "@/components/QuoteDrawerProvider";
 import type { SiteContent } from "@/lib/queries/content";
 import type { IndustryView } from "@/lib/queries/industries";
@@ -18,7 +19,10 @@ export default function Providers({
   return (
     <IndustriesProvider industries={industries}>
       <SiteContentProvider content={siteContent}>
-        <QuoteDrawerProvider>{children}</QuoteDrawerProvider>
+        <QuoteDrawerProvider>
+          {children}
+          <FloatingActions />
+        </QuoteDrawerProvider>
       </SiteContentProvider>
     </IndustriesProvider>
   );

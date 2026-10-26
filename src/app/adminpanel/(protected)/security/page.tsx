@@ -52,13 +52,13 @@ export default async function AdminSecurityPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Account</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Security</h2>
         <p className="mt-2 text-sm text-text">Signed in as {admin.email}</p>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <h3 className="font-heading text-2xl text-dark">Change password</h3>
         <p className="mt-1 text-sm text-text">Use at least 12 characters with letters and numbers.</p>
 
@@ -86,7 +86,7 @@ export default async function AdminSecurityPage({
         </form>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <h3 className="font-heading text-2xl text-dark">Server settings</h3>
         <ul className="mt-3 space-y-2 text-sm">
           <li className={secretProblem ? "text-secondary" : "text-emerald-700"}>

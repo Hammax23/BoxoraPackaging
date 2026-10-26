@@ -16,7 +16,7 @@ export default function AboutCTAButton({
 }) {
   const styles =
     variant === "primary"
-      ? "bg-primary text-white shadow-[0_12px_36px_rgba(39,87,255,0.4)] hover:bg-[#1f47d6]"
+      ? "bg-primary text-white shadow-[0_12px_36px_rgba(189,249,6,0.4)] hover:bg-[#8fbf00]"
       : "bg-white text-dark hover:bg-background-field";
   return (
     <button

@@ -1,14 +1,14 @@
 "use client";
 
 import { useIndustries } from "@/components/IndustriesProvider";
-import { industriesMegamenu } from "@/lib/data";
-import { ChevronRight } from "lucide-react";
+import { useSiteContent } from "@/components/SiteContentProvider";
+import { ChevronRight, LayoutGrid } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function IndustriesMegamenu() {
   const categories = useIndustries();
-  const { banners } = industriesMegamenu;
+  const banners = useSiteContent().menus.industriesBanners;
 
   return (
     <div className="mx-auto w-full max-w-[1320px] px-6 py-8 xl:px-8">
@@ -40,6 +40,14 @@ export default function IndustriesMegamenu() {
               </div>
             </Link>
           ))}
+          <Link href="/products" className="group flex items-center gap-4 transition hover:opacity-80">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background-field text-dark xl:h-[60px] xl:w-[60px]">
+              <LayoutGrid className="h-6 w-6" />
+            </span>
+            <h4 className="text-[15px] font-bold leading-tight text-dark transition group-hover:text-primary xl:text-base">
+              See all industries
+            </h4>
+          </Link>
         </div>
 
         {/* Promo banners */}

@@ -31,13 +31,13 @@ export default async function FaqPage() {
       <JsonLd data={faqJsonLd(faqs)} />
       <Header />
 
-      <section className="relative overflow-hidden bg-gradient-to-b from-white to-[#e9eeff] pb-20 pt-12 md:pt-16">
-        <div className="pointer-events-none absolute left-1/2 top-[-140px] h-[360px] w-[720px] -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/15 via-[#9b8cff]/15 to-secondary/20 blur-3xl" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-white to-[#f3f1de] pb-20 pt-12 md:pt-16">
+        <div className="pointer-events-none absolute left-1/2 top-[-140px] h-[360px] w-[720px] -translate-x-1/2 rounded-full bg-gradient-to-r from-primary/15 via-[#d8e267]/15 to-secondary/20 blur-3xl" />
         {/* decorative icon chips */}
-        <span className="pointer-events-none absolute left-[9%] top-[38%] hidden h-14 w-14 -rotate-6 items-center justify-center rounded-2xl border border-white bg-white text-primary shadow-[0_14px_34px_rgba(39,87,255,0.18)] lg:flex">
+        <span className="pointer-events-none absolute left-[9%] top-[38%] hidden h-14 w-14 -rotate-6 items-center justify-center rounded-2xl border border-white bg-white text-primary shadow-[0_14px_34px_rgba(189,249,6,0.18)] lg:flex">
           <Package className="h-6 w-6" />
         </span>
-        <span className="pointer-events-none absolute right-[10%] top-[30%] hidden h-14 w-14 rotate-6 items-center justify-center rounded-2xl border border-white bg-white text-secondary shadow-[0_14px_34px_rgba(248,101,220,0.2)] lg:flex">
+        <span className="pointer-events-none absolute right-[10%] top-[30%] hidden h-14 w-14 rotate-6 items-center justify-center rounded-2xl border border-white bg-white text-secondary shadow-[0_14px_34px_rgba(216,226,103,0.2)] lg:flex">
           <Truck className="h-6 w-6" />
         </span>
         <div className="container-main relative z-10 text-center">
@@ -48,7 +48,7 @@ export default async function FaqPage() {
             </span>
             <h1 className="mx-auto mt-5 max-w-3xl font-heading text-[34px] leading-[1.1] text-dark sm:text-[46px] md:text-[54px]">
               Questions? We&apos;ve got{" "}
-              <span className="bg-[linear-gradient(100deg,#2757ff_0%,#7a4dff_50%,#f865dc_100%)] bg-clip-text font-body font-extrabold tracking-tight text-transparent">
+              <span className="bg-[linear-gradient(100deg,#035a53_0%,#0b7a6e_100%)] bg-clip-text font-body font-extrabold tracking-tight text-transparent">
                 answers
               </span>
             </h1>
@@ -68,7 +68,7 @@ export default async function FaqPage() {
           <div className="mx-auto mt-16 grid max-w-5xl gap-4 md:grid-cols-3">
             {topics.map((t, i) => (
               <AnimatedSection key={t.title} delay={i * 0.08}>
-                <div className="flex h-full items-start gap-4 rounded-[24px] border border-border bg-white p-5">
+                <div className="flex h-full items-start gap-4 rounded-[16px] border border-border bg-white p-5">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-background-field text-primary">
                     <t.icon className="h-5 w-5" />
                   </span>
@@ -86,7 +86,7 @@ export default async function FaqPage() {
       <section className="section-padding bg-background-field">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-primary via-[#4a3df0] to-secondary px-6 py-14 text-center md:px-16 md:py-16">
+            <div className="relative overflow-hidden rounded-[20px] bg-dark ring-1 ring-primary/30 px-6 py-14 text-center md:px-16 md:py-16">
               <h2 className="mx-auto max-w-2xl font-heading text-[32px] leading-tight text-white md:text-[44px]">
                 Still have a question?
               </h2>

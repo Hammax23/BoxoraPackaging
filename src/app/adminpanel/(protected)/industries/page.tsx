@@ -132,7 +132,7 @@ export default async function AdminIndustriesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="section-label text-primary">Header</p>
@@ -149,7 +149,7 @@ export default async function AdminIndustriesPage() {
       </div>
 
       {industries.length === 0 && (
-        <div className="rounded-[28px] border border-primary/25 bg-primary/[0.04] p-6 md:p-8">
+        <div className="rounded-[20px] border border-primary/25 bg-primary/[0.04] p-6 md:p-8">
           <h3 className="font-heading text-2xl text-dark">No industries in the database yet</h3>
           <p className="mt-2 text-sm text-text">
             The website is currently showing the {staticIndustries().length} built-in default industries. Import them
@@ -167,7 +167,7 @@ export default async function AdminIndustriesPage() {
         </div>
       )}
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <h3 className="font-heading text-2xl text-dark">Add new industry</h3>
         <form action={createIndustry} className="mt-5 grid gap-3 md:grid-cols-2">
           <input name="name" placeholder="Name (e.g. Candle Packaging)" className={input} required />
@@ -176,7 +176,7 @@ export default async function AdminIndustriesPage() {
           <input name="slug" placeholder="Slug (optional — generated from name)" className={input} />
           <button
             type="submit"
-            className="btn-slip inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(39,87,255,0.28)] transition hover:bg-primary/90 md:col-span-2"
+            className="btn-slip inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_4px_16px_rgba(189,249,6,0.28)] transition hover:bg-primary/90 md:col-span-2"
           >
             <Plus className="h-4 w-4" />
             Add industry
@@ -184,7 +184,7 @@ export default async function AdminIndustriesPage() {
         </form>
       </div>
 
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <div className="flex items-center justify-between gap-4">
           <h3 className="font-heading text-2xl text-dark">All industries</h3>
           <span className="rounded-full border border-border px-3 py-2 text-sm text-lighter">

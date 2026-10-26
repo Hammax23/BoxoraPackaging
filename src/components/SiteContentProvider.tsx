@@ -1,7 +1,8 @@
 "use client";
 
 import type { SiteContent } from "@/lib/queries/content";
-import { defaultFooterGroups, topBar, heroContent, featuresSection, navLeft, navRight } from "@/lib/data";
+import { contentSection } from "@/lib/contentSections";
+import { defaultFooterGroups, packagingStyles, packagingTrends, topBar, heroContent, featuresSection, navLeft, navRight } from "@/lib/data";
 import { createContext, useContext } from "react";
 
 const defaults: SiteContent = {
@@ -10,6 +11,10 @@ const defaults: SiteContent = {
   features: featuresSection,
   nav: { left: navLeft as SiteContent["nav"]["left"], right: navRight as SiteContent["nav"]["right"] },
   footer: defaultFooterGroups,
+  social: [],
+  styles: packagingStyles.map((s) => ({ ...s, benefits: [], bestFor: [], materials: [] })),
+  trends: packagingTrends,
+  menus: contentSection("menus")!.defaults as SiteContent["menus"],
 };
 
 const SiteContentContext = createContext<SiteContent>(defaults);

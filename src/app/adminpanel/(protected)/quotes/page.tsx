@@ -5,6 +5,9 @@ import ConfirmButton from "@/components/admin/ConfirmButton";
 import SubmitButton from "@/components/admin/SubmitButton";
 import { Download, Mail, Search, Trash2 } from "lucide-react";
 import { revalidatePath } from "next/cache";
+import { ORDER_STAGES, stageIndex } from "@/lib/orderTracking";
+import { startTracking } from "../orders/actions";
+import { Truck } from "lucide-react";
 import Link from "next/link";
 
 const input =
@@ -71,7 +74,7 @@ export default async function AdminQuotesPage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[28px] border border-border bg-white p-6 shadow-sm md:p-8">
+      <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm md:p-8">
         <p className="section-label text-primary">Leads</p>
         <h2 className="mt-4 font-heading text-3xl text-dark">Quote requests</h2>
         <p className="mt-2 text-sm text-text">{allCount} total requests</p>
@@ -114,7 +117,7 @@ export default async function AdminQuotesPage({
             size: number;
           }[];
           return (
-          <div key={quote.id} className="rounded-[28px] border border-border bg-white p-6 shadow-sm">
+          <div key={quote.id} className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <Link href={`/adminpanel/quotes/${quote.id}`} className="font-heading text-xl text-dark transition hover:text-primary">{quote.name}</Link>
@@ -191,10 +194,25 @@ export default async function AdminQuotesPage({
                 </form>
                 <Link
                   href={`/adminpanel/quotes/${quote.id}`}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-[12px] font-bold text-primary transition hover:bg-primary hover:text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-[12px] font-bold text-primary transition hover:bg-primary hover:text-dark"
                 >
                   View full details{files.length > 0 ? ` · ${files.length} file${files.length === 1 ? "" : "s"}` : ""}
                 </Link>
+                {quote.orderStage ? (
+                  <Link
+                    href={`/adminpanel/quotes/${quote.id}`}
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-[12px] font-bold text-dark"
+                  >
+                    <Truck className="h-4 w-4" /> Tracking: {ORDER_STAGES[stageIndex(quote.orderStage)]?.label} · Manage
+                  </Link>
+                ) : (
+                  <form action={startTracking}>
+                    <input type="hidden" name="id" value={quote.id} />
+                    <SubmitButton pendingText="Starting…" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-dark px-4 py-2.5 text-[12px] font-bold text-white transition hover:bg-dark/85">
+                      <Truck className="h-4 w-4" /> Start order tracking
+                    </SubmitButton>
+                  </form>
+                )}
                 <div className="flex items-center gap-2">
                   <a
                     href={`mailto:${quote.email}?subject=${encodeURIComponent(`Your Boxora quote ${quote.reference}`)}`}
@@ -218,7 +236,7 @@ export default async function AdminQuotesPage({
           );
         })}
         {quotes.length === 0 && (
-          <div className="rounded-[28px] border border-dashed border-border bg-white px-4 py-12 text-center text-sm text-lighter">
+          <div className="rounded-[20px] border border-dashed border-border bg-white px-4 py-12 text-center text-sm text-lighter">
             No quote requests match.
           </div>
         )}
