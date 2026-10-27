@@ -469,14 +469,8 @@ footer .text-primary, .bg-dark .text-primary, .bg-navbar-top .text-primary, .nav
 .hero-wall {
   --g: 0.75rem;
   /* fade every edge so the wall dissolves into the background instead of being cut off */
-  mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  mask-composite: intersect;
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%);
-  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 88%, transparent 100%);
 }
 @media (min-width: 640px) {
   .hero-wall { --g: 1rem; }
@@ -510,4 +504,3 @@ footer .text-primary, .bg-dark .text-primary, .bg-navbar-top .text-primary, .nav
 @media (prefers-reduced-motion: reduce) {
   .hero-wall-track { animation: none; }
 }
-

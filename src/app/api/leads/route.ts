@@ -108,6 +108,8 @@ export async function POST(req: Request) {
     textOnBox: text(form, "brandText", 40) || null,
     neededBy: text(form, "neededBy", 30) || null,
     shipTo: text(form, "shipTo", 200) || null,
+    zip: text(form, "zip", 20) || null,
+    unit: text(form, "unit", 20) || null,
     material: text(form, "material", 60) || null,
     color: text(form, "color", 60) || null,
     finish: text(form, "finish", 60) || null,
@@ -117,6 +119,11 @@ export async function POST(req: Request) {
     requestType: type,
   };
   const phone = text(form, "phone", 40);
+  // Product page quote form: phone and quantity are required there.
+  if (text(form, "source", 60).startsWith("product:")) {
+    if (!phone) return fail("Please enter your phone number.");
+    if (!quantity) return fail("Please enter a quantity.");
+  }
   const company = text(form, "company", 120);
   const notes = text(form, "notes", 4000);
 
@@ -162,7 +169,7 @@ export async function POST(req: Request) {
   }
 
   const dims = [dimensions.length, dimensions.width, dimensions.height].every((d) => d != null)
-    ? `${dimensions.length} x ${dimensions.width} x ${dimensions.height} in`
+    ? `${dimensions.length} x ${dimensions.width} x ${dimensions.height} ${details.unit ?? "in"}`
     : "-";
   await notifyOwner({
     subject: `New ${type === "order" ? "order request" : "quote request"} ${reference} from ${name}`,
@@ -180,6 +187,7 @@ export async function POST(req: Request) {
       `Text on box: ${details.textOnBox ?? "-"}`,
       `Needed by: ${details.neededBy ?? "-"}`,
       `Ship to: ${details.shipTo ?? "-"}`,
+      `Zip code: ${details.zip ?? "-"}`,
       `Files: ${stored.length ? stored.map((f) => f.name).join(", ") : "none"}`,
       "",
       notes || "(no notes)",

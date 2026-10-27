@@ -5,6 +5,8 @@ type BrandLogoProps = {
   variant?: "dark" | "light";
   size?: "sm" | "nav" | "md" | "lg";
   className?: string;
+  /** On dark backgrounds, keep "ORA" in the lime box like the header logo. */
+  pill?: boolean;
 };
 
 // Icon box is square-ish (the mark is 485x489).
@@ -16,12 +18,12 @@ const sizeMap = {
 } as const;
 
 /** Two-tone cube mark + wordmark. On dark backgrounds the mark and "BOX" flip to cream and "ORA" stays lime. */
-export default function BrandLogo({ href = "/", variant = "dark", size = "md", className = "" }: BrandLogoProps) {
+export default function BrandLogo({ href = "/", variant = "dark", size = "md", className = "", pill = false }: BrandLogoProps) {
   const s = sizeMap[size];
   const onDark = variant === "light";
 
   const content = (
-    <span className={`inline-flex items-center ${s.gap} ${className}`}>
+    <span className={`inline-flex items-center whitespace-nowrap ${s.gap} ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={onDark ? "/logo/mark-dark.png" : "/logo/mark-light.png"}
@@ -35,7 +37,7 @@ export default function BrandLogo({ href = "/", variant = "dark", size = "md", c
         <span className={onDark ? "text-[#fcfaef]" : "text-[#035a53]"}>BOX</span>
         <span
           className={
-            onDark
+            onDark && !pill
               ? "text-[#bdf906]"
               : `ml-0.5 inline-block rounded-md bg-[#bdf906] py-[3px] text-[#035a53] ${s.pill}`
           }

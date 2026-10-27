@@ -1,14 +1,13 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import StarRating from "@/components/ui/StarRating";
+import CategoryResults from "./CategoryResults";
 import { getStyles, getTrends } from "@/lib/queries/pageContent";
 import { getIndustries } from "@/lib/queries/industries";
 import { listActiveProducts } from "@/lib/queries/products";
 import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 import JsonLd from "@/components/JsonLd";
 import type { Metadata } from "next";
-import { Grid2X2, List, ChevronRight } from "lucide-react";
-import Image from "next/image";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -47,6 +46,9 @@ export default async function CategoryPage({
   if (!activeCategory) notFound();
 
   const results = products.filter((p) => productInCategory(p.category, activeCategory.name));
+  const counted = industries.map((cat) => ({ cat, count: products.filter((p) => productInCategory(p.category, cat.name)).length }));
+  // Industries with products first, so people land on something useful.
+  const ordered = [...counted].sort((a, b) => Number(b.count > 0) - Number(a.count > 0));
 
   return (
     <>
@@ -66,6 +68,10 @@ export default async function CategoryPage({
               Home Page
             </Link>
             <ChevronRight className="mx-2 h-4 w-4" strokeWidth={2.5} />
+            <Link href="/industries" className="transition hover:text-primary">
+              Industries
+            </Link>
+            <ChevronRight className="mx-2 h-4 w-4" strokeWidth={2.5} />
             <span className="text-dark">{activeCategory.name}</span>
           </div>
         </div>
@@ -74,29 +80,31 @@ export default async function CategoryPage({
           <div className="container-main">
             <div className="grid gap-10 lg:grid-cols-[280px_1fr] xl:gap-12">
               {/* Sidebar */}
-              <aside className="space-y-8">
+              <aside className="hidden space-y-8 lg:block">
                 <div>
                   <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-dark">
                     Industries
                   </h3>
                   <div className="mt-4 space-y-1">
-                    {industries.map((cat) => {
+                    {ordered.map(({ cat, count }) => {
                       const isActive = cat.slug === activeCategory.slug;
-                      const count = products.filter((p) => productInCategory(p.category, cat.name)).length;
                       return (
                         <Link
                           key={cat.slug}
                           href={cat.href}
+                          aria-current={isActive ? "page" : undefined}
                           className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition ${
                             isActive
-                              ? "bg-background-field text-primary"
-                              : "text-text hover:bg-background-field hover:text-dark"
+                              ? "bg-primary text-dark"
+                              : count > 0
+                                ? "text-text hover:bg-background-field hover:text-dark"
+                                : "text-lighter hover:bg-background-field hover:text-dark"
                           }`}
                         >
                           <span className="truncate">{cat.name}</span>
                           <span
                             className={`ml-3 inline-flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-[12px] font-bold ${
-                              isActive ? "bg-primary text-white" : "bg-background-field text-lighter"
+                              isActive ? "bg-dark text-[#bdf906]" : count > 0 ? "bg-background-field text-dark" : "bg-background-field/70 text-lighter"
                             }`}
                           >
                             {count}
@@ -146,108 +154,30 @@ export default async function CategoryPage({
 
               {/* Content */}
               <div>
-                {/* Toolbar */}
-                <div className="flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-lighter">
-                    Showing all <span className="font-bold text-dark">{results.length}</span>{" "}
-                    results
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2 text-lighter">
-                      <button
-                        type="button"
-                        aria-label="Grid view"
-                        className="rounded-lg p-2 text-dark transition hover:bg-background-field"
-                      >
-                        <Grid2X2 className="h-4.5 w-4.5" />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="List view"
-                        className="rounded-lg p-2 text-lighter transition hover:bg-background-field hover:text-dark"
-                      >
-                        <List className="h-4.5 w-4.5" />
-                      </button>
-                    </div>
-
-                    <select
-                      className="h-10 rounded-full border border-border bg-white px-4 text-sm font-semibold text-text outline-none focus:border-primary"
-                      defaultValue="default"
-                    >
-                      <option value="default">Default sorting</option>
-                      <option value="price-asc">Sort by price: low to high</option>
-                      <option value="price-desc">Sort by price: high to low</option>
-                      <option value="rating">Sort by rating</option>
-                    </select>
-                  </div>
+                <div className="mb-8">
+                  <h1 className="font-heading text-[30px] leading-tight text-dark md:text-[40px]">{activeCategory.name} Packaging</h1>
+                  <p className="mt-2 max-w-2xl text-base text-text">{activeCategory.sub}. Browse ready-made options or get a custom quote.</p>
                 </div>
 
-                {/* Products grid */}
-                <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {results.map((p) => (
-                    <article
-                      key={p.slug}
-                      className="group relative overflow-hidden rounded-[22px] border border-border bg-white transition hover:-translate-y-1 hover:border-primary/30 hover:shadow-[0_20px_55px_rgba(189,249,6,0.12)]"
-                    >
-                      <Link href={`/products/${p.slug}`} aria-label={`View ${p.name}`} className="relative block bg-white p-4">
-                        <div className="relative mx-auto aspect-square max-w-[260px]">
-                          <Image
-                            src={p.image}
-                            alt={p.name}
-                            fill
-                            className="object-contain p-2 transition duration-500 group-hover:scale-105"
-                            sizes="260px"
-                          />
-                        </div>
+                {/* Mobile: swipeable industry chips (the sidebar is desktop only) */}
+                <div className="-mx-4 mb-6 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
+                  {ordered.map(({ cat }) => {
+                    const isActive = cat.slug === activeCategory.slug;
+                    return (
+                      <Link
+                        key={cat.slug}
+                        href={cat.href}
+                        className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                          isActive ? "border-primary bg-primary text-dark" : "border-border bg-white text-text hover:border-primary"
+                        }`}
+                      >
+                        {cat.name}
                       </Link>
-
-                      <div className="space-y-2 px-5 pb-5">
-                        <h3 className="font-heading text-[18px] leading-snug text-dark">
-                          <Link href={`/products/${p.slug}`} className="transition hover:text-primary">
-                            {p.name}
-                          </Link>
-                        </h3>
-                        <p className="line-clamp-2 text-sm text-lighter">
-                          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                          dolore eu fugiat nulla pariatur.
-                        </p>
-
-                        <div className="pt-1">
-                          {"salePrice" in p && p.salePrice ? (
-                            <div className="flex items-center gap-2">
-                              {p.discount && (
-                                <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">
-                                  {p.discount}
-                                </span>
-                              )}
-                              <span className="text-[15px] font-bold text-primary">
-                                ${p.salePrice.toFixed(2)}
-                              </span>
-                              <span className="text-[13px] text-lighter line-through">
-                                ${(p.price ?? 0).toFixed(2)}
-                              </span>
-                            </div>
-                          ) : (
-                            <span className="text-[15px] font-bold text-dark">
-                              ${(p.price ?? 0).toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-
-                        <StarRating rating={p.rating} reviews={p.reviews} />
-
-                        <Link
-                          href={`/products/${p.slug}`}
-                          className="mt-3 inline-flex items-center gap-1.5 text-[13px] font-bold uppercase tracking-[0.08em] text-primary"
-                        >
-                          View specs &amp; order
-                          <ChevronRight className="h-4 w-4 transition group-hover:translate-x-1" strokeWidth={2.5} />
-                        </Link>
-                      </div>
-                    </article>
-                  ))}
+                    );
+                  })}
                 </div>
+
+                <CategoryResults products={results} industry={activeCategory.name} />
               </div>
             </div>
           </div>

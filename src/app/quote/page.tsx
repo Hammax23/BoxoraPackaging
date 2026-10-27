@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import InstantQuote from "@/components/InstantQuote";
+import QuoteSection from "@/components/QuoteSection";
 import { buildPageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 
@@ -22,7 +22,7 @@ export default async function QuotePage({
   return (
     <main>
       <Header />
-      <InstantQuote asPage defaultIndustry={preset} />
+      <QuoteSection asPage source="quote-page" industry={preset} />
       <Footer />
     </main>
   );

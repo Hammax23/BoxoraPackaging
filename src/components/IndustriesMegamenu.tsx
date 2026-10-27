@@ -6,6 +6,8 @@ import { ChevronRight, LayoutGrid } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+const MAX_INDUSTRIES = 10;
+
 export default function IndustriesMegamenu() {
   const categories = useIndustries();
   const banners = useSiteContent().menus.industriesBanners;
@@ -15,7 +17,7 @@ export default function IndustriesMegamenu() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_340px] xl:gap-10">
         {/* Categories — 2 columns */}
         <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2 xl:gap-x-14 xl:gap-y-6">
-          {categories.map((item) => (
+          {categories.slice(0, MAX_INDUSTRIES).map((item) => (
             <Link
               key={item.slug}
               href={item.href}
@@ -40,14 +42,15 @@ export default function IndustriesMegamenu() {
               </div>
             </Link>
           ))}
-          <Link href="/products" className="group flex items-center gap-4 transition hover:opacity-80">
-            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-background-field text-dark xl:h-[60px] xl:w-[60px]">
-              <LayoutGrid className="h-6 w-6" />
-            </span>
-            <h4 className="text-[15px] font-bold leading-tight text-dark transition group-hover:text-primary xl:text-base">
-              See all industries
-            </h4>
-          </Link>
+          <div className="sm:col-span-2">
+            <Link
+              href="/industries"
+              className="inline-flex items-center gap-2 rounded-full bg-dark px-6 py-3 text-sm font-bold text-white transition hover:bg-primary hover:text-dark"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              View all industries
+            </Link>
+          </div>
         </div>
 
         {/* Promo banners */}

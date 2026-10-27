@@ -97,7 +97,7 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 sm:gap-x-8 sm:gap-y-12 sm:py-14 md:py-16 lg:grid-cols-[1.45fr_1fr_1fr_1fr_1.45fr]">
             {/* Brand */}
             <div className="col-span-2 lg:col-span-1">
-              <BrandLogo variant="light" size="md" />
+              <BrandLogo variant="light" size="nav" pill />
               <p className="mt-5 hidden max-w-xs text-[14.5px] leading-relaxed text-white/60 sm:block">
                 {topBar.tagline}
               </p>

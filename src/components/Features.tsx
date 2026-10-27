@@ -31,12 +31,8 @@ function FeatureIcon({ icon }: { icon: string }) {
   if (!Icon) return null;
 
   return (
-    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
-      <div className="absolute inset-0 rounded-2xl bg-primary/[0.08]" />
-      <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-[0_4px_16px_rgba(189,249,6,0.1)]">
-        <Icon className="h-6 w-6 text-primary" strokeWidth={1.75} />
-        <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full border-2 border-white bg-secondary" />
-      </div>
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#bdf906] shadow-[0_8px_24px_rgba(189,249,6,0.3)] transition duration-300 group-hover:scale-105">
+      <Icon className="h-7 w-7 text-[#035a53]" strokeWidth={2.25} />
     </div>
   );
 }

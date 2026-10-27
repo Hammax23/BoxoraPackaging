@@ -312,15 +312,21 @@ export default function Header() {
   const hasMobileDropdown = (link: NavItem) => !!(link.children?.length || link.megamenu);
   const getMobileItems = (link: NavItem) => {
     if (link.megamenu === "industries") {
-      return industries.map((c) => ({ title: c.name, href: c.href, sub: c.sub }));
+      return [
+        ...industries.slice(0, 10).map((c) => ({ title: c.name, href: c.href, sub: c.sub })),
+        ...(industries.length > 10 ? [{ title: "View all industries", href: "/industries", sub: "" }] : []),
+      ];
     }
 
     if (link.megamenu === "packaging-styles") {
-      return styles.map((s) => ({
-        title: s.title,
-        href: s.href,
-        sub: s.specs.slice(0, 2).join(" • "),
-      }));
+      return [
+        ...styles.slice(0, 10).map((s) => ({
+          title: s.title,
+          href: s.href,
+          sub: s.specs.slice(0, 2).join(" • "),
+        })),
+        ...(styles.length > 10 ? [{ title: "View all styles", href: "/styles", sub: "" }] : []),
+      ];
     }
 
     if (link.megamenu === "trends") {

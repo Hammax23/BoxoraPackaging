@@ -1,9 +1,11 @@
 "use client";
 
 import { useSiteContent } from "@/components/SiteContentProvider";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, LayoutGrid } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+const MAX_STYLES = 10;
 
 export default function PackagingStylesMegamenu({ onNavigate }: { onNavigate?: () => void }) {
   const { styles, menus } = useSiteContent();
@@ -14,30 +16,34 @@ export default function PackagingStylesMegamenu({ onNavigate }: { onNavigate?: (
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px] xl:grid-cols-[1fr_340px] xl:gap-10">
         {/* Left — Packaging styles (Industries-style list, but with specs) */}
         <div className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2 xl:gap-x-14 xl:gap-y-6">
-          {styles.slice(0, 10).map((style) => (
+          {styles.slice(0, MAX_STYLES).map((style) => (
             <Link
               key={style.title}
               href={style.href}
               onClick={onNavigate}
-              className="group flex items-center gap-4 rounded-2xl p-1.5 transition hover:bg-background-field/70"
+              className="group flex items-center gap-4 transition hover:opacity-80"
             >
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-background-field xl:h-[60px] xl:w-[60px]">
-                <Image src={style.image} alt={style.title} fill className="object-cover transition duration-300 group-hover:scale-110" sizes="60px" />
+                <Image src={style.image} alt={style.title} fill className="object-cover" sizes="60px" />
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0">
                 <h4 className="text-[15px] font-bold leading-tight text-dark transition group-hover:text-primary xl:text-base">
                   {style.title}
                 </h4>
-                <p className="mt-1 text-[13px] leading-snug text-lighter">
-                  {style.specs.slice(0, 2).join(" • ")}
-                </p>
+                <p className="mt-1 text-[13px] leading-snug text-lighter">{style.specs.slice(0, 2).join(" • ")}</p>
               </div>
-              <ChevronRight
-                className="h-4 w-4 shrink-0 -translate-x-1 text-primary opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100"
-                strokeWidth={2.5}
-              />
             </Link>
           ))}
+          <div className="sm:col-span-2">
+            <Link
+              href="/styles"
+              onClick={onNavigate}
+              className="inline-flex items-center gap-2 rounded-full bg-dark px-6 py-3 text-sm font-bold text-white transition hover:bg-primary hover:text-dark"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              View all styles
+            </Link>
+          </div>
         </div>
 
         {/* Right — Promo banners (same as Industries) */}
@@ -75,15 +81,6 @@ export default function PackagingStylesMegamenu({ onNavigate }: { onNavigate?: (
               </div>
             </Link>
           ))}
-
-          <Link
-            href="/styles"
-            onClick={onNavigate}
-            className="group inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-primary"
-          >
-            <ChevronRight className="h-3.5 w-3.5" strokeWidth={3} />
-            View all styles
-          </Link>
         </div>
       </div>
     </div>
