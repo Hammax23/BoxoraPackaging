@@ -74,7 +74,7 @@ function ShareBar({ title }: { title: string }) {
     "flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-dark transition hover:border-primary hover:bg-primary hover:text-dark";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="mr-1 text-[12px] font-bold uppercase tracking-[0.12em] text-lighter">Share</span>
       <button type="button" aria-label="Share on X" className={btn} onClick={() => open((u, t) => `https://twitter.com/intent/tweet?url=${u}&text=${t}`)}>
         <span className="text-[13px] font-bold">X</span>
@@ -169,8 +169,8 @@ export default function BlogPostPageClient({
             />
           </div>
 
-          <div className="mx-auto mt-10 grid max-w-[920px] gap-8 md:mt-12 lg:grid-cols-[minmax(0,680px)_56px] lg:items-start lg:justify-between lg:gap-12">
-            <div className="mx-auto w-full max-w-[720px] space-y-8">
+          <div className="mx-auto mt-10 grid max-w-[920px] gap-8 md:mt-12 lg:grid-cols-[56px_minmax(0,720px)_56px] lg:items-start lg:gap-10">
+            <div className="w-full space-y-6 lg:col-start-2 lg:row-start-1">
               {post.content.map((paragraph, i) => (
                 <p
                   key={`${post.slug}-${i}`}
@@ -184,7 +184,7 @@ export default function BlogPostPageClient({
                 </p>
               ))}
 
-              <div className="flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+              <div className="!mt-10 flex flex-col gap-5 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
                 <ShareBar title={post.title} />
                 <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
                   <ArrowLeft className="h-4 w-4" /> Back to the journal
@@ -192,7 +192,7 @@ export default function BlogPostPageClient({
               </div>
 
               {/* Author card */}
-              <div className="flex items-start gap-4 rounded-[24px] border border-border/80 bg-background-field/50 p-6 sm:p-7">
+              <div className="!mt-8 flex items-center gap-4 rounded-[24px] border border-border/80 bg-white p-6 sm:p-7">
                 <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-lg font-bold text-white">
                   {initials(post.author)}
                 </span>
@@ -207,8 +207,8 @@ export default function BlogPostPageClient({
             </div>
 
             {/* Sticky side share (desktop) */}
-            <aside className="hidden lg:block">
-              <div className="sticky top-32 flex flex-col items-center gap-3 rounded-full border border-border/80 bg-white p-2 shadow-[0_12px_30px_rgba(3,90,83,0.08)]">
+            <aside className="hidden lg:col-start-1 lg:row-start-1 lg:block lg:self-stretch">
+              <div className="sticky top-32 mx-auto flex w-fit flex-col items-center gap-2 rounded-full border border-border/80 bg-white p-2 shadow-[0_12px_30px_rgba(3,90,83,0.08)]">
                 <ShareRail title={post.title} />
               </div>
             </aside>
@@ -258,7 +258,7 @@ export default function BlogPostPageClient({
                 <Link
                   key={item.slug}
                   href={`/blog/${item.slug}`}
-                  className="group overflow-hidden rounded-[24px] border border-border/80 bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_24px_56px_rgba(3,90,83,0.1)]"
+                  className="group flex flex-col overflow-hidden rounded-[24px] border border-border/80 bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_24px_56px_rgba(3,90,83,0.1)]"
                 >
                   <div className="relative aspect-[1.18] overflow-hidden bg-background-field">
                     <Image
@@ -269,13 +269,13 @@ export default function BlogPostPageClient({
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="flex flex-1 flex-col p-6">
                     <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary">{item.category}</p>
                     <h3 className="mt-2 font-heading text-xl leading-snug text-dark transition group-hover:text-primary">
                       {item.title}
                     </h3>
                     <p className="mt-2 line-clamp-2 text-sm text-text">{item.excerpt}</p>
-                    <p className="mt-4 text-[12px] font-semibold text-lighter">{item.readTime}</p>
+                    <p className="mt-auto pt-4 text-[12px] font-semibold text-lighter">{item.readTime}</p>
                   </div>
                 </Link>
               ))}

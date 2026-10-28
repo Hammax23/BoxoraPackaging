@@ -137,7 +137,7 @@ export default function BlogPageClient({
           <AnimatedSection>
             <Link
               href={`/blog/${featured.slug}`}
-              className="group mx-auto grid max-w-[1180px] overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_24px_70px_rgba(3,90,83,0.14)] lg:h-[360px] lg:grid-cols-[1fr_1fr]"
+              className="group mx-auto grid max-w-[1180px] overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_24px_70px_rgba(3,90,83,0.14)] lg:min-h-[380px] lg:grid-cols-2"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-background-field lg:aspect-auto lg:h-full">
                 <Image
@@ -190,18 +190,18 @@ export default function BlogPageClient({
               </div>
             </div>
           </AnimatedSection>
-          <div className="mt-7 grid gap-4 md:grid-cols-3">
+          <div className="mt-7 grid gap-5 md:grid-cols-3">
             {picks.map((p, i) => (
               <AnimatedSection key={p.slug} delay={i * 0.08}>
                 <Link
                   href={`/blog/${p.slug}`}
-                  className="group flex h-full gap-4 rounded-[20px] border border-border/80 bg-background-field/35 p-5 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(3,90,83,0.1)]"
+                  className="group flex h-full items-start gap-4 rounded-[20px] border border-border/80 bg-background-field/35 p-6 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(3,90,83,0.1)]"
                 >
-                  <span className="font-heading text-[44px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)]">
+                  <span className="shrink-0 font-heading text-[44px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
                       {p.category}
                     </span>
                     <span className="mt-1 block font-heading text-[18px] leading-snug text-dark transition group-hover:text-primary">
