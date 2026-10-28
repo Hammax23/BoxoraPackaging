@@ -43,9 +43,9 @@ function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_28px_60px_rgba(189,249,6,0.12)]"
+      className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-border/80 bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_28px_60px_rgba(3,90,83,0.12)]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
+      <div className="relative aspect-[1.18] overflow-hidden bg-background-field">
         <Image
           src={post.image}
           alt={post.title}
@@ -53,21 +53,21 @@ function PostCard({ post }: { post: BlogPost }) {
           className="object-cover transition duration-700 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-dark backdrop-blur">
+        <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-dark shadow-sm backdrop-blur">
           {post.category}
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <span className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary">
+      <div className="flex flex-1 flex-col p-6 sm:p-7">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.08em] text-primary">
           <Clock className="h-3.5 w-3.5" /> {post.readTime}
         </span>
-        <h3 className="mt-2.5 font-heading text-[22px] leading-snug text-dark transition group-hover:text-primary">
+        <h3 className="mt-3 font-heading text-[22px] leading-[1.18] text-dark transition group-hover:text-primary sm:text-[24px]">
           {post.title}
         </h3>
-        <p className="mt-3 line-clamp-3 flex-1 text-[15px] leading-relaxed text-text">{post.excerpt}</p>
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
+        <p className="mt-4 line-clamp-3 flex-1 text-[15px] leading-[1.7] text-text">{post.excerpt}</p>
+        <div className="mt-6 flex items-center justify-between gap-3 border-t border-border/80 pt-4">
           <Byline post={post} />
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-dark transition group-hover:border-primary group-hover:bg-primary group-hover:text-dark">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border text-dark transition group-hover:border-primary group-hover:bg-primary group-hover:text-dark">
             <ArrowUpRight className="h-4 w-4" />
           </span>
         </div>
@@ -113,17 +113,17 @@ export default function BlogPageClient({
         <div className="hero-aurora hero-aurora-1" />
         <div className="hero-aurora hero-aurora-2" />
         <div className="hero-grid" />
-        <div className="container-main relative z-10 pb-24 pt-16 text-center md:pb-28 md:pt-24">
+        <div className="container-main relative z-10 pb-28 pt-16 text-center md:pb-36 md:pt-24">
           <AnimatedSection>
             <span className="hero-badge mx-auto">
               <span className="hero-badge-dot" />
               The Boxora Journal
             </span>
-            <h1 className="mx-auto mt-6 max-w-4xl font-heading text-[40px] leading-[1.08] text-white md:text-[62px]">
+            <h1 className="mx-auto mt-7 max-w-4xl font-heading text-[40px] leading-[1.04] text-white md:text-[68px]">
               Ideas that make your packaging{" "}
               <span className="hero-shimmer font-body font-extrabold tracking-tight">worth opening</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-base text-white/70 md:text-lg">
+            <p className="mx-auto mt-7 max-w-2xl text-base leading-relaxed text-white/70 md:text-lg">
               Practical guides on materials, design, sustainability and production, written for founders,
               marketers and packaging teams.
             </p>
@@ -132,14 +132,14 @@ export default function BlogPageClient({
       </section>
 
       {/* Featured story overlaps the masthead */}
-      <section className="relative z-10 -mt-14 md:-mt-16">
+      <section className="relative z-10 -mt-20 md:-mt-24">
         <div className="container-main">
           <AnimatedSection>
             <Link
               href={`/blog/${featured.slug}`}
-              className="group grid overflow-hidden rounded-[36px] border border-border bg-white shadow-[0_30px_80px_rgba(3,90,83,0.18)] lg:grid-cols-[1.05fr_1fr]"
+              className="group mx-auto grid max-w-[1180px] overflow-hidden rounded-[28px] border border-border/80 bg-white shadow-[0_24px_70px_rgba(3,90,83,0.14)] lg:h-[360px] lg:grid-cols-[1fr_1fr]"
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-background-field lg:aspect-auto lg:min-h-[440px]">
+              <div className="relative aspect-[4/3] overflow-hidden bg-background-field lg:aspect-auto lg:h-full">
                 <Image
                   src={featured.image}
                   alt={featured.title}
@@ -148,27 +148,27 @@ export default function BlogPageClient({
                   className="object-cover transition duration-700 group-hover:scale-105"
                   sizes="(max-width: 1024px) 100vw, 55vw"
                 />
-                <span className="absolute left-5 top-5 rounded-full bg-gradient-to-r from-primary to-secondary px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-white shadow-lg">
+                <span className="absolute left-6 top-6 rounded-full bg-white/95 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-dark shadow-lg backdrop-blur">
                   Featured story
                 </span>
               </div>
-              <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-14">
-                <span className="text-[12px] font-bold uppercase tracking-[0.14em] text-primary">
+              <div className="flex flex-col justify-center p-7 sm:p-9 lg:p-10">
+                <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
                   {featured.category}
                 </span>
-                <h2 className="mt-4 font-heading text-[30px] leading-[1.12] text-dark transition group-hover:text-primary sm:text-[38px] lg:text-[44px]">
+                <h2 className="mt-3 font-heading text-[28px] leading-[1.08] text-dark transition group-hover:text-primary sm:text-[34px] lg:text-[38px]">
                   {featured.title}
                 </h2>
-                <p className="mt-5 line-clamp-4 text-base leading-relaxed text-text md:text-lg">
+                <p className="mt-4 line-clamp-2 max-w-xl text-[15px] leading-[1.6] text-text md:text-base">
                   {featured.excerpt}
                 </p>
-                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
                   <Byline post={featured} />
                   <span className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-lighter">
                     <Clock className="h-3.5 w-3.5" /> {featured.readTime}
                   </span>
                 </div>
-                <span className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-[14px] font-bold text-white shadow-[0_12px_36px_rgba(189,249,6,0.35)] transition group-hover:bg-[#8fbf00]">
+                <span className="mt-5 inline-flex w-fit items-center gap-2 rounded-full bg-primary px-6 py-3 text-[13px] font-bold text-dark shadow-[0_10px_28px_rgba(189,249,6,0.25)] transition group-hover:bg-[#8fbf00]">
                   Read the story <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
                 </span>
               </div>
@@ -179,9 +179,9 @@ export default function BlogPageClient({
 
       {/* Editor's picks */}
       {picks.length > 0 && !isFiltering && (
-        <section className="container-main pt-16 md:pt-20">
+        <section className="container-main pt-20 md:pt-28">
           <AnimatedSection>
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex items-end justify-between gap-4 border-b border-border/80 pb-5">
               <div>
                 <span className="section-label text-secondary">Editor&apos;s picks</span>
                 <h2 className="mt-2 font-heading text-[28px] leading-tight text-dark md:text-[36px]">
@@ -190,12 +190,12 @@ export default function BlogPageClient({
               </div>
             </div>
           </AnimatedSection>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
             {picks.map((p, i) => (
               <AnimatedSection key={p.slug} delay={i * 0.08}>
                 <Link
                   href={`/blog/${p.slug}`}
-                  className="group flex h-full gap-4 rounded-[16px] border border-border bg-background-field/40 p-4 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(189,249,6,0.1)]"
+                  className="group flex h-full gap-4 rounded-[20px] border border-border/80 bg-background-field/35 p-5 transition hover:border-primary/30 hover:bg-white hover:shadow-[0_18px_44px_rgba(3,90,83,0.1)]"
                 >
                   <span className="font-heading text-[44px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)]">
                     {String(i + 1).padStart(2, "0")}
@@ -217,15 +217,22 @@ export default function BlogPageClient({
       )}
 
       {/* Library */}
-      <section className="container-main py-16 md:py-20">
+      <section className="container-main py-20 md:py-28">
         <AnimatedSection>
-          <span className="section-label text-primary">The library</span>
-          <h2 className="mt-2 font-heading text-[30px] leading-tight text-dark md:text-[42px]">
-            Every article, in one place
-          </h2>
+          <div className="flex flex-col gap-3 border-b border-border/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="section-label text-primary">The library</span>
+              <h2 className="mt-2 font-heading text-[30px] leading-tight text-dark md:text-[42px]">
+                Every article, in one place
+              </h2>
+            </div>
+            <p className="max-w-xs text-sm leading-relaxed text-lighter sm:text-right">
+              Fresh thinking for better products, better launches, and better unboxing moments.
+            </p>
+          </div>
         </AnimatedSection>
 
-        <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mt-8 flex flex-col gap-5 rounded-[20px] border border-border/80 bg-background-field/35 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
             {categories.map((category) => (
               <button
@@ -252,7 +259,7 @@ export default function BlogPageClient({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search articles"
               aria-label="Search articles"
-              className="[&::-webkit-search-cancel-button]:hidden w-full rounded-full border border-border bg-white py-3 pl-11 pr-10 text-[15px] text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15"
+              className="[&::-webkit-search-cancel-button]:hidden w-full rounded-full border border-border/80 bg-white py-3 pl-11 pr-10 text-[15px] text-dark outline-none transition placeholder:text-lighter focus:border-primary focus:ring-2 focus:ring-primary/15"
             />
             {query && (
               <button
@@ -267,12 +274,12 @@ export default function BlogPageClient({
           </div>
         </div>
 
-        <p className="mt-6 text-sm font-semibold text-lighter" role="status" aria-live="polite">
+        <p className="mt-6 text-[12px] font-bold uppercase tracking-[0.1em] text-lighter" role="status" aria-live="polite">
           {filtered.length} {filtered.length === 1 ? "article" : "articles"}
           {activeCategory !== "All" && ` in ${activeCategory}`}
         </p>
 
-        <div className="mt-5 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((post, i) => (
             <AnimatedSection key={post.slug} delay={(i % 3) * 0.07}>
               <PostCard post={post} />
@@ -303,7 +310,7 @@ export default function BlogPageClient({
       <section className="pb-16 md:pb-24">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[20px] bg-[#024540] px-6 py-14 text-center md:px-16 md:py-16">
+            <div className="relative overflow-hidden rounded-[28px] bg-[#024540] px-6 py-16 text-center md:px-16 md:py-20">
               <div className="hero-aurora hero-aurora-1 opacity-40" />
               <div className="hero-aurora hero-aurora-2 opacity-40" />
               <div className="relative z-10">

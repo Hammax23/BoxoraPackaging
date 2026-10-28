@@ -121,7 +121,7 @@ export default function BlogPostPageClient({
 
       {/* Title block */}
       <section className="relative overflow-hidden bg-gradient-to-b from-background-field/70 via-white to-white">
-        <div className="container-main pb-10 pt-8 md:pb-14 md:pt-10">
+        <div className="container-main pb-12 pt-8 md:pb-16 md:pt-10">
           <nav className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs font-semibold text-lighter sm:text-[13px]">
             <Link href="/" className="transition hover:text-primary">Home</Link>
             <ChevronRight className="h-3.5 w-3.5" />
@@ -130,11 +130,11 @@ export default function BlogPostPageClient({
             <span className="max-w-[40ch] truncate text-dark">{post.title}</span>
           </nav>
 
-          <div className="mx-auto mt-8 max-w-4xl text-center">
+          <div className="mx-auto mt-9 max-w-4xl text-center">
             <span className="inline-flex rounded-full bg-primary/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-primary">
               {post.category}
             </span>
-            <h1 className="mt-5 font-heading text-[32px] leading-[1.1] text-dark sm:text-[44px] md:text-[56px]">
+            <h1 className="mt-5 font-heading text-[32px] leading-[1.06] text-dark sm:text-[44px] md:text-[60px]">
               {post.title}
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-text sm:text-lg md:text-xl">
@@ -156,28 +156,28 @@ export default function BlogPostPageClient({
         </div>
       </section>
 
-      <article ref={articleRef}>
+      <article ref={articleRef} className="border-y border-border/70 bg-background-field/45 py-8 md:py-12">
         <div className="container-main">
-          <div className="relative mx-auto aspect-[16/9] max-w-5xl overflow-hidden rounded-[16px] bg-background-field shadow-[0_30px_80px_rgba(3,90,83,0.15)]">
+          <div className="relative mx-auto h-[230px] max-w-[920px] overflow-hidden rounded-[22px] bg-background-field shadow-[0_22px_55px_rgba(3,90,83,0.12)] sm:h-[300px] md:h-[340px]">
             <Image
               src={post.image}
               alt={post.title}
               fill
               priority
               className="object-cover"
-              sizes="(max-width: 1280px) 100vw, 1024px"
+              sizes="(max-width: 1280px) calc(100vw - 2.5rem), 920px"
             />
           </div>
 
-          <div className="mx-auto mt-12 grid max-w-[1000px] gap-10 md:mt-16 lg:grid-cols-[1fr_auto] lg:gap-14">
-            <div className="mx-auto w-full max-w-[720px] space-y-7">
+          <div className="mx-auto mt-10 grid max-w-[920px] gap-8 md:mt-12 lg:grid-cols-[minmax(0,680px)_56px] lg:items-start lg:justify-between lg:gap-12">
+            <div className="mx-auto w-full max-w-[720px] space-y-8">
               {post.content.map((paragraph, i) => (
                 <p
                   key={`${post.slug}-${i}`}
                   className={
                     i === 0
-                      ? "text-[18px] leading-[1.85] text-dark first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[72px] first-letter:leading-[0.8] first-letter:text-primary md:text-[20px]"
-                      : "text-[18px] leading-[1.85] text-text md:text-[19px]"
+                      ? "text-[18px] leading-[1.8] text-dark first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-heading first-letter:text-[72px] first-letter:leading-[0.8] first-letter:text-primary md:text-[20px]"
+                      : "text-[18px] leading-[1.8] text-text md:text-[19px]"
                   }
                 >
                   {paragraph}
@@ -192,7 +192,7 @@ export default function BlogPostPageClient({
               </div>
 
               {/* Author card */}
-              <div className="flex items-start gap-4 rounded-[20px] border border-border bg-background-field/50 p-6">
+              <div className="flex items-start gap-4 rounded-[24px] border border-border/80 bg-background-field/50 p-6 sm:p-7">
                 <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-lg font-bold text-white">
                   {initials(post.author)}
                 </span>
@@ -208,7 +208,7 @@ export default function BlogPostPageClient({
 
             {/* Sticky side share (desktop) */}
             <aside className="hidden lg:block">
-              <div className="sticky top-32 flex flex-col items-center gap-3 rounded-full border border-border bg-white p-2 shadow-sm">
+              <div className="sticky top-32 flex flex-col items-center gap-3 rounded-full border border-border/80 bg-white p-2 shadow-[0_12px_30px_rgba(3,90,83,0.08)]">
                 <ShareRail title={post.title} />
               </div>
             </aside>
@@ -258,9 +258,9 @@ export default function BlogPostPageClient({
                 <Link
                   key={item.slug}
                   href={`/blog/${item.slug}`}
-                  className="group overflow-hidden rounded-[20px] border border-border bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/25 hover:shadow-[0_24px_56px_rgba(189,249,6,0.12)]"
+                  className="group overflow-hidden rounded-[24px] border border-border/80 bg-white transition duration-300 hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_24px_56px_rgba(3,90,83,0.1)]"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-background-field">
+                  <div className="relative aspect-[1.18] overflow-hidden bg-background-field">
                     <Image
                       src={item.image}
                       alt={item.title}

@@ -29,13 +29,6 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/about",
 });
 
-// Small stack of tilted photos inside the hero card. Offsets are in % of the stack box.
-const heroStack = [
-  { src: images.photo(19), alt: "Printed rigid box", cls: "left-[2%] top-[14%] h-[62%] w-[34%]", rotate: -7, z: "z-10" },
-  { src: img("2024/05/h1-banner09.jpg"), alt: "Custom printed kraft pouches", cls: "left-[28%] top-[2%] h-[92%] w-[42%]", rotate: 0, z: "z-20", pos: "78% 50%" },
-  { src: images.photo(11), alt: "Stand-up pouch", cls: "right-[2%] top-[16%] h-[62%] w-[34%]", rotate: 7, z: "z-10" },
-] as { src: string; alt: string; cls: string; rotate: number; z: string; pos?: string }[];
-
 const icons: Record<string, LucideIcon> = { Gem, Leaf, Palette, Rocket, Handshake, ShieldCheck };
 
 export default async function AboutPage() {
@@ -52,75 +45,75 @@ export default async function AboutPage() {
     <main>
       <Header />
 
-      {/* Hero: compact banner card */}
-      <section className="bg-gradient-to-b from-white to-[#f3f1de] py-8 sm:py-10">
-        <div className="container-main">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-background-field">
+        <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 left-1/3 h-80 w-80 rounded-full bg-secondary/20 blur-3xl" />
+        <div className="container-main relative z-10 py-12 md:py-20 lg:py-24">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[16px] border border-white bg-white/80 shadow-[0_24px_70px_rgba(189,249,6,0.12)] sm:rounded-[20px]">
-              <div className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full bg-gradient-to-br from-primary/20 to-secondary/25 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-24 left-1/3 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
-
-              <div className="relative grid items-center gap-2 px-6 py-8 sm:px-10 sm:py-10 md:grid-cols-[1.25fr_1fr] lg:px-14">
-                <div className="text-center md:text-left">
-                  <span className="inline-flex items-center gap-2.5 rounded-full border border-primary/20 bg-white px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-primary shadow-sm">
-                    <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                    About Boxora
-                  </span>
-                  <h1 className="mt-4 font-heading text-[30px] leading-[1.1] text-dark sm:text-[40px] lg:text-[46px]">
-                    We make packaging{" "}
-                    <span className="whitespace-nowrap bg-[linear-gradient(100deg,#035a53_0%,#0b7a6e_100%)] bg-clip-text font-body font-extrabold tracking-tight text-transparent">
-                      worth keeping
-                    </span>
+            <div className="relative overflow-hidden rounded-[32px] border border-border bg-white px-6 py-8 shadow-[0_24px_70px_rgba(3,90,83,0.1)] sm:px-10 sm:py-12 lg:px-16 lg:py-16">
+              <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+                <div>
+                  <span className="section-label text-primary">About Boxora</span>
+                  <h1 className="mt-6 max-w-xl font-heading text-[42px] leading-[0.98] text-dark sm:text-[58px] lg:text-[72px]">
+                    Packaging with a point of view.
                   </h1>
-                  <p className="mx-auto mt-3 max-w-md text-[14.5px] leading-relaxed text-text sm:text-base md:mx-0">
-                    Custom, eco-friendly packaging that makes your brand&apos;s first impression count.
+                  <p className="mt-6 max-w-lg text-base leading-relaxed text-text sm:text-lg">
+                    We make custom packaging that protects what is inside and makes the moment of opening
+                    feel unmistakably yours.
                   </p>
-                  <div className="mt-5 flex items-center justify-center gap-5 md:justify-start">
+                  <div className="mt-8 flex flex-wrap items-center gap-3">
                     <Link
                       href="/quote"
-                      className="btn-slip group inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-6 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white shadow-[0_8px_24px_rgba(189,249,6,0.3)] transition-all duration-300 hover:bg-primary/90"
+                      className="btn-slip group inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-dark shadow-[0_10px_30px_rgba(189,249,6,0.25)] transition hover:bg-secondary"
                     >
                       Start your project
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" strokeWidth={2.5} />
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2.5} />
                     </Link>
                     <Link
                       href="/team"
-                      className="group inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.08em] text-dark transition hover:text-primary"
+                      className="group inline-flex items-center gap-2 rounded-full border border-dark/20 px-7 py-3.5 text-sm font-bold text-dark transition hover:border-primary hover:text-primary"
                     >
                       Meet the team
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
                     </Link>
                   </div>
                 </div>
 
-                <div className="relative mx-auto hidden h-[230px] w-full max-w-[380px] sm:block lg:h-[250px]">
-                  {heroStack.map((p) => (
-                    <div
-                      key={p.src}
-                      className={`absolute overflow-hidden rounded-2xl border-[4px] border-white bg-background-field shadow-[0_16px_40px_rgba(189,249,6,0.2)] ${p.cls} ${p.z}`}
-                      style={{ transform: `rotate(${p.rotate}deg)` }}
-                    >
+                <div className="relative">
+                  <div className="grid grid-cols-[0.78fr_1.22fr] items-end gap-3 sm:gap-5">
+                    <div className="relative aspect-[0.8] overflow-hidden rounded-[22px] bg-dark shadow-[0_20px_45px_rgba(3,90,83,0.2)]">
                       <Image
-                        src={p.src}
-                        alt={p.alt}
+                        src={images.photo(19)}
+                        alt="Printed rigid box"
                         fill
                         priority
-                        sizes="160px"
+                        sizes="(max-width: 1024px) 35vw, 220px"
                         className="object-cover"
-                        style={{ objectPosition: p.pos ?? "50% 50%" }}
                       />
                     </div>
-                  ))}
-                  <div className="absolute -bottom-1 right-2 z-30 flex items-center gap-2 rounded-xl border border-white bg-white px-3 py-2 shadow-[0_12px_30px_rgba(189,249,6,0.2)]">
-                    <span className="font-heading text-[22px] leading-none text-primary">50+</span>
-                    <span className="text-[11px] font-semibold leading-tight text-dark">
-                      custom
+                    <div className="relative aspect-[1.12] overflow-hidden rounded-[22px] bg-dark shadow-[0_24px_55px_rgba(3,90,83,0.22)]">
+                      <Image
+                        src={img("2024/05/h1-banner09.jpg")}
+                        alt="Custom printed kraft pouches"
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 60vw, 420px"
+                        className="object-cover"
+                        style={{ objectPosition: "78% 50%" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-5 left-5 flex items-center gap-3 rounded-2xl border border-white bg-dark px-4 py-3 text-white shadow-[0_14px_35px_rgba(3,90,83,0.25)] sm:left-10">
+                    <span className="font-heading text-3xl leading-none text-primary">50+</span>
+                    <span className="text-[11px] font-bold uppercase leading-tight tracking-[0.1em] text-white/75">
+                      ways to
                       <br />
-                      options
+                      make it yours
                     </span>
                   </div>
                 </div>
-              </div>
+            </div>
             </div>
           </AnimatedSection>
         </div>
@@ -132,7 +125,7 @@ export default async function AboutPage() {
       <section className="section-padding bg-white">
         <div className="container-main grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <AnimatedSection className="relative">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[20px] shadow-[0_30px_80px_rgba(189,249,6,0.18)]">
+            <div className="relative aspect-[4/4.5] overflow-hidden rounded-[28px] shadow-[0_28px_70px_rgba(3,90,83,0.16)]">
               <Image
                 src={images.goGreen}
                 alt="Eco-friendly custom packaging by Boxora"
@@ -147,9 +140,9 @@ export default async function AboutPage() {
                 <Image src={images.specialOffer} alt="" fill className="object-cover" sizes="25vw" />
               </div>
             </div>
-            <div className="absolute -left-3 top-8 rounded-2xl bg-primary px-5 py-4 text-white shadow-[0_16px_40px_rgba(189,249,6,0.45)] sm:-left-6">
-              <p className="font-heading text-3xl leading-none">50+</p>
-              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-white/85">
+            <div className="absolute -left-3 top-8 rounded-2xl bg-dark px-5 py-4 text-white shadow-[0_16px_40px_rgba(3,90,83,0.3)] sm:-left-6">
+              <p className="font-heading text-3xl leading-none text-primary">50+</p>
+              <p className="mt-1 text-[11px] font-bold uppercase tracking-wider text-white/75">
                 Options to
                 <br />
                 make it yours
@@ -187,12 +180,12 @@ export default async function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="bg-background-field py-14">
+      <section className="bg-dark py-14">
         <div className="container-main grid grid-cols-2 gap-6 lg:grid-cols-4">
           {stats.map((s, i) => (
             <AnimatedSection key={s.label} delay={i * 0.08} className="text-center">
               <p className="font-heading text-[44px] leading-none text-primary md:text-[56px]">{s.value}</p>
-              <p className="mx-auto mt-3 max-w-[180px] text-sm font-semibold text-dark">{s.label}</p>
+              <p className="mx-auto mt-3 max-w-[180px] text-sm font-semibold text-white/75">{s.label}</p>
             </AnimatedSection>
           ))}
         </div>
@@ -210,7 +203,7 @@ export default async function AboutPage() {
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {values.map((v, i) => (
               <AnimatedSection key={v.title} delay={(i % 3) * 0.08}>
-                <div className="group h-full rounded-[20px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.12)]">
+                <div className="group h-full rounded-[24px] border border-border/80 bg-background-field/35 p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:bg-white hover:shadow-[0_24px_60px_rgba(3,90,83,0.1)]">
                   <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-background-field text-primary transition group-hover:bg-primary group-hover:text-dark">
                     <v.icon className="h-6 w-6" />
                   </span>
@@ -235,7 +228,7 @@ export default async function AboutPage() {
           <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {steps.map((s, i) => (
               <AnimatedSection key={s.n} delay={i * 0.08}>
-                <div className="group relative h-full rounded-[20px] border border-border bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_60px_rgba(189,249,6,0.12)]">
+                <div className="group relative h-full rounded-[24px] border border-border/80 bg-white p-7 transition duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_24px_60px_rgba(3,90,83,0.1)]">
                   <span className="font-heading text-[56px] leading-none text-transparent [-webkit-text-stroke:1px_rgba(3,90,83,0.55)] transition group-hover:[-webkit-text-stroke:1px_rgba(3,90,83,1)]">
                     {s.n}
                   </span>
@@ -252,7 +245,7 @@ export default async function AboutPage() {
       <section className="section-padding bg-white">
         <div className="container-main">
           <AnimatedSection>
-            <div className="relative overflow-hidden rounded-[20px] bg-dark ring-1 ring-primary/30 px-6 py-16 text-center md:px-16 md:py-20">
+            <div className="relative overflow-hidden rounded-[28px] bg-dark ring-1 ring-primary/30 px-6 py-16 text-center md:px-16 md:py-20">
               <div className="pointer-events-none absolute -right-10 -top-10 hidden h-64 w-64 rotate-12 overflow-hidden rounded-[16px] opacity-40 md:block">
                 <Image src={images.packagingStyles[0]} alt="" fill className="object-cover" sizes="260px" />
               </div>
